@@ -39,7 +39,7 @@ entity esp is
     tdo             : out   std_logic;
     tms             : in    std_logic;
     tclk            : in    std_logic;
-    next_in         : out   std_logic;
+    
     
     uart_rxd        : in    std_logic;  -- UART1_RX (u1i.rxd)
     uart_txd        : out   std_logic;  -- UART1_TX (u1o.txd)
@@ -72,7 +72,7 @@ end;
 architecture rtl of esp is
 
 
-signal tdi_int,tms_int,tclk_int,tdo_int,next_in_int :std_logic;
+signal tdi_int,tms_int,tclk_int,tdo_int:std_logic;
     
   
 constant nocs_num : integer := 6;
@@ -427,7 +427,7 @@ begin
   tms_int<=tms;
   tclk_int<=tclk;
   tdo<=tdo_int;
-  next_in<=next_in_int;
+  
   
 
   -----------------------------------------------------------------------------
@@ -553,7 +553,7 @@ begin
         tdo                => tdo_int,
         tms                => tms_int,
         tclk               => tclk_int,
-        next_in            => next_in_int,
+        
 
 
         -- NOC

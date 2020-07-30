@@ -58,8 +58,7 @@ entity tile_cpu is
     tdo                : out std_logic;
     tms                : in  std_logic;
     tclk               : in  std_logic;
-    next_in            : out std_logic;
-
+    
    -- NOC
     sys_clk_int        : in  std_logic;
     noc1_data_n_in     : in  noc_flit_type;
@@ -158,12 +157,13 @@ architecture rtl of tile_cpu is
       tdo                :        out std_logic;
       tms                :        in  std_logic;
       tclk               :        in  std_logic;
-      next_in            :        out std_logic;
-
+      
       noc2_output_port:           in noc_flit_type;
       noc2_cpu_data_void_out:     in std_ulogic;
       noc3_output_port:           in noc_flit_type;
       noc3_cpu_data_void_out:     in std_ulogic;
+      noc4_output_port:           in noc_flit_type;
+      noc4_cpu_data_void_out:     in std_ulogic;
       noc5_output_port:           in misc_noc_flit_type;
       noc5_cpu_data_void_out:     in std_ulogic;
       noc6_output_port:           in noc_flit_type;
@@ -175,10 +175,12 @@ architecture rtl of tile_cpu is
       test2_output_port      :    out noc_flit_type;
       test3_cpu_data_void_out:    out std_ulogic;
       test3_output_port      :    out noc_flit_type;
+      test4_cpu_data_void_out:    out std_ulogic;
+      test4_output_port      :    out noc_flit_type;
       test5_cpu_data_void_out:    out std_ulogic;
       test5_output_port      :    out misc_noc_flit_type;
       test6_cpu_data_void_out:    out std_ulogic;
-      test6_output_port       :    out noc_flit_type;
+      test6_output_port      :    out noc_flit_type;
 
       noc1_in_port           :     in noc_flit_type;
       tonoc1_cpu_data_void_in:     in std_ulogic;
@@ -188,7 +190,10 @@ architecture rtl of tile_cpu is
       tonoc4_cpu_data_void_in:     in std_ulogic;
       noc5_in_port           :     in misc_noc_flit_type;
       tonoc5_cpu_data_void_in:     in std_ulogic;
+      noc6_in_port           :     in noc_flit_type;
+      tonoc6_cpu_data_void_in:     in std_ulogic;
 
+      
       noc1_input_port:             out noc_flit_type;
       noc1_cpu_data_void_in:       out std_ulogic;
       noc3_input_port:             out noc_flit_type;
@@ -491,8 +496,10 @@ architecture rtl of tile_cpu is
   signal test2_output_port      : std_logic_vector(NOC_FLIT_SIZE-1 downto 0);
   signal test3_cpu_data_void_out: std_ulogic;
   signal test3_output_port      : std_logic_vector(NOC_FLIT_SIZE-1 downto 0);
+  signal test4_cpu_data_void_out: std_ulogic;
+  signal test4_output_port      : std_logic_vector(NOC_FLIT_SIZE-1 downto 0);
   signal test5_cpu_data_void_out: std_ulogic;
-  signal test5_output_port      : misc_noc_flit_type;
+  signal test5_output_port      : std_logic_vector(MISC_NOC_FLIT_SIZE-1 downto 0);
   signal test6_cpu_data_void_out: std_ulogic;
   signal test6_output_port      : noc_flit_type;
 
@@ -504,7 +511,8 @@ architecture rtl of tile_cpu is
   signal tonoc4_cpu_data_void_in : std_ulogic;
   signal noc5_in_port           :misc_noc_flit_type;
   signal tonoc5_cpu_data_void_in : std_ulogic;
-  
+  signal noc6_in_port           :noc_flit_type;
+  signal tonoc6_cpu_data_void_in : std_ulogic;  
   
   -- Noc signals
   signal noc1_stop_in_s         : std_logic_vector(4 downto 0);
@@ -623,12 +631,13 @@ begin
       tdo=>       tdo,
       tms=>       tms,
       tclk=>      tclk,
-      next_in=>   next_in,
-
+      
       noc2_output_port=>        noc2_output_port,
       noc2_cpu_data_void_out=>  noc2_cpu_data_void_out,
       noc3_output_port=>        noc3_output_port,
       noc3_cpu_data_void_out=>  noc3_cpu_data_void_out,
+      noc4_output_port=>        noc4_output_port,
+      noc4_cpu_data_void_out=>  noc4_cpu_data_void_out,
       noc5_output_port=>        noc5_output_port,
       noc5_cpu_data_void_out=>  noc5_cpu_data_void_out,
       noc6_output_port=>        noc6_output_port,
@@ -638,6 +647,8 @@ begin
       test2_output_port=>       test2_output_port,
       test3_cpu_data_void_out=> test3_cpu_data_void_out,
       test3_output_port=>       test3_output_port,
+      test4_cpu_data_void_out=> test4_cpu_data_void_out,
+      test4_output_port=>       test4_output_port,
       test5_cpu_data_void_out=> test5_cpu_data_void_out,
       test5_output_port=>       test5_output_port,
       test6_cpu_data_void_out=> test6_cpu_data_void_out,
@@ -651,7 +662,10 @@ begin
       tonoc4_cpu_data_void_in=> tonoc4_cpu_data_void_in,
       noc5_in_port=>            noc5_in_port,
       tonoc5_cpu_data_void_in=> tonoc5_cpu_data_void_in,
+      noc6_in_port=>            noc6_in_port,
+      tonoc6_cpu_data_void_in=> tonoc6_cpu_data_void_in,
 
+      
       noc1_input_port=>         noc1_input_port,
       noc1_cpu_data_void_in=>   noc1_cpu_data_void_in,
       noc3_input_port=>         noc3_input_port,
@@ -1518,8 +1532,8 @@ begin
       noc3_in_data               => noc3_in_port,
       noc3_in_void               => tonoc3_cpu_data_void_in,
       noc3_in_stop               => noc3_cpu_stop_out,
-      noc4_out_data              => noc4_output_port,
-      noc4_out_void              => noc4_cpu_data_void_out,
+      noc4_out_data              => test4_output_port,
+      noc4_out_void              => test4_cpu_data_void_out,
       noc4_out_stop              => noc4_cpu_stop_in,
       noc4_in_data               => noc4_in_port,
       noc4_in_void               => tonoc4_cpu_data_void_in,
@@ -1533,8 +1547,8 @@ begin
       noc6_out_data              => test6_output_port,
       noc6_out_void              => test6_cpu_data_void_out,
       noc6_out_stop              => noc6_cpu_stop_in,
-      noc6_in_data               => noc6_input_port,
-      noc6_in_void               => noc6_cpu_data_void_in,
+      noc6_in_data               => noc6_in_port,
+      noc6_in_void               => tonoc6_cpu_data_void_in,
       noc6_in_stop               => noc6_cpu_stop_out);
  
 end;

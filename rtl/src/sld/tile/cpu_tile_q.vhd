@@ -563,6 +563,15 @@ begin  -- rtl
                         remote_irq_ack_rdreq <= '1';
                         to_noc5_fifos_next <= packet_irq_ack;
                       end if;
+
+                    elsif remote_ahbs_snd_empty = '0' then
+                      if noc5_in_stop = '0' then
+                        noc5_in_data <= remote_ahbs_snd_data_out;
+                        noc5_in_void <= remote_ahbs_snd_empty;
+                        remote_ahbs_snd_rdreq <= '1';
+                        to_noc5_fifos_next <= packet_remote_ahbs_snd;
+                      end if;
+
                     elsif (remote_apb_snd_empty = '0' and remote_apb_snd_to_local = '0') then
                       if noc5_in_stop = '0' then
                         noc5_in_data <= remote_apb_snd_data_out;
@@ -588,13 +597,6 @@ begin  -- rtl
                         local_apb_snd_wrreq <= '1';
                         apb_snd_rdreq <= '1';
                         to_noc5_fifos_next <= packet_local_apb_snd;
-                      end if;
-                    elsif remote_ahbs_snd_empty = '0' then
-                      if noc5_in_stop = '0' then
-                        noc5_in_data <= remote_ahbs_snd_data_out;
-                        noc5_in_void <= remote_ahbs_snd_empty;
-                        remote_ahbs_snd_rdreq <= '1';
-                        to_noc5_fifos_next <= packet_remote_ahbs_snd;
                       end if;
 
                     end if;

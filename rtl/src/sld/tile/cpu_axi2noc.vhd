@@ -170,7 +170,7 @@ architecture rtl of cpu_axi2noc is
 
 begin  -- rtl
 
-  make_packet: process (mosi)
+  make_packet: process (mosi,coherence_req_full)
     variable tran : transaction_type;
   begin  -- process make_packet
 
@@ -181,11 +181,11 @@ begin  -- rtl
     -- Prioritize masters (0 highest priority) and set xindex
     for i in  nmst - 1 downto 0 loop
       -- Higher priority to master with low index
-      if (mosi(i).aw.valid or mosi(i).ar.valid) = '1' then
+      if (mosi(i).aw.valid or mosi(i).ar.valid)='1' then  --(coherence_req_full='0' and mosi(i).ar.valid='1')) then
         tran.xindex := i;
         selected <= '1';
       end if;
-    end loop;  -- i
+    end loop;  -- 
 
     -- Set write
     tran.write := mosi(tran.xindex).aw.valid;
@@ -604,14 +604,15 @@ begin  -- rtl
 
       when request_data_ack =>
         somi(transaction_reg.xindex).b.valid <= '1';
-        if mst_bready = '1' then
-          if selected = '0' then
-            next_state <= idle;
-          else
-            sample_flits <= '1';
-            next_state <= request_header;
+          if mst_bready = '1' then
+            if selected = '0' then
+              next_state <= idle;
+            else
+              sample_flits<='1';
+              next_state<=request_header;
+            end if;
           end if;
-        end if;
+                
 
       when reply_header =>
         if transaction_reg.dst_is_mem = '1' then

@@ -62,7 +62,7 @@ package test_int_package is
   end component demux_1to6;
 
 
-  component mux_4to1 
+  component mux_5to1 
       generic (sz: integer);
       port
         ( sel : in  std_logic_vector(5 downto 0);
@@ -70,8 +70,9 @@ package test_int_package is
           B   : in  std_logic_vector (sz-1 downto 0);
           C   : in  std_logic_vector (sz-1 downto 0);
           D   : in  std_logic_vector (sz-1 downto 0);
+          E   : in  std_logic_vector (sz-1 downto 0);
           X   : out std_logic_vector (sz-1 downto 0));
-    end component mux_4to1;
+  end component mux_5to1;
         
  
   component mux_2to1 

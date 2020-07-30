@@ -44,7 +44,7 @@ entity top is
     tdo             : out   std_logic;
     tms             : in    std_logic;
     tclk            : in    std_logic;
-    next_in         : out   std_logic;
+    
     
     ddr3_dq         : inout std_logic_vector(63 downto 0);
     ddr3_dqs_p      : inout std_logic_vector(7 downto 0);
@@ -531,7 +531,7 @@ begin
       tdo           => tdo,
       tms           => tms,
       tclk          => tclk,
-      next_in       => next_in,
+      
       
       pllbypass      => chip_pllbypass,
       uart_rxd       => uart_rxd_int,

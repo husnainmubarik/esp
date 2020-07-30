@@ -34,8 +34,7 @@ package soctiles is
       tdo                : out std_logic;
       tms                : in std_logic;
       tclk               : in std_logic;
-      next_in            : out std_logic;
-
+      
       pllbypass          : in  std_logic_vector(CFG_TILES_NUM - 1 downto 0);
       uart_rxd           : in  std_logic;
       uart_txd           : out std_logic;
@@ -84,7 +83,7 @@ package soctiles is
       tdo                : out std_logic;
       tms                : in  std_logic;
       tclk               : in  std_logic;
-      next_in            : out std_logic;
+      
       -- NOC
       sys_clk_int        : in  std_logic;
       noc1_data_n_in     : in  noc_flit_type;

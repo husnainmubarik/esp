@@ -9,7 +9,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
--- Last update: 2020-07-14
+-- Last update: 2020-07-28
 -- Platform   :
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -94,7 +94,7 @@ architecture syn of async_fifo is
   attribute ASYNC_REG of wcb: signal is "TRUE";
   attribute ASYNC_REG of rcb: signal is "TRUE";
 
-  signal full_int, empty_int               : std_logic;
+  signal full_int, empty_int,empty_i          : std_logic;
   signal going_full                        : std_logic;
 
   signal wr_count, rd_count : t_counter;
@@ -108,13 +108,19 @@ begin  -- syn
   rd_int <= rd_i and not empty_int;
   we_int <= we_i and not full_int;
 
-  p_mem_write : process(clk_wr_i,empty_int)
+  p_mem_write : process(clk_wr_i,empty_i,rd_i,rcb)
   begin
-    if rising_edge(empty_int) then
-      for i in 0 to g_size-1 loop
-        mem(i)<=ZERO & '1';
-      end loop;
-      
+   -- if rising_edge(empty_i) then
+   --   for i in 0 to g_size-1 loop
+   --     mem(i)<=ZERO & '1';
+   --   end loop;
+
+    if  rising_edge(rd_i) then
+      if to_integer(rcb.bin(rcb.bin'left-1 downto 0))>0 then  
+      mem(to_integer(rcb.bin(rcb.bin'left-1 downto 0))-1)<=ZERO & '1';
+      else
+        mem(7)<=ZERO & '1';
+      end if;
     elsif rising_edge(clk_wr_i) then
       if(we_int = '1') then
         mem(to_integer(wcb.bin(wcb.bin'left-1 downto 0))) <= d_i;
@@ -126,7 +132,11 @@ begin  -- syn
 
   wcb.bin_next  <= wcb.bin + 1;
   wcb.gray_next <= f_bin2gray(wcb.bin_next);
+  
 
+
+
+  
   p_write_ptr : process(clk_wr_i, rst_n_i)
   begin
     if rst_n_i = '0' then
@@ -176,16 +186,31 @@ begin  -- syn
   wcb.bin_x <= f_gray2bin(wcb.gray_x);
   rcb.bin_x <= f_gray2bin(rcb.gray_x);
 
-  p_gen_empty : process(clk_rd_i, rst_n_i)
+p_empty : process(clk_rd_i, rst_n_i,rcb,wcb)
+  begin
+    if rst_n_i = '0' then
+      empty_i<='1';
+    elsif rising_edge (clk_rd_i) then
+      if (rcb.bin = wcb.bin) then
+        empty_i<='1';
+      else
+        empty_i<='0';
+      end if;
+    end if;
+  end process;
+
+
+  
+  p_gen_empty : process(clk_rd_i, rst_n_i,rcb,wcb)
   begin
     if rst_n_i = '0' then
       empty_int <= '1';
-    elsif rising_edge (clk_rd_i) then
-      if(rcb.gray = wcb.gray_x or (rd_int = '1' and (wcb.gray_x = rcb.gray_next))) then
+     elsif rising_edge (clk_rd_i) then
+      if (rcb.gray = wcb.gray_x  or  (rd_int = '1' and (wcb.gray_x = rcb.gray_next))) then 
         empty_int <= '1';
-      else
+       else
         empty_int <= '0';
-      end if;
+       end if;
     end if;
   end process;
 
