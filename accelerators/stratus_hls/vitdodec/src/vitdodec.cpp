@@ -381,6 +381,14 @@ void vitdodec::compute_kernel()
                     uint8_t  l_ppresult[TRACEBACK_MAX][64];
                     int      l_store_pos = 0;
 
+                    HLS_FLAT(l_metric0_generic);
+                    HLS_FLAT(l_metric1_generic);
+                    HLS_FLAT(l_path0_generic);
+                    HLS_FLAT(l_path1_generic);
+                    HLS_FLAT(l_mmresult);
+                    HLS_FLAT(l_ppresult);
+
+
 #if(0)
                     {
                         printf(" d_brtab27_0 = ");
@@ -492,6 +500,8 @@ void vitdodec::compute_kernel()
                                 unsigned char *pp0       = l_path0_generic;
                                 unsigned char *pp1       = l_path1_generic;
                                 unsigned char symbols[4];// = (unsigned char)plm_in_ping[(idx_depd_data + in_count) & 0xfffffffc];
+                                HLS_FLAT(symbols);
+
                                 symbols[0] = (unsigned char)plm_in_ping[((idx_depd_data + in_count) & 0xfffffffc) + 0];
                                 symbols[1] = (unsigned char)plm_in_ping[((idx_depd_data + in_count) & 0xfffffffc) + 1];
                                 symbols[2] = (unsigned char)plm_in_ping[((idx_depd_data + in_count) & 0xfffffffc) + 2];
@@ -512,6 +522,24 @@ void vitdodec::compute_kernel()
                                 unsigned short simd_epi16;
                                 unsigned int   first_symbol;
                                 unsigned int   second_symbol;
+
+                                HLS_FLAT(m0);
+                                HLS_FLAT(m1);
+                                HLS_FLAT(m2);
+                                HLS_FLAT(m3);
+                                HLS_FLAT(decision0);
+                                HLS_FLAT(decision1);
+                                HLS_FLAT(survivor0);
+                                HLS_FLAT(survivor1);
+                                HLS_FLAT(metsv);
+                                HLS_FLAT(metsvm);
+                                HLS_FLAT(shift0);
+                                HLS_FLAT(shift1);
+                                HLS_FLAT(tmp0);
+                                HLS_FLAT(tmp1);
+                                HLS_FLAT(sym0v);
+                                HLS_FLAT(sym1v);
+
 
                                 //printf("Setting up for next two symbols\n");
                                 // Set up for the first two symbols (0 and 1)
