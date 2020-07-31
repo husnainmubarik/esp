@@ -34,7 +34,7 @@ use work.socmap.all;
 entity tile_slm is
   generic (
     ROUTER_PORTS : ports_vec := "11111";
-    HAS_SYNC: integer range 0 to 1 := 0);
+    HAS_SYNC: integer range 0 to 1 := 1);
   port (
     rst                : in  std_ulogic;
     clk                : in  std_ulogic;

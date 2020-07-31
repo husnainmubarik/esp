@@ -34,7 +34,7 @@ entity tile_acc is
     this_has_pll       : integer range 0 to 1 := 0;
     this_extra_clk_buf : integer range 0 to 1 := 0;
     ROUTER_PORTS       : ports_vec            := "11111";
-    HAS_SYNC           : integer range 0 to 1 := 0);
+    HAS_SYNC           : integer range 0 to 1 := 1);
   port (
     rst                : in  std_ulogic;
     refclk             : in  std_ulogic;
