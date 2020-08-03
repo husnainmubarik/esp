@@ -1,0 +1,190 @@
+
+prom.srec:     file format srec
+
+
+Disassembly of section .sec1:
+
+0000000000010000 <.sec1>:
+   10000:	37110000          	lui	sp,0x1
+   10004:	1b01f19f          	0x9ff1011b
+   10008:	13114101          	slli	sp,sp,0x14
+   1000c:	93023000          	li	t0,3
+   10010:	93024000          	li	t0,4
+   10014:	b3856200          	add	a1,t0,t1
+   10018:	9b071000          	0x10079b
+   1001c:	9397f701          	slli	a5,a5,0x1f
+   10020:	23a2b700          	sw	a1,4(a5)
+   10024:	83a24700          	lw	t0,4(a5)
+   10028:	13055500          	addi	a0,a0,5
+   1002c:	23a4a700          	sw	a0,8(a5)
+   10030:	732540f1          	csrr	a0,mhartid
+
+Disassembly of section .sec2:
+
+0000000000010100 <.sec2>:
+   10100:	0cc1                	sw	a1,0(a0)
+   10102:	8280                	ret
+   10104:	0841                	lw	a0,0(a0)
+   10106:	0125                	jal	0x10706
+   10108:	8280                	ret
+   1010a:	b7070060          	lui	a5,0x60000
+   1010e:	03a54710          	lw	a0,260(a5) # 0x60000104
+   10112:	1189                	andi	a0,a0,4
+   10114:	8280                	ret
+   10116:	37070060          	lui	a4,0x60000
+   1011a:	83274710          	lw	a5,260(a4) # 0x60000104
+   1011e:	918b                	andi	a5,a5,4
+   10120:	eddf                	beqz	a5,0x1011a
+   10122:	8280                	ret
+   10124:	0111                	addi	sp,sp,-32
+   10126:	22e8                	fsw	fs0,16(sp)
+   10128:	06ec                	fsw	ft1,24(sp)
+   1012a:	26e4                	fsw	fs1,8(sp)
+   1012c:	a947                	li	a5,10
+   1012e:	2a84                	mv	s0,a0
+   10130:	6313f502          	bne	a0,a5,0x10156
+   10134:	b7040060          	lui	s1,0x60000
+   10138:	eff0fffd          	jal	ra,0x10116
+   1013c:	23a08410          	sw	s0,256(s1) # 0x60000100
+   10140:	eff07ffd          	jal	ra,0x10116
+   10144:	b547                	li	a5,13
+   10146:	23a0f410          	sw	a5,256(s1)
+   1014a:	4264                	flw	fs0,16(sp)
+   1014c:	e260                	flw	ft1,24(sp)
+   1014e:	a264                	flw	fs1,8(sp)
+   10150:	0561                	addi	sp,sp,32
+   10152:	6ff05ffc          	j	0x10116
+   10156:	eff01ffc          	jal	ra,0x10116
+   1015a:	0124                	jal	0x1035a
+   1015c:	b7070060          	lui	a5,0x60000
+   10160:	23a08710          	sw	s0,256(a5) # 0x60000100
+   10164:	ddb7                	j	0x1014a
+   10166:	4111                	addi	sp,sp,-16
+   10168:	22e0                	fsw	fs0,0(sp)
+   1016a:	06e4                	fsw	ft1,8(sp)
+   1016c:	2a84                	mv	s0,a0
+   1016e:	03450400          	lbu	a0,0(s0)
+   10172:	09e5                	bnez	a0,0x1017c
+   10174:	a260                	flw	ft1,8(sp)
+   10176:	0264                	flw	fs0,0(sp)
+   10178:	4101                	addi	sp,sp,16
+   1017a:	8280                	ret
+   1017c:	eff09ffa          	jal	ra,0x10124
+   10180:	0504                	addi	s0,s0,1
+   10182:	f5b7                	j	0x1016e
+   10184:	37070060          	lui	a4,0x60000
+   10188:	9307200a          	li	a5,162
+   1018c:	2326f710          	sw	a5,268(a4) # 0x6000010c
+   10190:	b7070080          	lui	a5,0x80000
+   10194:	8d27                	jal	0x108f6
+   10196:	17050000          	auipc	a0,0x0
+   1019a:	2324f710          	sw	a5,264(a4)
+   1019e:	1305a526          	addi	a0,a0,618 # 0x10400
+   101a2:	6ff05ffc          	j	0x10166
+   101a6:	97070000          	auipc	a5,0x0
+   101aa:	9387a715          	addi	a5,a5,346 # 0x10300
+   101ae:	1377f500          	andi	a4,a0,15
+   101b2:	3e97                	add	a4,a4,a5
+   101b4:	03470700          	lbu	a4,0(a4)
+   101b8:	1181                	srli	a0,a0,0x4
+   101ba:	aa97                	add	a5,a5,a0
+   101bc:	a380e500          	sb	a4,1(a1)
+   101c0:	83c70700          	lbu	a5,0(a5)
+   101c4:	2380f500          	sb	a5,0(a1)
+   101c8:	8280                	ret
+   101ca:	7971                	addi	sp,sp,-48
+   101cc:	22f0                	fsw	fs0,32(sp)
+   101ce:	26ec                	fsw	fs1,24(sp)
+   101d0:	4ae8                	fsw	fs2,16(sp)
+   101d2:	06f4                	fsw	ft1,40(sp)
+   101d4:	2a89                	mv	s2,a0
+   101d6:	6144                	li	s0,24
+   101d8:	e154                	li	s1,-8
+   101da:	3b558900          	0x89553b
+   101de:	2c00                	addi	a1,sp,8
+   101e0:	1375f50f          	andi	a0,a0,255
+   101e4:	eff03ffc          	jal	ra,0x101a6
+   101e8:	03458100          	lbu	a0,8(sp) # 0x1008
+   101ec:	6134                	jal	0xfc74
+   101ee:	eff07ff3          	jal	ra,0x10124
+   101f2:	03459100          	lbu	a0,9(sp)
+   101f6:	eff0fff2          	jal	ra,0x10124
+   101fa:	e31094fe          	bne	s0,s1,0x101da
+   101fe:	a270                	flw	ft1,40(sp)
+   10200:	0274                	flw	fs0,32(sp)
+   10202:	e264                	flw	fs1,24(sp)
+   10204:	4269                	flw	fs2,16(sp)
+   10206:	4561                	addi	sp,sp,48
+   10208:	8280                	ret
+   1020a:	7971                	addi	sp,sp,-48
+   1020c:	22f0                	fsw	fs0,32(sp)
+   1020e:	26ec                	fsw	fs1,24(sp)
+   10210:	4ae8                	fsw	fs2,16(sp)
+   10212:	06f4                	fsw	ft1,40(sp)
+   10214:	2a89                	mv	s2,a0
+   10216:	13048003          	li	s0,56
+   1021a:	e154                	li	s1,-8
+   1021c:	33558900          	srl	a0,s2,s0
+   10220:	2c00                	addi	a1,sp,8
+   10222:	1375f50f          	andi	a0,a0,255
+   10226:	eff01ff8          	jal	ra,0x101a6
+   1022a:	03458100          	lbu	a0,8(sp)
+   1022e:	6134                	jal	0xfcb6
+   10230:	eff05fef          	jal	ra,0x10124
+   10234:	03459100          	lbu	a0,9(sp)
+   10238:	eff0dfee          	jal	ra,0x10124
+   1023c:	e31094fe          	bne	s0,s1,0x1021c
+   10240:	a270                	flw	ft1,40(sp)
+   10242:	0274                	flw	fs0,32(sp)
+   10244:	e264                	flw	fs1,24(sp)
+   10246:	4269                	flw	fs2,16(sp)
+   10248:	4561                	addi	sp,sp,48
+   1024a:	8280                	ret
+   1024c:	0111                	addi	sp,sp,-32
+   1024e:	2c00                	addi	a1,sp,8
+   10250:	06ec                	fsw	ft1,24(sp)
+   10252:	eff05ff5          	jal	ra,0x101a6
+   10256:	03458100          	lbu	a0,8(sp)
+   1025a:	eff0bfec          	jal	ra,0x10124
+   1025e:	03459100          	lbu	a0,9(sp)
+   10262:	eff03fec          	jal	ra,0x10124
+   10266:	e260                	flw	ft1,24(sp)
+   10268:	0561                	addi	sp,sp,32
+   1026a:	8280                	ret
+   1026c:	8280                	ret
+   1026e:	4111                	addi	sp,sp,-16
+   10270:	06e4                	fsw	ft1,8(sp)
+   10272:	eff03ff1          	jal	ra,0x10184
+   10276:	01a0                	j	0x10276
+
+Disassembly of section .sec3:
+
+0000000000010300 <.sec3>:
+   10300:	3031                	fld	fa2,96(a0)
+   10302:	3233                	fld	ft6,296(sp)
+   10304:	3435                	fld	fa3,104(a0)
+   10306:	3637                	fld	fa4,360(sp)
+   10308:	3839                	fld	fa4,112(a0)
+   1030a:	4142                	li	tp,16
+   1030c:	43444546          	fmadd.q	fs0,fa0,ft4,fs0,rmm
+
+Disassembly of section .sec4:
+
+0000000000010400 <.sec4>:
+   10400:	4553                	li	t1,-15
+   10402:	502d                	fld	fa2,152(a0)
+   10404:	4172                	lui	tp,0xffff0
+   10406:	6961                	addi	sp,sp,208
+   10408:	6e65                	flw	fa0,216(sp)
+   1040a:	2066                	flw	fs0,72(a2)
+   1040c:	6972                	lui	tp,0xffffa
+   1040e:	73742d73          	csrrci	s0,0x732,26
+   10412:	7461                	flw	fa3,68(a0)
+   10414:	67652062          	0x62206567
+   10418:	6f6f7420          	jal	t5,0x56e1e
+   1041c:	6c6f                	flw	fa1,92(a4)
+   1041e:	6164                	lui	s0,0x18
+   10420:	6572                	lui	tp,0xffff9
+   10422:	0a0a                	slli	s4,s4,0x2
+   10424:	0000                	unimp
+	...

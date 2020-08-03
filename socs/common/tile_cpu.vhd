@@ -9,7 +9,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-use work.test_int_package.all;
+--use work.test_int_package.all;
 
 use work.esp_global.all;
 use work.amba.all;
@@ -158,6 +158,8 @@ architecture rtl of tile_cpu is
       tms                :        in  std_logic;
       tclk               :        in  std_logic;
       
+      noc1_output_port:           in noc_flit_type;
+      noc1_cpu_data_void_out:     in std_ulogic;
       noc2_output_port:           in noc_flit_type;
       noc2_cpu_data_void_out:     in std_ulogic;
       noc3_output_port:           in noc_flit_type;
@@ -170,7 +172,8 @@ architecture rtl of tile_cpu is
       noc6_cpu_data_void_out:     in std_ulogic;
 
 
-
+      test1_cpu_data_void_out:    out std_ulogic;
+      test1_output_port:          out noc_flit_type;
       test2_cpu_data_void_out:    out std_ulogic;
       test2_output_port      :    out noc_flit_type;
       test3_cpu_data_void_out:    out std_ulogic;
@@ -184,6 +187,8 @@ architecture rtl of tile_cpu is
 
       noc1_in_port           :     in noc_flit_type;
       tonoc1_cpu_data_void_in:     in std_ulogic;
+      noc2_in_port           :     in noc_flit_type;
+      tonoc2_cpu_data_void_in:     in std_ulogic;
       noc3_in_port           :     in noc_flit_type;
       tonoc3_cpu_data_void_in:     in std_ulogic;
       noc4_in_port           :     in noc_flit_type;
@@ -196,12 +201,16 @@ architecture rtl of tile_cpu is
       
       noc1_input_port:             out noc_flit_type;
       noc1_cpu_data_void_in:       out std_ulogic;
+      noc2_input_port:             out noc_flit_type;
+      noc2_cpu_data_void_in:       out std_ulogic;
       noc3_input_port:             out noc_flit_type;
       noc3_cpu_data_void_in:       out std_ulogic;
       noc4_input_port:             out noc_flit_type;
       noc4_cpu_data_void_in:       out std_ulogic;
       noc5_input_port:             out misc_noc_flit_type;
       noc5_cpu_data_void_in:       out std_ulogic;
+      noc6_input_port:             out noc_flit_type;
+      noc6_cpu_data_void_in:       out std_ulogic;
 
       noc1_stop_out_s4:            in std_logic;
       noc2_stop_out_s4:            in std_logic;
@@ -491,7 +500,8 @@ architecture rtl of tile_cpu is
 
   -- Jtag signals
 
-
+  signal test1_cpu_data_void_out: std_ulogic;
+  signal test1_output_port      : std_logic_vector(NOC_FLIT_SIZE-1 downto 0);
   signal test2_cpu_data_void_out: std_ulogic;
   signal test2_output_port      : std_logic_vector(NOC_FLIT_SIZE-1 downto 0);
   signal test3_cpu_data_void_out: std_ulogic;
@@ -505,6 +515,8 @@ architecture rtl of tile_cpu is
 
   signal noc1_in_port           :noc_flit_type;
   signal tonoc1_cpu_data_void_in : std_ulogic;
+  signal noc2_in_port           :noc_flit_type;
+  signal tonoc2_cpu_data_void_in : std_ulogic;
   signal noc3_in_port           :noc_flit_type;
   signal tonoc3_cpu_data_void_in : std_ulogic;
   signal noc4_in_port           :noc_flit_type;
@@ -631,7 +643,9 @@ begin
       tdo=>       tdo,
       tms=>       tms,
       tclk=>      tclk,
-      
+
+      noc1_output_port=>        noc1_output_port,
+      noc1_cpu_data_void_out=>  noc1_cpu_data_void_out,
       noc2_output_port=>        noc2_output_port,
       noc2_cpu_data_void_out=>  noc2_cpu_data_void_out,
       noc3_output_port=>        noc3_output_port,
@@ -642,7 +656,9 @@ begin
       noc5_cpu_data_void_out=>  noc5_cpu_data_void_out,
       noc6_output_port=>        noc6_output_port,
       noc6_cpu_data_void_out=>  noc6_cpu_data_void_out,
-      
+
+      test1_cpu_data_void_out=> test1_cpu_data_void_out,
+      test1_output_port=>       test1_output_port,
       test2_cpu_data_void_out=> test2_cpu_data_void_out,
       test2_output_port=>       test2_output_port,
       test3_cpu_data_void_out=> test3_cpu_data_void_out,
@@ -656,6 +672,8 @@ begin
 
       noc1_in_port=>            noc1_in_port,
       tonoc1_cpu_data_void_in=> tonoc1_cpu_data_void_in,
+      noc2_in_port=>            noc2_in_port,
+      tonoc2_cpu_data_void_in=> tonoc2_cpu_data_void_in,
       noc3_in_port=>            noc3_in_port,
       tonoc3_cpu_data_void_in=> tonoc3_cpu_data_void_in,
       noc4_in_port=>            noc4_in_port,
@@ -668,13 +686,18 @@ begin
       
       noc1_input_port=>         noc1_input_port,
       noc1_cpu_data_void_in=>   noc1_cpu_data_void_in,
+      noc2_input_port=>         noc2_input_port,
+      noc2_cpu_data_void_in=>   noc2_cpu_data_void_in,
       noc3_input_port=>         noc3_input_port,
       noc3_cpu_data_void_in=>   noc3_cpu_data_void_in,
       noc4_input_port=>         noc4_input_port,
       noc4_cpu_data_void_in=>   noc4_cpu_data_void_in,
       noc5_input_port=>         noc5_input_port,
       noc5_cpu_data_void_in=>   noc5_cpu_data_void_in,
-
+      noc6_input_port=>         noc6_input_port,
+      noc6_cpu_data_void_in=>   noc6_cpu_data_void_in,
+      
+      
       noc1_stop_out_s4=>        noc1_stop_out_s(4),
       noc2_stop_out_s4=>        noc2_stop_out_s(4),
       noc3_stop_out_s4=>        noc3_stop_out_s(4),
@@ -1514,8 +1537,8 @@ begin
       remote_irq_ack_wrreq       => remote_irq_ack_wrreq,
       remote_irq_ack_data_in     => remote_irq_ack_data_in,
       remote_irq_ack_full        => remote_irq_ack_full,
-      noc1_out_data              => noc1_output_port,
-      noc1_out_void              => noc1_cpu_data_void_out,
+      noc1_out_data              => test1_output_port,
+      noc1_out_void              => test1_cpu_data_void_out,
       noc1_out_stop              => noc1_cpu_stop_in,
       noc1_in_data               => noc1_in_port,
       noc1_in_void               => tonoc1_cpu_data_void_in,
@@ -1523,8 +1546,8 @@ begin
       noc2_out_data              => test2_output_port,
       noc2_out_void              => test2_cpu_data_void_out,
       noc2_out_stop              => noc2_cpu_stop_in,
-      noc2_in_data               => noc2_input_port,
-      noc2_in_void               => noc2_cpu_data_void_in,
+      noc2_in_data               => noc2_in_port,
+      noc2_in_void               => tonoc2_cpu_data_void_in,
       noc2_in_stop               => noc2_cpu_stop_out,
       noc3_out_data              => test3_output_port,
       noc3_out_void              => test3_cpu_data_void_out,

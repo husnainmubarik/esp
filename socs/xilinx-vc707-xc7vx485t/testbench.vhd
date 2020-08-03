@@ -1,7 +1,3 @@
------------------------------------------------------------------------------
---  Testbench for ESP on Xilinx VC707
-------------------------------------------------------------------------------
-
 library ieee;
 library std;
 use ieee.std_logic_1164.all;
@@ -39,7 +35,7 @@ architecture behav of testbench is
       tdi          : in    std_logic;
       tdo          : out   std_logic;
       tclk         : in    std_logic;
-      tms          : in    std_logic;
+      tms          : in    std_logic_vector(1 downto 0);
       
       ddr3_dq      : inout std_logic_vector(63 downto 0);
       ddr3_dqs_p   : inout std_logic_vector(7 downto 0);
@@ -76,23 +72,23 @@ architecture behav of testbench is
   end component top;
 
 
-  -- Bein TOP-level interface --
+--  Bein TOP-level interface --
 
 
-  -- Reset and clocl
+--  Reset and clocl
   signal reset     : std_ulogic := '1';
   signal sys_clk_p : std_ulogic := '0';
   signal sys_clk_n : std_ulogic := '1';
 
 
   signal tclk      : std_logic := '0';
-  signal tms       : std_logic  := '0';
+  signal tms       : std_logic_vector(1 downto 0)  := "00";
   signal tdi       : std_logic;
   signal tdo       : std_logic;
   
 
   
-  -- DDR3
+--  DDR3
   signal ddr3_dq      : std_logic_vector(63 downto 0);
   signal ddr3_dqs_p   : std_logic_vector(7 downto 0);
   signal ddr3_dqs_n   : std_logic_vector(7 downto 0);
@@ -109,7 +105,7 @@ architecture behav of testbench is
   signal ddr3_dm      : std_logic_vector(7 downto 0);
   signal ddr3_odt     : std_logic_vector(0 downto 0);
 
-  -- SGMII Ethernet
+  --SGMII Ethernet
   signal gtrefclk_p : std_logic := '0';
   signal gtrefclk_n : std_logic := '1';
   signal txp        : std_logic;
@@ -121,13 +117,13 @@ architecture behav of testbench is
   signal eint       : std_ulogic;
   signal erst       : std_ulogic;
 
-  -- UART
+  --UART
   signal uart_rxd  : std_ulogic;
   signal uart_txd  : std_ulogic;
   signal uart_ctsn : std_ulogic;
   signal uart_rtsn : std_ulogic;
 
-  -- GPIO
+  --GPIO
   signal button : std_logic_vector(3 downto 0);
   signal switch : std_logic_vector(4 downto 0);
   signal led    : std_logic_vector(6 downto 0);
@@ -138,18 +134,18 @@ architecture behav of testbench is
    
   constant tclksp : time := 10 ns;
   
-  -- End TOP-level interface --
+  --End TOP-level interface --
 
 begin
 
-  -- clock and reset
+--  clock and reset
   reset     <= '0'           after 2500 ns;
   sys_clk_p <= not sys_clk_p after 2.5 ns;
   sys_clk_n <= not sys_clk_n after 2.5 ns;
 
   tclk <= not tclk after tclksp;
 
-  tms   <= '1'               after 2740 ns;
+  tms(1)   <= '1'               after 2740 ns;
  
   PROC_SEQUENCER : process
     file text_file1 : text open read_mode is "/home/gabriele/epochs2/esp/socs/xilinx-vc707-xc7vx485t/stim1.txt";
@@ -170,7 +166,7 @@ begin
 
   begin
 
-    wait until tms='1';
+    wait until (tms(1)='1' or tms(0)='1');
     readline(text_file1, text_line);
     read(text_line, instr_no,ok);
     read(text_line, wait_time,ok);
@@ -347,7 +343,7 @@ begin
 
         if tdo='1' then
 
-          assert tdo='0' report "------------------if3 entered"  severity note;
+          assert tdo='0' report "------------------if2 entered"  severity note;
 
           wait until falling_edge(tdo);
           wait until rising_edge(tclk);
@@ -368,14 +364,13 @@ begin
           writeline(out_file,out_line);
 
         else
-
-          wait until rising_edge(tclk) ;
-
-          wait until falling_edge(tclk);
+        wait until rising_edge(tclk) ;
+        wait until falling_edge(tclk);
+         
           
           if tdo='1' then
 
-            assert tdo='0' report "------------------if4 entered"  severity note;
+            assert tdo='0' report "------------------if3 entered"  severity note;
 
             wait until falling_edge(tdo);
             wait until rising_edge(tclk);
@@ -384,7 +379,7 @@ begin
             for i in 0 to 66 loop
               write(out_line,to_bit(tdo));
               wait until rising_edge(tclk) ;
-               end loop;
+            end loop; 
 
             for i in 0 to 5 loop
               write(out_line,to_bit(tdo));
@@ -396,14 +391,14 @@ begin
             writeline(out_file,out_line);
 
           else
-            
+
             wait until rising_edge(tclk) ;
 
             wait until falling_edge(tclk);
-            
+          
             if tdo='1' then
 
-              assert tdo='0' report "------------------if5 entered"  severity note;
+              assert tdo='0' report "------------------if4 entered"  severity note;
 
               wait until falling_edge(tdo);
               wait until rising_edge(tclk);
@@ -431,12 +426,13 @@ begin
             
               if tdo='1' then
 
-                assert tdo='0' report "------------------if6 entered"  severity note;
+                assert tdo='0' report "------------------if5 entered"  severity note;
 
                 wait until falling_edge(tdo);
                 wait until rising_edge(tclk);
-              
-                 for i in 0 to 66 loop
+ 
+
+                for i in 0 to 66 loop
                   write(out_line,to_bit(tdo));
                   wait until rising_edge(tclk) ;
                 end loop;
@@ -447,33 +443,62 @@ begin
                   wait until rising_edge(tclk) ;
                 end loop;
 
-                assert tdo='1' report "write6"  severity note;
+                assert tdo='1' report "write5"  severity note;
                 writeline(out_file,out_line);
 
               else
+            
+                wait until rising_edge(tclk) ;
+
+                wait until falling_edge(tclk);
+            
+                if tdo='1' then
+
+                  assert tdo='0' report "------------------if6 entered"  severity note;
+
+                  wait until falling_edge(tdo);
+                  wait until rising_edge(tclk);
+              
+                  for i in 0 to 66 loop
+                    write(out_line,to_bit(tdo));
+                    wait until rising_edge(tclk) ;
+                  end loop;
+
+                  for i in 0 to 5 loop
+                    write(out_line,to_bit(tdo));
+                    source(5-i)<=tdo;
+                    wait until rising_edge(tclk) ;
+                  end loop;
+
+                  assert tdo='1' report "write6"  severity note;
+                  writeline(out_file,out_line);
+
+                else
                      
         
-              assert tdo='1' report "////// writein entered" severity note;
+                  assert tdo='1' report "////// writein entered" severity note;
 
-              wait until rising_edge(tclk) ;
+                  wait until rising_edge(tclk) ;
 
-              assert tdo='1' report "////// writein1 entered" severity note;
-
-              
-              wait until falling_edge(tclk);
-
-              assert tdo='1' report "////// writein2 entered" severity note;
+                  assert tdo='1' report "////// writein1 entered" severity note;
 
               
-              for i in 0 to 5 loop
-                source(5-i)<=tdo;
-                wait until falling_edge(tclk) ;
-              end loop;
-            end if ;
+                  wait until falling_edge(tclk);
+
+                  assert tdo='1' report "////// writein2 entered" severity note;
+
+              
+                  for i in 0 to 5 loop
+                    source(5-i)<=tdo;
+                    wait until falling_edge(tclk) ;
+                  end loop;
+
+                end if ;
+              end if;
+            end if;
           end if;
         end if;
       end if;
-    end if;
   end loop;
 
   end process;

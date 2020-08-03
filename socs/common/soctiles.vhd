@@ -32,7 +32,7 @@ package soctiles is
 
       tdi                : in std_logic;
       tdo                : out std_logic;
-      tms                : in std_logic;
+      tms                : in std_logic_vector(1 downto 0);
       tclk               : in std_logic;
       
       pllbypass          : in  std_logic_vector(CFG_TILES_NUM - 1 downto 0);
@@ -178,6 +178,13 @@ package soctiles is
       refclk             : in  std_ulogic;
       pllbypass          : in  std_ulogic;
       pllclk             : out std_ulogic;
+
+
+      tdi             : in    std_logic;
+      tdo             : out   std_logic;
+      tms             : in    std_logic;
+      tclk            : in    std_logic;
+      
       -- NOC
       sys_clk_int        : in  std_logic;
       noc1_data_n_in     : in  noc_flit_type;
@@ -387,6 +394,13 @@ package soctiles is
       clk                : in  std_ulogic;
       ddr_ahbsi          : out ahb_slv_in_type;
       ddr_ahbso          : in  ahb_slv_out_type;
+
+      tdi                : in std_logic;
+      tdo                : out std_logic;
+      tms                : in std_logic;
+      tclk               : in std_logic;
+
+
       -- NOC
       sys_clk_int        : in  std_logic;
       noc1_data_n_in     : in  noc_flit_type;

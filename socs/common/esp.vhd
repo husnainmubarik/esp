@@ -37,7 +37,7 @@ entity esp is
 
     tdi             : in    std_logic;
     tdo             : out   std_logic;
-    tms             : in    std_logic;
+    tms             : in    std_logic_vector(1 downto 0);
     tclk            : in    std_logic;
     
     
@@ -72,7 +72,7 @@ end;
 architecture rtl of esp is
 
 
-signal tdi_int,tms_int,tclk_int,tdo_int:std_logic;
+signal tms_cpu,tdo_cpu,tms_acc,tdo_acc,tms_mem,tdo_mem:std_logic;
     
   
 constant nocs_num : integer := 6;
@@ -178,6 +178,8 @@ signal ipi : std_logic_vector(CFG_NCPU_TILE - 1 downto 0);
 
 begin
 
+  
+  
   rst_int <= rst;
   clk_int_gen: for i in 0 to CFG_NMEM_TILE - 1 generate
     sys_clk_int(i) <= sys_clk(i);
@@ -422,11 +424,33 @@ begin
     end generate meshgen_x;
   end generate meshgen_y;
 
+--temporary logic for tile-under-test selection
 
-  tdi_int<=tdi;
-  tms_int<=tms;
-  tclk_int<=tclk;
-  tdo<=tdo_int;
+  process(tms,tdo_cpu,tdo_acc,tdo_mem)
+  begin
+    case tms is
+      when "00" => tms_cpu<='0';
+                   tms_acc<='0';
+                   tms_mem<='0';
+                   tdo<='0';
+      when "10"=>  tms_cpu<='1';
+                   tms_acc<='0';
+                   tms_mem<='0';
+                   tdo<=tdo_cpu;
+      when "01" => tms_cpu<='0';
+                   tms_acc<='1';
+                   tms_mem<='0';
+                   tdo<=tdo_acc;
+      when "11" => tms_cpu<='0';
+                   tms_acc<='0';
+                   tms_mem<='1';
+                   tdo<=tdo_mem;
+      when others => null;
+                     
+    end case;
+  end process;
+  
+  
   
   
 
@@ -549,12 +573,11 @@ begin
         timer_irq          => timer_irq(tile_cpu_id(i)),
         ipi                => ipi(tile_cpu_id(i)),
 
-        tdi                => tdi_int,
-        tdo                => tdo_int,
-        tms                => tms_int,
-        tclk               => tclk_int,
+        tdi                => tdi,
+        tdo                => tdo_cpu,
+        tms                => tms_cpu,
+        tclk               => tclk,
         
-
 
         -- NOC
         sys_clk_int        => sys_clk_int(0),
@@ -653,6 +676,12 @@ begin
       port map (
         rst                => rst_int,
         refclk             => refclk_int(i),
+        tdi                => tdi,
+        tdo                => tdo_acc,
+        tms                => tms_acc,
+        tclk               => tclk,
+
+
         pllbypass          => pllbypass_int(i),
         pllclk             => clk_tile(i),
         -- NOC
@@ -869,8 +898,14 @@ begin
 	clk                => sys_clk_int(tile_mem_id(i)),
 	ddr_ahbsi          => ddr_ahbsi(tile_mem_id(i)),
 	ddr_ahbso          => ddr_ahbso(tile_mem_id(i)),
-	-- NOC
-	sys_clk_int        => sys_clk_int(0),
+
+        tdi                =>tdi,
+        tms                =>tms_mem,
+        tdo                =>tdo_mem,
+        tclk               =>tclk,
+        
+        -- NOC
+        sys_clk_int        => sys_clk_int(0),
 	noc1_data_n_in     => noc1_data_n_in(i),
 	noc1_data_s_in     => noc1_data_s_in(i),
 	noc1_data_w_in     => noc1_data_w_in(i),

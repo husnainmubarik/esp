@@ -42,7 +42,7 @@ entity top is
 
     tdi             : in    std_logic;
     tdo             : out   std_logic;
-    tms             : in    std_logic;
+    tms             : in    std_logic_vector(1 downto 0);
     tclk            : in    std_logic;
     
     
