@@ -1628,7 +1628,9 @@ begin  -- architecture rtl of l2_wrapper
 
     -- Set unused outputs for AHB BUS
     ahbso.hready <= '0';
-    ahbso.hrdata <= (others => '0');
+    unused_large_hrdata_gen: if ARCH_BITS > 32 generate
+      ahbso.hrdata(ARCH_BITS - 1 downto 32) <= (others => '0');
+    end generate unused_large_hrdata_gen;
     ahbso.hrdata(31 downto 0) <= x"dadecace";
 
 
