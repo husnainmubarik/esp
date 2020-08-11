@@ -23,13 +23,14 @@ entity misc_irq2noc is
   generic (
     tech    : integer := virtex7;
     ncpu    : integer := 0;
-    local_y : local_yx;
-    local_x : local_yx;
     cpu_y   : yx_vec(0 to CFG_NCPU_TILE - 1);
     cpu_x   : yx_vec(0 to CFG_NCPU_TILE - 1));
   port (
     rst : in std_ulogic;
     clk : in std_ulogic;
+
+    local_y : in local_yx;
+    local_x : in local_yx;
 
     irqi : in  irq_in_vector(0 to ncpu-1);
     irqo : out irq_out_vector(0 to ncpu-1);
@@ -92,42 +93,24 @@ architecture rtl of misc_irq2noc is
   signal sample_irq : std_logic_vector(ncpu-1 downto 0);
 
   -- attribute mark_debug : string;
-  -- attribute keep       : string;
 
   -- attribute mark_debug of irqi             : signal is "true";
-  -- attribute keep of irqi                   : signal is "true";
   -- attribute mark_debug of irqo             : signal is "true";
-  -- attribute keep of irqo                   : signal is "true";
   -- attribute mark_debug of irq_ack_rdreq    : signal is "true";
-  -- attribute keep of irq_ack_rdreq          : signal is "true";
   -- attribute mark_debug of irq_ack_data_out : signal is "true";
-  -- attribute keep of irq_ack_data_out       : signal is "true";
   -- attribute mark_debug of irq_ack_empty    : signal is "true";
-  -- attribute keep of irq_ack_empty          : signal is "true";
   -- attribute mark_debug of irq_wrreq        : signal is "true";
-  -- attribute keep of irq_wrreq              : signal is "true";
   -- attribute mark_debug of irq_data_in      : signal is "true";
-  -- attribute keep of irq_data_in            : signal is "true";
   -- attribute mark_debug of irq_full         : signal is "true";
-  -- attribute keep of irq_full               : signal is "true";
   -- attribute mark_debug of irqi_changed     : signal is "true";
-  -- attribute keep of irqi_changed           : signal is "true";
   -- attribute mark_debug of fifo_full        : signal is "true";
-  -- attribute keep of fifo_full              : signal is "true";
   -- attribute mark_debug of fifo_empty       : signal is "true";
-  -- attribute keep of fifo_empty             : signal is "true";
   -- attribute mark_debug of overflow         : signal is "true";
-  -- attribute keep of overflow               : signal is "true";
   -- attribute mark_debug of irq_snd_state    : signal is "true";
-  -- attribute keep of irq_snd_state          : signal is "true";
   -- attribute mark_debug of irq_rcv_state    : signal is "true";
-  -- attribute keep of irq_rcv_state          : signal is "true";
   -- attribute mark_debug of intack_delay_1   : signal is "true";
-  -- attribute keep of intack_delay_1         : signal is "true";
   -- attribute mark_debug of intack_delay_2   : signal is "true";
-  -- attribute keep of intack_delay_2         : signal is "true";
   -- attribute mark_debug of same_irl_pending : signal is "true";
-  -- attribute keep of same_irl_pending       : signal is "true";
 
 
   component gp_arbiter is
@@ -174,7 +157,7 @@ begin  -- rtl
     end process detect_fifo_overflow;
 
     -- Make a packet for interrupt request
-    make_packet : process (irqi(cpuid))
+    make_packet : process (irqi(cpuid), local_y, local_x)
       variable msg_type    : noc_msg_type;
       variable tmp : noc_flit_type;
       variable header_v    : misc_noc_flit_type;

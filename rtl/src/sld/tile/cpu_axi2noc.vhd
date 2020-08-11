@@ -38,8 +38,6 @@ entity cpu_axi2noc is
   generic (
     tech             : integer;
     nmst             : integer;
-    local_y          : local_yx;
-    local_x          : local_yx;
     retarget_for_dma : integer range 0 to 1 := 0;
     mem_axi_port     : integer range 0 to NAHBSLV - 1;
     mem_num          : integer;
@@ -49,6 +47,8 @@ entity cpu_axi2noc is
   port (
     rst                        : in  std_ulogic;
     clk                        : in  std_ulogic;
+    local_y                    : in  local_yx;
+    local_x                    : in  local_yx;
     mosi                       : in  axi_mosi_vector(0 to nmst - 1);
     somi                       : out axi_somi_vector(0 to nmst - 1);
     -- tile->NoC1
@@ -170,7 +170,7 @@ architecture rtl of cpu_axi2noc is
 
 begin  -- rtl
 
-  make_packet: process (mosi,coherence_req_full)
+  make_packet: process (mosi, local_y, local_x)
     variable tran : transaction_type;
   begin  -- process make_packet
 
@@ -181,7 +181,7 @@ begin  -- rtl
     -- Prioritize masters (0 highest priority) and set xindex
     for i in  nmst - 1 downto 0 loop
       -- Higher priority to master with low index
-      if (mosi(i).aw.valid or mosi(i).ar.valid)='1' then  --(coherence_req_full='0' and mosi(i).ar.valid='1')) then
+      if (mosi(i).aw.valid or mosi(i).ar.valid)='1' then
         tran.xindex := i;
         selected <= '1';
       end if;

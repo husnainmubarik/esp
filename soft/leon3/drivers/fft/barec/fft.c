@@ -74,7 +74,7 @@ static int validate_buf(token_t *out, float *gold)
 			errors++;
 	}
 
-	printf("  + Relative error > %.02f for %d output values out of %ld\n", ERR_TH, errors, 2 * len);
+	printf("  + Relative error is larger than threshold for %d output values out of %ld\n", errors, 2 * len);
 	return errors;
 }
 

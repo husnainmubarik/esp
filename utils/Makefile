@@ -1469,9 +1469,9 @@ endif
 	fi;
 	@if test -r $(DESIGN_PATH)/mem_tile_floorplanning.xdc; then \
 		echo "read_xdc  $(DESIGN_PATH)/mem_tile_floorplanning.xdc" >> $@; \
-	    echo "set_property used_in_synthesis true [get_files $(DESIGN_PATH)/mem_tile_floorplanning.xdc]" >> $@; \
-	    echo "set_property used_in_implementation true [get_files $(DESIGN_PATH)/mem_tile_floorplanning.xdc]" >> $@; \
-	echo "set_property strategy Congestion_SpreadLogic_high [get_runs impl_1]" >> $@; \
+		echo "set_property used_in_synthesis true [get_files $(DESIGN_PATH)/mem_tile_floorplanning.xdc]" >> $@; \
+		echo "set_property used_in_implementation true [get_files $(DESIGN_PATH)/mem_tile_floorplanning.xdc]" >> $@; \
+		echo "set_property strategy Congestion_SpreadLogic_high [get_runs impl_1]" >> $@; \
 	fi;
 	@for i in $(XDC); do \
 	  echo "read_xdc $$i" >> $@; \
@@ -1624,7 +1624,6 @@ vivado-distclean: vivado-clean
 GENUS_VLOG = read_hdl -language v2001
 GENUS_SVLOG = read_hdl -language sv
 GENUS_VHDL = read_hdl -language vhdl
-GENUS_ARIANE_VLOGOPT = -define WT_DCACHE=1
 
 genus:
 	$(QUIET_MKDIR)mkdir -p genus
@@ -1672,7 +1671,7 @@ genus/srcs.tcl: genus check_all_rtl_srcs.old
 		done; \
 	echo "### Compile SystemVerilog source files ###" >> $@; \
 		for rtl in $(SVLOG_SYN_SRCS); do \
-			echo "$(GENUS_SVLOG) $$rtl" >> $@; \
+			echo "$(GENUS_SVLOG) $(GENUS_SVLOGOPT) $$rtl" >> $@; \
 		done; \
 
 genus/$(DESIGN): genus genus/srcs.tcl genus/incdir.tcl

@@ -180,7 +180,7 @@ constant has_sram : tech_ability_type :=
 	(atc18s => 0, others => 1);
 
 constant has_2pram : tech_ability_type :=
-	( atc18s => 0, umc => 0, rhumc => 0, ihp25 => 0, others => 1);
+	( gf12 => 1, atc18s => 0, umc => 0, rhumc => 0, ihp25 => 0, others => 1);
 
 constant has_dpram : tech_ability_type :=
 	(virtex => 1, virtex2 => 1, memvirage => 1, axcel => 0,

@@ -1640,5 +1640,18 @@ end component;
     diagin   : in std_logic_vector(1 downto 0) := "00");
   end component;
 
+  component gf12_syncram is
+    generic (
+      abits : integer;
+      dbits : integer);
+    port (
+      clk     : in  std_ulogic;
+      address : in  std_logic_vector (abits -1 downto 0);
+      datain  : in  std_logic_vector (dbits -1 downto 0);
+      dataout : out std_logic_vector (dbits -1 downto 0);
+      enable  : in  std_ulogic;
+      write   : in  std_ulogic);
+  end component gf12_syncram;
+
 end;
 
