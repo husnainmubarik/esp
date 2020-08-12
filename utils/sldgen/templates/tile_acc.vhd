@@ -8,6 +8,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use work.test_int_package.all;
 use work.esp_global.all;
 use work.amba.all;
 use work.stdlib.all;
@@ -40,6 +41,14 @@ entity tile_acc is
     refclk             : in  std_ulogic;
     pllbypass          : in  std_ulogic;
     pllclk             : out std_ulogic;
+
+    -- jtag signals
+    tdi                : in  std_logic;
+    tdo                : out std_logic;
+    tms                : in  std_logic;
+    tclk               : in  std_logic;
+        
+
     -- NOC
     sys_clk_int        : in  std_logic;
     noc1_data_n_in     : in  noc_flit_type;
@@ -131,6 +140,98 @@ end;
 
 architecture rtl of tile_acc is
 
+
+  component jtag_test
+    port (
+      rst                :        in  std_ulogic;
+      refclk             :        in  std_ulogic;
+
+      tdi                :        in  std_logic;
+      tdo                :        out std_logic;
+      tms                :        in  std_logic;
+      tclk               :        in  std_logic;
+
+      noc1_output_port:           in noc_flit_type;
+      noc1_cpu_data_void_out:     in std_ulogic;
+      noc2_output_port:           in noc_flit_type;
+      noc2_cpu_data_void_out:     in std_ulogic;
+      noc3_output_port:           in noc_flit_type;
+      noc3_cpu_data_void_out:     in std_ulogic;
+      noc4_output_port:           in noc_flit_type;
+      noc4_cpu_data_void_out:     in std_ulogic;
+      noc5_output_port:           in misc_noc_flit_type;
+      noc5_cpu_data_void_out:     in std_ulogic;
+      noc6_output_port:           in noc_flit_type;
+      noc6_cpu_data_void_out:     in std_ulogic;
+
+
+      test1_cpu_data_void_out:    out std_ulogic;
+      test1_output_port:          out noc_flit_type;
+      test2_cpu_data_void_out:    out std_ulogic;
+      test2_output_port      :    out noc_flit_type;
+      test3_cpu_data_void_out:    out std_ulogic;
+      test3_output_port      :    out noc_flit_type;
+      test4_cpu_data_void_out:    out std_ulogic;
+      test4_output_port      :    out noc_flit_type;
+      test5_cpu_data_void_out:    out std_ulogic;
+      test5_output_port      :    out misc_noc_flit_type;
+      test6_cpu_data_void_out:    out std_ulogic;
+      test6_output_port      :    out noc_flit_type;
+
+      noc1_in_port           :     in noc_flit_type;
+      tonoc1_cpu_data_void_in:     in std_ulogic;
+      noc2_in_port           :     in noc_flit_type;
+      tonoc2_cpu_data_void_in:     in std_ulogic;
+      noc3_in_port           :     in noc_flit_type;
+      tonoc3_cpu_data_void_in:     in std_ulogic;
+      noc4_in_port           :     in noc_flit_type;
+      tonoc4_cpu_data_void_in:     in std_ulogic;
+      noc5_in_port           :     in misc_noc_flit_type;
+      tonoc5_cpu_data_void_in:     in std_ulogic;
+      noc6_in_port           :     in noc_flit_type;
+      tonoc6_cpu_data_void_in:     in std_ulogic;
+
+      noc1_input_port:             out noc_flit_type;
+      noc1_cpu_data_void_in:       out std_ulogic;
+      noc2_input_port:             out noc_flit_type;
+      noc2_cpu_data_void_in:       out std_ulogic;
+      noc3_input_port:             out noc_flit_type;
+      noc3_cpu_data_void_in:       out std_ulogic;
+      noc4_input_port:             out noc_flit_type;
+      noc4_cpu_data_void_in:       out std_ulogic;
+      noc5_input_port:             out misc_noc_flit_type;
+      noc5_cpu_data_void_in:       out std_ulogic;
+      noc6_input_port:             out noc_flit_type;
+      noc6_cpu_data_void_in:       out std_ulogic;
+
+      noc1_stop_out_s4:            in std_logic;
+      noc2_stop_out_s4:            in std_logic;
+      noc3_stop_out_s4:            in std_logic;
+      noc4_stop_out_s4:            in std_logic;
+      noc5_stop_out_s4:            in std_logic;
+      noc6_stop_out_s4:            in std_logic;
+
+      noc1_cpu_stop_out:           out std_ulogic;
+      noc2_cpu_stop_out:           out std_ulogic;
+      noc3_cpu_stop_out:           out std_ulogic;
+      noc4_cpu_stop_out:           out std_ulogic;
+      noc5_cpu_stop_out:           out std_ulogic;
+      noc6_cpu_stop_out:           out std_ulogic;
+
+      noc1_cpu_stop_in:            in std_ulogic;
+      noc2_cpu_stop_in:            in std_ulogic;
+      noc3_cpu_stop_in:            in std_ulogic;
+      noc4_cpu_stop_in:            in std_ulogic;
+      noc5_cpu_stop_in:            in std_ulogic;
+      noc6_cpu_stop_in:            in std_ulogic
+      );
+
+  end component;
+
+  
+
+
+  
   component sync_noc_set
      generic (
        PORTS     : std_logic_vector(4 downto 0);
@@ -315,7 +416,37 @@ architecture rtl of tile_acc is
   constant io_x                : local_yx                           := tile_x(io_tile_id);
   constant this_scatter_gather : integer range 0 to 1               := CFG_SCATTER_GATHER;
 
-   -- Noc signals
+  -- Jtag signals
+
+  signal test1_acc_data_void_out: std_ulogic;
+  signal test1_output_port      : std_logic_vector(NOC_FLIT_SIZE-1 downto 0);
+  signal test2_acc_data_void_out: std_ulogic;
+  signal test2_output_port      : std_logic_vector(NOC_FLIT_SIZE-1 downto 0);
+  signal test3_acc_data_void_out: std_ulogic;
+  signal test3_output_port      : std_logic_vector(NOC_FLIT_SIZE-1 downto 0);
+  signal test4_acc_data_void_out: std_ulogic;
+  signal test4_output_port      : std_logic_vector(NOC_FLIT_SIZE-1 downto 0);
+  signal test5_acc_data_void_out: std_ulogic;
+  signal test5_output_port      : std_logic_vector(MISC_NOC_FLIT_SIZE-1 downto 0);
+  signal test6_acc_data_void_out: std_ulogic;
+  signal test6_output_port      : noc_flit_type;
+
+  signal noc1_in_port           :noc_flit_type;
+  signal tonoc1_acc_data_void_in : std_ulogic;
+  signal noc2_in_port           :noc_flit_type;
+  signal tonoc2_acc_data_void_in : std_ulogic;
+  signal noc3_in_port           :noc_flit_type;
+  signal tonoc3_acc_data_void_in : std_ulogic;
+  signal noc4_in_port           :noc_flit_type;
+  signal tonoc4_acc_data_void_in : std_ulogic;
+  signal noc5_in_port           :misc_noc_flit_type;
+  signal tonoc5_acc_data_void_in : std_ulogic;
+  signal noc6_in_port           :noc_flit_type;
+  signal tonoc6_acc_data_void_in : std_ulogic;
+  
+
+
+  -- Noc signals
   signal noc1_stop_in_s         : std_logic_vector(4 downto 0);
   signal noc1_stop_out_s        : std_logic_vector(4 downto 0);
   signal noc1_acc_stop_in       : std_ulogic;
@@ -445,41 +576,130 @@ begin
   ----------------------------------------------------------------------------
   noc1_stop_in_s         <= noc1_acc_stop_in  & noc1_stop_in;
   noc1_stop_out          <= noc1_stop_out_s(3 downto 0);
-  noc1_acc_stop_out      <= noc1_stop_out_s(4);
+--  noc1_acc_stop_out      <= noc1_stop_out_s(4);
   noc1_data_void_in_s    <= noc1_acc_data_void_in & noc1_data_void_in;
   noc1_data_void_out     <= noc1_data_void_out_s(3 downto 0);
   noc1_acc_data_void_out <= noc1_data_void_out_s(4);
   noc2_stop_in_s         <= noc2_acc_stop_in  & noc2_stop_in;
   noc2_stop_out          <= noc2_stop_out_s(3 downto 0);
-  noc2_acc_stop_out      <= noc2_stop_out_s(4);
+--  noc2_acc_stop_out      <= noc2_stop_out_s(4);
   noc2_data_void_in_s    <= noc2_acc_data_void_in & noc2_data_void_in;
   noc2_data_void_out     <= noc2_data_void_out_s(3 downto 0);
   noc2_acc_data_void_out <= noc2_data_void_out_s(4);
   noc3_stop_in_s         <= noc3_acc_stop_in  & noc3_stop_in;
   noc3_stop_out          <= noc3_stop_out_s(3 downto 0);
-  noc3_acc_stop_out      <= noc3_stop_out_s(4);
+--  noc3_acc_stop_out      <= noc3_stop_out_s(4);
   noc3_data_void_in_s    <= noc3_acc_data_void_in & noc3_data_void_in;
   noc3_data_void_out     <= noc3_data_void_out_s(3 downto 0);
   noc3_acc_data_void_out <= noc3_data_void_out_s(4);
   noc4_stop_in_s         <= noc4_acc_stop_in  & noc4_stop_in;
   noc4_stop_out          <= noc4_stop_out_s(3 downto 0);
-  noc4_acc_stop_out      <= noc4_stop_out_s(4);
+--  noc4_acc_stop_out      <= noc4_stop_out_s(4);
   noc4_data_void_in_s    <= noc4_acc_data_void_in & noc4_data_void_in;
   noc4_data_void_out     <= noc4_data_void_out_s(3 downto 0);
   noc4_acc_data_void_out <= noc4_data_void_out_s(4);
   noc5_stop_in_s         <= noc5_acc_stop_in  & noc5_stop_in;
   noc5_stop_out          <= noc5_stop_out_s(3 downto 0);
-  noc5_acc_stop_out      <= noc5_stop_out_s(4);
+--  noc5_acc_stop_out      <= noc5_stop_out_s(4);
   noc5_data_void_in_s    <= noc5_acc_data_void_in & noc5_data_void_in;
   noc5_data_void_out     <= noc5_data_void_out_s(3 downto 0);
   noc5_acc_data_void_out <= noc5_data_void_out_s(4);
   noc6_stop_in_s         <= noc6_acc_stop_in  & noc6_stop_in;
   noc6_stop_out          <= noc6_stop_out_s(3 downto 0);
-  noc6_acc_stop_out      <= noc6_stop_out_s(4);
+--  noc6_acc_stop_out      <= noc6_stop_out_s(4);
   noc6_data_void_in_s    <= noc6_acc_data_void_in & noc6_data_void_in;
   noc6_data_void_out     <= noc6_data_void_out_s(3 downto 0);
   noc6_acc_data_void_out <= noc6_data_void_out_s(4);
 
+  jtag_test_acc: jtag_test
+    port map(
+      rst=>       rst,
+      refclk=>    refclk,
+
+      tdi=>       tdi,
+      tdo=>       tdo,
+      tms=>       tms,
+      tclk=>      tclk,
+
+      noc1_output_port=>        noc1_output_port,
+      noc1_cpu_data_void_out=>  noc1_acc_data_void_out,
+      noc2_output_port=>        noc2_output_port,
+      noc2_cpu_data_void_out=>  noc2_acc_data_void_out,
+      noc3_output_port=>        noc3_output_port,
+      noc3_cpu_data_void_out=>  noc3_acc_data_void_out,
+      noc4_output_port=>        noc4_output_port,
+      noc4_cpu_data_void_out=>  noc4_acc_data_void_out,
+      noc5_output_port=>        noc5_output_port,
+      noc5_cpu_data_void_out=>  noc5_acc_data_void_out,
+      noc6_output_port=>        noc6_output_port,
+      noc6_cpu_data_void_out=>  noc6_acc_data_void_out,
+
+      test1_cpu_data_void_out=> test1_acc_data_void_out,
+      test1_output_port=>       test1_output_port,
+      test2_cpu_data_void_out=> test2_acc_data_void_out,
+      test2_output_port=>       test2_output_port,
+      test3_cpu_data_void_out=> test3_acc_data_void_out,
+      test3_output_port=>       test3_output_port,
+      test4_cpu_data_void_out=> test4_acc_data_void_out,
+      test4_output_port=>       test4_output_port,
+      test5_cpu_data_void_out=> test5_acc_data_void_out,
+      test5_output_port=>       test5_output_port,
+      test6_cpu_data_void_out=> test6_acc_data_void_out,
+
+
+      noc1_in_port=>            noc1_in_port,
+      tonoc1_cpu_data_void_in=> tonoc1_acc_data_void_in,
+      noc2_in_port=>            noc2_in_port,
+      tonoc2_cpu_data_void_in=> tonoc2_acc_data_void_in,
+      noc3_in_port=>            noc3_in_port,
+      tonoc3_cpu_data_void_in=> tonoc3_acc_data_void_in,
+      noc4_in_port=>            noc4_in_port,
+      tonoc4_cpu_data_void_in=> tonoc4_acc_data_void_in,
+      noc5_in_port=>            noc5_in_port,
+      tonoc5_cpu_data_void_in=> tonoc5_acc_data_void_in,
+      noc6_in_port=>            noc6_in_port,
+      tonoc6_cpu_data_void_in=> tonoc6_acc_data_void_in,
+
+
+      noc1_input_port=>         noc1_input_port,
+      noc1_cpu_data_void_in=>   noc1_acc_data_void_in,
+      noc2_input_port=>         noc2_input_port,
+      noc2_cpu_data_void_in=>   noc2_acc_data_void_in,
+      noc3_input_port=>         noc3_input_port,
+      noc3_cpu_data_void_in=>   noc3_acc_data_void_in,
+      noc4_input_port=>         noc4_input_port,
+      noc4_cpu_data_void_in=>   noc4_acc_data_void_in,
+      noc5_input_port=>         noc5_input_port,
+      noc5_cpu_data_void_in=>   noc5_acc_data_void_in,
+      noc6_input_port=>         noc6_input_port,
+      noc6_cpu_data_void_in=>   noc6_acc_data_void_in,
+
+
+      noc1_stop_out_s4=>        noc1_stop_out_s(4),
+      noc2_stop_out_s4=>        noc2_stop_out_s(4),
+      noc3_stop_out_s4=>        noc3_stop_out_s(4),
+      noc4_stop_out_s4=>        noc4_stop_out_s(4),
+      noc5_stop_out_s4=>        noc5_stop_out_s(4),
+      noc6_stop_out_s4=>        noc6_stop_out_s(4),
+
+      noc1_cpu_stop_out=>       noc1_acc_stop_out,
+      noc2_cpu_stop_out=>       noc2_acc_stop_out,
+      noc3_cpu_stop_out=>       noc3_acc_stop_out,
+      noc4_cpu_stop_out=>       noc4_acc_stop_out,
+      noc5_cpu_stop_out=>       noc5_acc_stop_out,
+      noc6_cpu_stop_out=>       noc6_acc_stop_out,
+
+      noc1_cpu_stop_in=>        noc1_acc_stop_in,
+      noc2_cpu_stop_in=>        noc2_acc_stop_in,
+      noc3_cpu_stop_in=>        noc3_acc_stop_in,
+      noc4_cpu_stop_in=>        noc4_acc_stop_in,
+      noc5_cpu_stop_in=>        noc5_acc_stop_in,
+      noc6_cpu_stop_in=>        noc6_acc_stop_in
+
+      );
+  
+      
+  
  sync_noc_set_acc: sync_noc_set
   generic map (
      PORTS    => ROUTER_PORTS,
@@ -714,41 +934,41 @@ begin
       interrupt_ack_rdreq        => interrupt_ack_rdreq,
       interrupt_ack_data_out     => interrupt_ack_data_out,
       interrupt_ack_empty        => interrupt_ack_empty,
-      noc1_out_data              => noc1_output_port,
-      noc1_out_void              => noc1_acc_data_void_out,
+      noc1_out_data              => test1_output_port,
+      noc1_out_void              => test1_acc_data_void_out,
       noc1_out_stop              => noc1_acc_stop_in,
-      noc1_in_data               => noc1_input_port,
-      noc1_in_void               => noc1_acc_data_void_in,
+      noc1_in_data               => noc1_in_port,
+      noc1_in_void               => tonoc1_acc_data_void_in,
       noc1_in_stop               => noc1_acc_stop_out,
-      noc2_out_data              => noc2_output_port,
-      noc2_out_void              => noc2_acc_data_void_out,
+      noc2_out_data              => test2_output_port,
+      noc2_out_void              => test2_acc_data_void_out,
       noc2_out_stop              => noc2_acc_stop_in,
-      noc2_in_data               => noc2_input_port,
-      noc2_in_void               => noc2_acc_data_void_in,
+      noc2_in_data               => noc2_in_port,
+      noc2_in_void               => tonoc2_acc_data_void_in,
       noc2_in_stop               => noc2_acc_stop_out,
-      noc3_out_data              => noc3_output_port,
-      noc3_out_void              => noc3_acc_data_void_out,
+      noc3_out_data              => test3_output_port,
+      noc3_out_void              => test3_acc_data_void_out,
       noc3_out_stop              => noc3_acc_stop_in,
-      noc3_in_data               => noc3_input_port,
-      noc3_in_void               => noc3_acc_data_void_in,
+      noc3_in_data               => noc3_in_port,
+      noc3_in_void               => tonoc3_acc_data_void_in,
       noc3_in_stop               => noc3_acc_stop_out,
-      noc4_out_data              => noc4_output_port,
-      noc4_out_void              => noc4_acc_data_void_out,
+      noc4_out_data              => test4_output_port,
+      noc4_out_void              => test4_acc_data_void_out,
       noc4_out_stop              => noc4_acc_stop_in,
-      noc4_in_data               => noc4_input_port,
-      noc4_in_void               => noc4_acc_data_void_in,
+      noc4_in_data               => noc4_in_port,
+      noc4_in_void               => tonoc4_acc_data_void_in,
       noc4_in_stop               => noc4_acc_stop_out,
-      noc5_out_data              => noc5_output_port,
-      noc5_out_void              => noc5_acc_data_void_out,
+      noc5_out_data              => test5_output_port,
+      noc5_out_void              => test5_acc_data_void_out,
       noc5_out_stop              => noc5_acc_stop_in,
-      noc5_in_data               => noc5_input_port,
-      noc5_in_void               => noc5_acc_data_void_in,
+      noc5_in_data               => noc5_in_port,
+      noc5_in_void               => tonoc5_acc_data_void_in,
       noc5_in_stop               => noc5_acc_stop_out,
-      noc6_out_data              => noc6_output_port,
-      noc6_out_void              => noc6_acc_data_void_out,
+      noc6_out_data              => test6_output_port,
+      noc6_out_void              => test6_acc_data_void_out,
       noc6_out_stop              => noc6_acc_stop_in,
-      noc6_in_data               => noc6_input_port,
-      noc6_in_void               => noc6_acc_data_void_in,
+      noc6_in_data               => noc6_in_port,
+      noc6_in_void               => tonoc6_acc_data_void_in,
       noc6_in_stop               => noc6_acc_stop_out);
 
 end;

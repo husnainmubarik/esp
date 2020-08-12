@@ -145,7 +145,7 @@ begin
 
   tclk <= not tclk after tclksp;
 
-  tms(1)   <= '1'               after 2740 ns;
+--  tms(1)   <= '1'               after 2740 ns;
  
   PROC_SEQUENCER : process
     file text_file1 : text open read_mode is "../stim1.txt";
