@@ -148,13 +148,13 @@ begin
   tms(1)   <= '1'               after 2740 ns;
  
   PROC_SEQUENCER : process
-    file text_file1 : text open read_mode is "/home/gabriele/epochs2/esp/socs/xilinx-vc707-xc7vx485t/stim1.txt";
-    file text_file2 : text open read_mode is "/home/gabriele/epochs2/esp/socs/xilinx-vc707-xc7vx485t/stim2.txt";
-    file text_file3 : text open read_mode is "/home/gabriele/epochs2/esp/socs/xilinx-vc707-xc7vx485t/stim3.txt";
-    file text_file4 : text open read_mode is "/home/gabriele/epochs2/esp/socs/xilinx-vc707-xc7vx485t/stim4.txt";
-    file text_file5 : text open read_mode is "/home/gabriele/epochs2/esp/socs/xilinx-vc707-xc7vx485t/stim5.txt";
-    file text_file6 : text open read_mode is "/home/gabriele/epochs2/esp/socs/xilinx-vc707-xc7vx485t/stim6.txt";
-    file out_file : text open write_mode is "test_out.txt";
+    file text_file1 : text open read_mode is "../stim1.txt";
+    file text_file2 : text open read_mode is "../stim2.txt";
+    file text_file3 : text open read_mode is "../stim3.txt";
+    file text_file4 : text open read_mode is "../stim4.txt";
+    file text_file5 : text open read_mode is "../stim5.txt";
+    file text_file6 : text open read_mode is "../stim6.txt";
+    file out_file : text open write_mode is "../test_out.txt";
     variable text_line :line ;
     variable out_line :line;
     variable ok : boolean;
