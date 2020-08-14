@@ -151,11 +151,7 @@ Disassembly of section .sec2:
    10266:	e260                	flw	ft1,24(sp)
    10268:	0561                	addi	sp,sp,32
    1026a:	8280                	ret
-   1026c:	8280                	ret
-   1026e:	4111                	addi	sp,sp,-16
-   10270:	06e4                	fsw	ft1,8(sp)
-   10272:	eff03ff1          	jal	ra,0x10184
-   10276:	01a0                	j	0x10276
+   1026c:	01a0                	j	0x1026c
 
 Disassembly of section .sec3:
 

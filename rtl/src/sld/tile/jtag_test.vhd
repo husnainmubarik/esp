@@ -125,9 +125,9 @@ architecture rtl of jtag_test is
 
   signal demux_sel:std_logic_vector(5 downto 0);
   signal compare_reg,compare_reg1:std_logic_vector(5 downto 0);
-  signal tdo_data,tdo_data0,sipo_clear,sel,sipo_en_in,sipo_en_out,sipo_done,en_sipo_comp,piso_load,piso_load0,piso_en,piso_en0,piso_done,piso_done0,skipwait,skip,lastw,lastwrite,nextin :std_logic;
+  signal tdo_data,tdo_data0,sipo_clear,sel,sipo_en_in,sipo_en_out,sipo_done,en_sipo_comp,piso_load,piso_load0,piso_en,piso_en0,piso_done,piso_done0,skipwait,skip,lastw,lastwrite,nextin,cnt_en,cnt_rs :std_logic;
   signal sipo_en_i,sipo_en_o,sipo_en_ii,sipo_en_is,op_i,sipo_done_i,sipo_clear_i,tdi_i: std_logic_vector (5 downto 0);
- 
+  signal cnt_r :unsigned(3 downto 0);
   --signals for logic JTAG->CPU 
 
   signal rd_i1,rd_i2,rd_i3,rd_i5,rd_i4,rd_i6: std_logic;
@@ -205,7 +205,7 @@ begin
    end if;
 end process CU_REG;
 
-NSL : process(jtag_current,tms,sipo_comp,sipo_done,sipo_done_i,piso_done,piso_done0,tonoc1_cpu_data_void_in,tonoc5_cpu_data_void_in,noc5_in_port_sync,noc1_in_port_sync,noc4_in_port_sync,noc3_in_port_sync,compare_reg1,skipwait,lastwrite) 
+NSL : process(jtag_current,cnt_r,tms,sipo_comp,sipo_done,sipo_done_i,piso_done,piso_done0,tonoc1_cpu_data_void_in,tonoc5_cpu_data_void_in,noc5_in_port_sync,noc1_in_port_sync,noc4_in_port_sync,noc3_in_port_sync,compare_reg1,skipwait,lastwrite) 
 begin 
    jtag_next <= jtag_current;
    case jtag_current is
@@ -213,7 +213,8 @@ begin
                                   jtag_next<=inject1;
                                 end if;
                                 noc_stop_out_test<=(others=>'1');
-
+                                cnt_rs<='1';
+                                cnt_en<='0';
                                 skip<='0';
                                 sel<='0';
                                 piso_en<='0';
@@ -224,6 +225,7 @@ begin
                                 
      when inject1 =>            demux_sel<="100000";
                                 sel<='1';
+                                cnt_rs<='0';
                                 nextin<='1';
                                 sipo_en_ii(0)<='1';
                                 if sipo_done_i(0)='1' then
@@ -261,13 +263,8 @@ begin
                                 demux_sel<="000001";
                                 
                                 if sipo_done_i(5)='1' then
-                                  jtag_next<=waitfirstvoid;
                                   sipo_en_ii(5)<='0';
-                                  noc_stop_out_test(4)<='0';
-                                  if noc5_in_port_sync(0)='0' then
-                                    compare_reg<="000010";
-                                    piso_load<='1';
-                                  end if ;
+                                  jtag_next<=writein;
                                 end if ;
 
                               
@@ -293,21 +290,29 @@ begin
                                 nextin<='1';
                                 demux_sel<=compare_reg1;
                                 en_sipo_comp<='1';
-                                
                                 if sipo_done='1' then
-                                  if (lastwrite='1' and compare_reg1="000010" and sipo_comp(0)='1') then
-                                    skip<='1';
+                                  if cnt_r="0110" then
+                                    noc_stop_out_test(4)<='0';
+                                    if noc5_in_port_sync(0)='0' then
+                                      compare_reg<="000010";
+                                      piso_load<='1';
+                                    end if ;
+                                    jtag_next<=waitfirstvoid;
+                                    
                                   else
-                                    skip<='0';
+                                    if (lastwrite='1' and compare_reg1="000010" and sipo_comp(0)='1') then
+                                      skip<='1';
+                                    else
+                                      skip<='0';
+                                    end if;
+                                    sipo_en_in<='0';
+                                    jtag_next<=waitforvoid1;
                                   end if;
-                                  sipo_en_in<='0';
-                                  jtag_next<=waitforvoid1;
-                                
                                 end if;
-                                                                                    
      when writein =>            sipo_en_out<='1';
                                 en_sipo_comp<='1';
                                 lastw<='1';
+                                cnt_en<='1';
                                 if sipo_comp_i(4)(1)='1' then
                                   compare_reg<="000010";
                                 elsif sipo_comp_i(5)(1)='1' then
@@ -324,12 +329,15 @@ begin
      when extr_source =>        sipo_en_out<='0';
                                 piso_load0<='0';
                                 piso_en0<='1';
+                                cnt_en<='0';
                                 if piso_done0='1' then
                                   jtag_next<=rti1;
                                 end if;
                                 
        
-     when waitfirstvoid =>      if noc5_in_port_sync(0)='0' then 
+     when waitfirstvoid =>      cnt_rs<='1';
+                                if noc5_in_port_sync(0)='0' then 
+                                  piso_load<='1';
                                   jtag_next<=read_and_check; 
                                   noc_stop_out_test(4)<='1';
                                 end if;
@@ -454,6 +462,18 @@ end process NSL;
 lastwrite<=lastw;
 skipwait<=skip;
 compare_reg1<=compare_reg;
+
+
+
+process(tclk,cnt_en,cnt_rs)
+begin
+  if cnt_rs='1' then
+    cnt_r<=(others=>'0');
+  elsif tclk'event and tclk='1' and cnt_en='1' then
+    cnt_r<=cnt_r+1;
+  end if ;
+end process;
+
 
 process(tms,noc1_stop_out_s4,noc2_stop_out_s4,noc3_stop_out_s4,noc4_stop_out_s4,noc5_stop_out_s4,noc6_stop_out_s4,noc_stop_out_test)
 begin

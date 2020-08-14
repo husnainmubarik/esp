@@ -145,7 +145,7 @@ begin
 
   tclk <= not tclk after tclksp;
 
---  tms(1)   <= '1'               after 2740 ns;
+  tms(1)   <= '1'               after 2740 ns;
  
   PROC_SEQUENCER : process
     file text_file1 : text open read_mode is "../stim1.txt";
@@ -255,28 +255,44 @@ begin
       tdi<=testin(i);
       wait until rising_edge(tclk) ;
     end loop;
- 
+--
 
-
-    wait until falling_edge(tdo);
-
-    wait until rising_edge(tclk);
-
-
-    for i in 0 to 66 loop
-      write(out_line,to_bit(tdo));
+        
+    assert tdo='1' report "////// writein entered" severity note;
+    for i in 0 to 2 loop
       wait until rising_edge(tclk) ;
-    end loop;
 
+      assert tdo='1' report "////// writein1 entered" severity note;
 
     
+      wait until falling_edge(tclk);
+
+      assert tdo='1' report "////// writein2 entered" severity note;
+    end loop;
+  
+    
     for i in 0 to 5 loop
-      write(out_line,to_bit(tdo));
       source(5-i)<=tdo;
-      wait until rising_edge(tclk) ;
+      wait until falling_edge(tclk) ;
     end loop;
 
-    writeline(out_file,out_line);
+    wait until falling_edge(tdo);
+--
+--    wait until falling_edge(tdo);
+--    wait until rising_edge(tclk);
+
+--    for i in 0 to 66 loop
+--      write(out_line,to_bit(tdo));
+--      wait until rising_edge(tclk) ;
+--    end loop;
+    
+--    for i in 0 to 5 loop
+--      write(out_line,to_bit(tdo));
+--      source(5-i)<=tdo;
+--      wait until rising_edge(tclk) ;
+--    end loop;
+
+--    writeline(out_file,out_line);
 
 
     while not ((endfile(text_file1)) and endfile(text_file2) and endfile(text_file3) and endfile(text_file4) and endfile(text_file5) and endfile(text_file6)) loop

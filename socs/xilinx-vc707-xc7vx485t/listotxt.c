@@ -353,7 +353,6 @@ int main () {
 	while (fgets (buf, sizeof(buf), fp) !=NULL )
 	{
 
-
 		
 		time=strtok(buf,separators);
 
@@ -457,7 +456,8 @@ int main () {
 		
 		 if (atoi(bitvoid1)==0)
 		 {
-			 
+
+			 //printf("%s %s \n", subnoc1, bitvoid1);
 			 if (strcmp(subnoc1,subnoc1_old)!=0 || strcmp(bitvoid1,bitvoid1_old)!=0)
 			 {
 				 k=k+1;
@@ -467,6 +467,9 @@ int main () {
 		 if (atoi(bitvoid2_out)==0)
 		 {
 			 
+
+			 //printf("%s %s \n", subnoc2, bitvoid2);
+
 			 if (strcmp(subnoc2_out,subnoc2_out_old)!=0 || strcmp(bitvoid2_out,bitvoid2_out_old)!=0)
 			 {
 				 k=k+1;
@@ -479,6 +482,8 @@ int main () {
 		 {
 
 			 
+			 //printf("%s %s \n", subnoc3, bitvoid3);
+
 			 if (strcmp(subnoc3,subnoc3_old)!=0 || strcmp(bitvoid3,bitvoid3_old)!=0)
 			 {
 				 k=k+1;
