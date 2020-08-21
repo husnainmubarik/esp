@@ -426,6 +426,9 @@ begin
         HAS_SYNC     => CFG_HAS_SYNC)
       port map (
         rst                => rst,
+        refclk             => '0',
+        pllbypass          => '0',
+        pllclk             => open,
 	sys_clk_int        => sys_clk_int(0),
 	noc1_data_n_in     => noc1_data_n_in(i),
 	noc1_data_s_in     => noc1_data_s_in(i),
@@ -739,6 +742,8 @@ begin
 	rst                => rst_int,
 	srst               => srst,
 	clk                => refclk_int(i),
+        pllbypass          => '0',
+        pllclk             => open,
 	eth0_apbi          => eth0_apbi,
 	eth0_apbo          => eth0_apbo,
 	sgmii0_apbi        => sgmii0_apbi,
@@ -852,8 +857,17 @@ begin
 	rst                => rst_int,
 	srst               => srst,
 	clk                => sys_clk_int(tile_mem_id(i)),
+        pllbypass          => '0',
+        pllclk             => open,
 	ddr_ahbsi          => ddr_ahbsi(tile_mem_id(i)),
 	ddr_ahbso          => ddr_ahbso(tile_mem_id(i)),
+        fpga_data_in       => (others => '0'),
+        fpga_data_out      => open,
+        fpga_oen           => open,
+        fpga_clk_in        => '0',
+        fpga_clk_out       => open,
+        fpga_credit_in     => '0',
+        fpga_credit_out    => open,,
 	-- NOC
 	sys_clk_int        => sys_clk_int(0),
 	noc1_data_n_in     => noc1_data_n_in(i),
@@ -948,6 +962,8 @@ begin
         port map (
           rst                => rst_int,
           clk                => refclk_int(i),
+          pllbypass          => '0',
+          pllclk             => open,
           -- NOC
           sys_clk_int        => sys_clk_int(0),
           noc1_data_n_in     => noc1_data_n_in(i),

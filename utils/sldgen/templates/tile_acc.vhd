@@ -32,7 +32,9 @@ entity tile_acc is
     this_has_l2        : integer range 0 to 1 := 0;
     this_has_dvfs      : integer range 0 to 1 := 0;
     this_has_pll       : integer range 0 to 1 := 0;
+    this_has_dco       : integer range 0 to 1 := 0;
     this_extra_clk_buf : integer range 0 to 1 := 0;
+    test_if_en         : integer range 0 to 1 := 0;
     ROUTER_PORTS       : ports_vec            := "11111";
     HAS_SYNC           : integer range 0 to 1 := 1);
   port (

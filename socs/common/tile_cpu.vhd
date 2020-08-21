@@ -38,7 +38,9 @@ entity tile_cpu is
     SIMULATION         : boolean              := false;
     this_has_dvfs      : integer range 0 to 1 := 0;
     this_has_pll       : integer range 0 to 1 := 0;
+    this_has_dco       : integer range 0 to 1 := 0;
     this_extra_clk_buf : integer range 0 to 1 := 0;
+    test_if_en         : integer range 0 to 1 := 0;
     ROUTER_PORTS       : ports_vec := "11111";
     HAS_SYNC           : integer range 0 to 1 := 1);
   port (
@@ -52,6 +54,11 @@ entity tile_cpu is
     irq                : in  std_logic_vector(1 downto 0);
     timer_irq          : in  std_ulogic;
     ipi                : in  std_ulogic;
+    -- Test interface
+    tdi                : in  std_logic;
+    tdo                : out std_logic;
+    tms                : in  std_logic;
+    tclk               : in  std_logic;
     -- NOC
     sys_clk_int        : in  std_logic;
     noc1_data_n_in     : in  noc_flit_type;
