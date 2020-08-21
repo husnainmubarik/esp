@@ -44,7 +44,7 @@ if {$TECH eq "cmos32soi"} {
     set_attr default_input_delay      100.0
 }
 if {$TECH eq "gf12"} {
-    set CLOCK_PERIOD 1000.0
+    set CLOCK_PERIOD 750.0
     set SIM_CLOCK_PERIOD 2000.0
     set_attr default_input_delay      100.0
 }
