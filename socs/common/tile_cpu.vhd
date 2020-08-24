@@ -485,7 +485,11 @@ architecture rtl of tile_cpu is
 
 begin
 
+  -- TODO DCO
   pllclk <= clk_feedthru;
+
+  -- TODO JTAG
+  tdo <= '0';
 
   -----------------------------------------------------------------------------
   -- Tile parameters

@@ -430,6 +430,15 @@ begin
   -- TODO:  DCO
   pllclk <= '0';
 
+  -- TODO FPGA link
+  fpga_data_out <= (others => '0');
+  fpga_oen <= '0';
+  fpga_clk_out <= '0';
+  fpga_credit_out <= '0';
+
+  -- TODO JTAG
+  tdo <= '0';
+
   -----------------------------------------------------------------------------
   -- Tile parameters
   -----------------------------------------------------------------------------

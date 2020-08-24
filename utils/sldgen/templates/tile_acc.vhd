@@ -427,7 +427,11 @@ architecture rtl of tile_acc is
 
 begin
 
+  -- TODO: DCO
   pllclk <= clk_feedthru;
+
+  -- TODO: JTAG
+  tdo <= '0';
 
   -----------------------------------------------------------------------------
   -- Tile parameters
