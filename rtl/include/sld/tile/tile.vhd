@@ -880,4 +880,19 @@ package tile is
       apbo        : out apb_slv_out_type);
   end component;
 
+  component ext2ahbm is
+    port (
+      clk             : in  std_ulogic;
+      rstn            : in  std_ulogic;
+      fpga_data_in    : out std_logic_vector(ARCH_BITS downto 0);
+      fpga_data_out   : in  std_logic_vector(ARCH_BITS downto 0);
+      fpga_data_ien   : out std_logic;
+      fpga_clk_in     : out std_ulogic;
+      fpga_clk_out    : in  std_ulogic;
+      fpga_credit_in  : out std_ulogic;
+      fpga_credit_out : in  std_ulogic;
+      ddr_ahbsi       : out ahb_slv_in_type;
+      ddr_ahbso       : in  ahb_slv_out_type);
+  end component ext2ahbm;
+
 end tile;

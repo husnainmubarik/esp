@@ -241,7 +241,6 @@ architecture rtl of tile_empty is
 
   end component;
 
-
   -- Queues
   signal apb_rcv_rdreq    : std_ulogic;
   signal apb_rcv_data_out : misc_noc_flit_type;
@@ -342,6 +341,9 @@ architecture rtl of tile_empty is
     others => '0');
 
 begin
+
+  -- TODO:  DCO
+  pllclk <= '0';
 
   -----------------------------------------------------------------------------
   -- Tile parameters

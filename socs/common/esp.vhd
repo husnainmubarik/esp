@@ -430,6 +430,12 @@ begin
         pllbypass          => '0',
         pllclk             => open,
 	sys_clk_int        => sys_clk_int(0),
+        -- Test interface
+        tdi                => '0',
+        tdo                => open,
+        tms                => '0',
+        tclk               => '0',
+        -- NOC
 	noc1_data_n_in     => noc1_data_n_in(i),
 	noc1_data_s_in     => noc1_data_s_in(i),
 	noc1_data_w_in     => noc1_data_w_in(i),
@@ -537,6 +543,11 @@ begin
         irq                => irq((tile_cpu_id(i) + 1) * 2 - 1 downto tile_cpu_id(i) * 2),
         timer_irq          => timer_irq(tile_cpu_id(i)),
         ipi                => ipi(tile_cpu_id(i)),
+        -- Test interface
+        tdi                => '0',
+        tdo                => open,
+        tms                => '0',
+        tclk               => '0',
         -- NOC
         sys_clk_int        => sys_clk_int(0),
         noc1_data_n_in     => noc1_data_n_in(i),
@@ -643,6 +654,11 @@ begin
         refclk             => refclk_int(i),
         pllbypass          => pllbypass_int(i),
         pllclk             => clk_tile(i),
+        -- Test interface
+        tdi                => '0',
+        tdo                => open,
+        tms                => '0',
+        tclk               => '0',
         -- NOC
         sys_clk_int        => sys_clk_int(0),
         noc1_data_n_in     => noc1_data_n_in(i),
@@ -742,8 +758,10 @@ begin
 	rst                => rst_int,
 	srst               => srst,
 	clk                => refclk_int(i),
+        refclk             => '0',
         pllbypass          => '0',
         pllclk             => open,
+        dco_clk            => open,
 	eth0_apbi          => eth0_apbi,
 	eth0_apbo          => eth0_apbo,
 	sgmii0_apbi        => sgmii0_apbi,
@@ -763,8 +781,14 @@ begin
 	irq                => irq,
 	timer_irq          => timer_irq,
 	ipi                => ipi,
+        -- Test interface
+        tdi                => '0',
+        tdo                => open,
+        tms                => '0',
+        tclk               => '0',
 	-- NOC
 	sys_clk_int        => sys_clk_int(0),
+        sys_clk_out        => open,
 	noc1_data_n_in     => noc1_data_n_in(i),
 	noc1_data_s_in     => noc1_data_s_in(i),
 	noc1_data_w_in     => noc1_data_w_in(i),
@@ -867,7 +891,12 @@ begin
         fpga_clk_in        => '0',
         fpga_clk_out       => open,
         fpga_credit_in     => '0',
-        fpga_credit_out    => open,,
+        fpga_credit_out    => open,
+        -- Test interface
+        tdi                => '0',
+        tdo                => open,
+        tms                => '0',
+        tclk               => '0',
 	-- NOC
 	sys_clk_int        => sys_clk_int(0),
 	noc1_data_n_in     => noc1_data_n_in(i),
@@ -964,6 +993,11 @@ begin
           clk                => refclk_int(i),
           pllbypass          => '0',
           pllclk             => open,
+          -- Test interface
+          tdi                => '0',
+          tdo                => open,
+          tms                => '0',
+          tclk               => '0',
           -- NOC
           sys_clk_int        => sys_clk_int(0),
           noc1_data_n_in     => noc1_data_n_in(i),

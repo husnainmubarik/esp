@@ -48,8 +48,8 @@ entity tile_mem is
     ddr_ahbsi          : out ahb_slv_in_type;
     ddr_ahbso          : in  ahb_slv_out_type;
     -- FPGA proxy memory link (this_has_ddr -> 0)
-    fpga_data_in       : in  std_logic_vector(ARCH_BITS - 1 downto 0);
-    fpga_data_out      : out std_logic_vector(ARCH_BITS - 1 downto 0);
+    fpga_data_in       : in  std_logic_vector(ARCH_BITS downto 0);
+    fpga_data_out      : out std_logic_vector(ARCH_BITS downto 0);
     fpga_oen           : out std_ulogic;
     fpga_clk_in        : in  std_ulogic;
     fpga_clk_out       : out std_ulogic;
@@ -426,6 +426,9 @@ architecture rtl of tile_mem is
   signal noc6_output_port       : noc_flit_type;
 
 begin
+
+  -- TODO:  DCO
+  pllclk <= '0';
 
   -----------------------------------------------------------------------------
   -- Tile parameters

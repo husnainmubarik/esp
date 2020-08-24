@@ -289,8 +289,10 @@ package soctiles is
       rst                : in  std_ulogic;
       srst               : out std_ulogic;
       clk                : in  std_ulogic;
+      refclk             : in  std_ulogic;
       pllbypass          : in  std_ulogic;
       pllclk             : out std_ulogic;
+      dco_clk            : out std_ulogic;
       -- Test interface
       tdi                : in  std_logic;
       tdo                : out std_logic;
@@ -318,6 +320,7 @@ package soctiles is
       ipi                : out std_logic_vector(CFG_NCPU_TILE - 1 downto 0);
       -- NOC
       sys_clk_int        : in  std_logic;
+      sys_clk_out        : out std_logic;
       noc1_data_n_in     : in  noc_flit_type;
       noc1_data_s_in     : in  noc_flit_type;
       noc1_data_w_in     : in  noc_flit_type;
@@ -410,10 +413,12 @@ package soctiles is
       rst                : in  std_ulogic;
       srst               : in  std_ulogic;
       clk                : in  std_ulogic;
+      pllbypass          : in  std_ulogic;
+      pllclk             : out std_ulogic;
       ddr_ahbsi          : out ahb_slv_in_type;
       ddr_ahbso          : in  ahb_slv_out_type;
-      fpga_data_in       : in  std_logic_vector(ARCH_BITS - 1 downto 0);
-      fpga_data_out      : out std_logic_vector(ARCH_BITS - 1 downto 0);
+      fpga_data_in       : in  std_logic_vector(ARCH_BITS downto 0);
+      fpga_data_out      : out std_logic_vector(ARCH_BITS downto 0);
       fpga_oen           : out std_ulogic;
       fpga_clk_in        : in  std_ulogic;
       fpga_clk_out       : out std_ulogic;
@@ -518,6 +523,9 @@ package soctiles is
       HAS_SYNC     : integer range 0 to 1 := 1);
     port (
       rst                : in  std_logic;
+      refclk             : in  std_ulogic;
+      pllbypass          : in  std_ulogic;
+      pllclk             : out std_ulogic;
       -- Test interface
       tdi                : in  std_logic;
       tdo                : out std_logic;

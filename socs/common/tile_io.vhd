@@ -45,8 +45,10 @@ entity tile_io is
     rst                : in  std_ulogic;
     srst               : out std_ulogic;
     clk                : in  std_ulogic;
+    refclk             : in  std_ulogic;
     pllbypass          : in  std_ulogic;
     pllclk             : out std_ulogic;
+    dco_clk            : out std_ulogic;
     eth0_apbi          : out apb_slv_in_type;
     eth0_apbo          : in  apb_slv_out_type;
     sgmii0_apbi        : out apb_slv_in_type;
@@ -73,6 +75,7 @@ entity tile_io is
     tclk               : in  std_logic;
     -- NOC
     sys_clk_int        : in  std_logic;
+    sys_clk_out        : out std_logic;
     noc1_data_n_in     : in  noc_flit_type;
     noc1_data_s_in     : in  noc_flit_type;
     noc1_data_w_in     : in  noc_flit_type;
@@ -521,7 +524,12 @@ architecture rtl of tile_io is
 
 begin
 
- -----------------------------------------------------------------------------
+  -- TODO:  DCO (two instances)
+  pllclk <= '0';
+  dco_clk <= '0';
+  sys_clk_out <= '0';
+
+  -----------------------------------------------------------------------------
   -- NOC Connections
   ----------------------------------------------------------------------------
   noc1_stop_in_s         <= noc1_io_stop_in  & noc1_stop_in;
