@@ -346,9 +346,13 @@ begin
 
   dataout                <= do(dbits - 1 downto 0);
   di(dbits - 1 downto 0) <= datain;
-  di(63 downto dbits)    <= (others => '0');
+  di_narrow_gen: if dbits < 64 generate
+    di(63 downto dbits)  <= (others => '0');
+  end generate di_narrow_gen;
   xa(abits - 1 downto 0) <= address;
-  xa(13 downto abits)    <= (others => '0');
+  xa_narrow_gen: if abits < 14 generate
+    xa(13 downto abits)  <= (others => '0');
+  end generate xa_narrow_gen;
 
    a0 : if (abits < 8) generate
     s : generic_syncram
