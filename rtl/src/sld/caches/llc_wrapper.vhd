@@ -1423,7 +1423,9 @@ begin  -- architecture rtl
               end if;
             end if;
 
-            req_id(RESERVED_WIDTH-1 downto llc_fwd_out_data_req_id'length) := (others => '0');
+            if llc_fwd_out_data_req_id'length < RESERVED_WIDTH then
+              req_id(RESERVED_WIDTH-1 downto llc_fwd_out_data_req_id'length) := (others => '0');
+            end if;
             req_id(llc_fwd_out_data_req_id'length - 1 downto 0)            := llc_fwd_out_data_req_id;
 
             coherence_fwd_wrreq <= '1';
