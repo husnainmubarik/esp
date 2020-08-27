@@ -69,6 +69,8 @@ entity tile_io is
     tdo                : out std_logic;
     tms                : in  std_logic;
     tclk               : in  std_logic;
+    -- Pads configuration
+    pad_cfg            : out std_logic_vector(ESP_CSR_PAD_CFG_MSB - ESP_CSR_PAD_CFG_LSB downto 0);
     -- NOC
     sys_clk_int        : in  std_logic;
     sys_clk_out        : out std_logic;
@@ -615,6 +617,9 @@ begin
 
   -- TODO JTAG
   tdo <= '0';
+
+  -- Pads configuration
+  pad_cfg                <= config(ESP_CSR_PAD_CFG_MSB downto ESP_CSR_PAD_CFG_LSB);
 
   -----------------------------------------------------------------------------
   -- NOC Connections

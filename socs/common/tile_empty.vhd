@@ -50,6 +50,8 @@ entity tile_empty is
     tdo                : out std_logic;
     tms                : in  std_logic;
     tclk               : in  std_logic;
+    -- Pads configuration
+    pad_cfg            : out std_logic_vector(ESP_CSR_PAD_CFG_MSB - ESP_CSR_PAD_CFG_LSB downto 0);
     -- NoC
     sys_clk_int        : in  std_logic;
     noc1_data_n_in     : in  noc_flit_type;
@@ -352,6 +354,7 @@ begin
   -- Tile parameters
   -----------------------------------------------------------------------------
   tile_id                <= to_integer(unsigned(config(ESP_CSR_TILE_ID_MSB downto ESP_CSR_TILE_ID_LSB)));
+  pad_cfg                <= config(ESP_CSR_PAD_CFG_MSB downto ESP_CSR_PAD_CFG_LSB);
 
   this_csr_pindex        <= tile_csr_pindex(tile_id);
   this_csr_pconfig       <= fixed_apbo_pconfig(this_csr_pindex);

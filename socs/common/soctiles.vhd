@@ -78,6 +78,8 @@ package soctiles is
       tdo                : out std_logic;
       tms                : in  std_logic;
       tclk               : in  std_logic;
+      -- Pads configuration
+      pad_cfg            : out std_logic_vector(ESP_CSR_PAD_CFG_MSB - ESP_CSR_PAD_CFG_LSB downto 0);
       -- NOC
       sys_clk_int        : in  std_logic;
       noc1_data_n_in     : in  noc_flit_type;
@@ -186,6 +188,8 @@ package soctiles is
       tdo                : out std_logic;
       tms                : in  std_logic;
       tclk               : in  std_logic;
+      -- Pads configuration
+      pad_cfg            : out std_logic_vector(ESP_CSR_PAD_CFG_MSB - ESP_CSR_PAD_CFG_LSB downto 0);
       -- NOC
       sys_clk_int        : in  std_logic;
       noc1_data_n_in     : in  noc_flit_type;
@@ -310,6 +314,8 @@ package soctiles is
       uart_txd           : out std_ulogic;
       uart_ctsn          : in  std_ulogic;
       uart_rtsn          : out std_ulogic;
+      -- Pads configuration
+      pad_cfg            : out std_logic_vector(ESP_CSR_PAD_CFG_MSB - ESP_CSR_PAD_CFG_LSB downto 0);
       -- NOC
       sys_clk_int        : in  std_logic;
       sys_clk_out        : out std_logic;
@@ -421,6 +427,8 @@ package soctiles is
       tdo                : out std_logic;
       tms                : in  std_logic;
       tclk               : in  std_logic;
+      -- Pads configuration
+      pad_cfg            : out std_logic_vector(ESP_CSR_PAD_CFG_MSB - ESP_CSR_PAD_CFG_LSB downto 0);
       -- NOC
       sys_clk_int        : in  std_logic;
       noc1_data_n_in     : in  noc_flit_type;
@@ -523,6 +531,8 @@ package soctiles is
       tdo                : out std_logic;
       tms                : in  std_logic;
       tclk               : in  std_logic;
+      -- Pads configuration
+      pad_cfg            : out std_logic_vector(ESP_CSR_PAD_CFG_MSB - ESP_CSR_PAD_CFG_LSB downto 0);
       -- NoC
       sys_clk_int        : in  std_logic;
       noc1_data_n_in     : in  noc_flit_type;
@@ -622,6 +632,8 @@ package soctiles is
       tdo                : out std_logic;
       tms                : in  std_logic;
       tclk               : in  std_logic;
+      -- Pads configuration
+      pad_cfg            : out std_logic_vector(ESP_CSR_PAD_CFG_MSB - ESP_CSR_PAD_CFG_LSB downto 0);
       -- NoC
       sys_clk_int        : in  std_logic;
       noc1_data_n_in     : in  noc_flit_type;

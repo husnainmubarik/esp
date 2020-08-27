@@ -55,6 +55,8 @@ entity tile_cpu is
     tdo                : out std_logic;
     tms                : in  std_logic;
     tclk               : in  std_logic;
+    -- Pads configuration
+    pad_cfg            : out std_logic_vector(ESP_CSR_PAD_CFG_MSB - ESP_CSR_PAD_CFG_LSB downto 0);
     -- NOC
     sys_clk_int        : in  std_logic;
     noc1_data_n_in     : in  noc_flit_type;
@@ -501,6 +503,7 @@ begin
   -- Tile parameters
   -----------------------------------------------------------------------------
   tile_id                <= to_integer(unsigned(config(ESP_CSR_TILE_ID_MSB downto ESP_CSR_TILE_ID_LSB)));
+  pad_cfg                <= config(ESP_CSR_PAD_CFG_MSB downto ESP_CSR_PAD_CFG_LSB);
 
   this_cpu_id            <= tile_cpu_id(tile_id);
   this_cpu_id_lv         <= conv_std_logic_vector(this_cpu_id, 64);

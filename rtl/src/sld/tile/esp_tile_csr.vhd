@@ -92,7 +92,9 @@ architecture rtl of esp_tile_csr is
 
     -- CSRs
     signal config_r : std_logic_vector(ESP_CSR_WIDTH - 1 downto 0);
-    constant DEFAULT_CONFIG : std_logic_vector(ESP_CSR_WIDTH - 1 downto 0) := (others => '0');
+    constant DEFAULT_CONFIG : std_logic_vector(ESP_CSR_WIDTH - 1 downto 0) :=
+      "011"    &   X"00"    &   "1";
+    -- PAD_CFG     TILE_ID      VALID
 
     signal csr_addr : integer range 0 to 31;
 
@@ -131,6 +133,8 @@ architecture rtl of esp_tile_csr is
           readdata(ESP_CSR_VALID_MSB - ESP_CSR_VALID_LSB downto 0) <= config_r(ESP_CSR_VALID_MSB downto ESP_CSR_VALID_LSB);
         when ESP_CSR_TILE_ID_ADDR =>
           readdata(ESP_CSR_TILE_ID_MSB - ESP_CSR_TILE_ID_LSB downto 0) <= config_r(ESP_CSR_TILE_ID_MSB downto ESP_CSR_TILE_ID_LSB);
+        when ESP_CSR_PAD_CFG_ADDR =>
+          readdata(ESP_CSR_PAD_CFG_MSB - ESP_CSR_PAD_CFG_LSB downto 0) <= config_r(ESP_CSR_PAD_CFG_MSB downto ESP_CSR_PAD_CFG_LSB);
         when others =>
           readdata <= (others => '0');
       end case;
@@ -175,6 +179,8 @@ architecture rtl of esp_tile_csr is
               config_r(ESP_CSR_VALID_MSB downto ESP_CSR_VALID_LSB) <= apbi.pwdata(ESP_CSR_VALID_MSB - ESP_CSR_VALID_LSB downto 0);
             when ESP_CSR_TILE_ID_ADDR =>
               config_r(ESP_CSR_TILE_ID_MSB downto ESP_CSR_TILE_ID_LSB) <= apbi.pwdata(ESP_CSR_TILE_ID_MSB - ESP_CSR_TILE_ID_LSB downto 0);
+            when ESP_CSR_PAD_CFG_ADDR =>
+              config_r(ESP_CSR_PAD_CFG_MSB downto ESP_CSR_PAD_CFG_LSB) <= apbi.pwdata(ESP_CSR_PAD_CFG_MSB - ESP_CSR_PAD_CFG_LSB downto 0);
             when others => null;
           end case;
         end if;
