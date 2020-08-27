@@ -161,11 +161,6 @@ signal noc6_data_void_out   : handshake_vec;
 signal noc6_stop_out        : handshake_vec;
 
 
--- TODO: remove this; IRQ will flow through the NoC
-signal irq : std_logic_vector(CFG_NCPU_TILE * 2 - 1 downto 0);
-signal timer_irq : std_logic_vector(CFG_NCPU_TILE - 1 downto 0);
-signal ipi : std_logic_vector(CFG_NCPU_TILE - 1 downto 0);
-
 begin
 
   rst_int <= rst;
@@ -539,10 +534,6 @@ begin
         pllbypass          => pllbypass_int(i),
         pllclk             => clk_tile(i),
         cpuerr             => cpuerr_vec(tile_cpu_id(i)),
-        -- TODO: remove this; should use proxy
-        irq                => irq((tile_cpu_id(i) + 1) * 2 - 1 downto tile_cpu_id(i) * 2),
-        timer_irq          => timer_irq(tile_cpu_id(i)),
-        ipi                => ipi(tile_cpu_id(i)),
         -- Test interface
         tdi                => '0',
         tdo                => open,
@@ -777,10 +768,6 @@ begin
 	uart_txd           => uart_txd,
 	uart_ctsn          => uart_ctsn,
 	uart_rtsn          => uart_rtsn,
-	--TODO: REMOVE THIS and use NoC proxies
-	irq                => irq,
-	timer_irq          => timer_irq,
-	ipi                => ipi,
         -- Test interface
         tdi                => '0',
         tdo                => open,
