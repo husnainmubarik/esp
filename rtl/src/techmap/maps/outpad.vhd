@@ -48,7 +48,7 @@ begin
 	when slew = 0 else i;
   end generate;
   gf12p : if (tech = gf12) generate
-    x0 : gf12_outpad port map (pad, i);
+    x0 : gf12_outpad port map (pad, i, cfgi(2), cfgi(1), cfgi(0));
   end generate;
   xcv : if (is_unisim(tech) = 1) generate
     x0 : unisim_outpad generic map (level, slew, voltage, strength) port map (pad, i);

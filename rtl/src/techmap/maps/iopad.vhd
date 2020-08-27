@@ -64,7 +64,7 @@ begin
   end generate;
   gf12p : if (tech = gf12) generate
     x0 : gf12_iopad
-         port map (pad, i, oen, o);
+         port map (pad, i, oen, o, cfgi(2), cfgi(1), cfgi(0));
   end generate;
   xcv : if (is_unisim(tech) = 1) generate
     x0 : unisim_iopad generic map (level, slew, voltage, strength)

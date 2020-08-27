@@ -35,11 +35,11 @@ component gf12_inpad
 end component; 
 
 component gf12_iopad 
-  port (pad : inout std_logic; i, en : in std_ulogic; o : out std_logic);
+  port (pad : inout std_logic; i, en : in std_ulogic; o : out std_logic; sr, ds0, ds1 : in std_ulogic);
 end component;
 
 component gf12_outpad 
-  port (pad : out std_ulogic; i : in std_ulogic);
+  port (pad : out std_ulogic; i : in std_ulogic; sr, ds0, ds1 : in std_ulogic);
 end component;
 
 component apa3_clkpad 
