@@ -28,6 +28,8 @@ ifndef V
 	QUIET_DIFF          = @echo -n '   ' DIFF '';
 	QUIET_RUN           = @echo '   ' RUN $@;
 	QUIET_CLEAN         = @echo '   ' CLEAN $@;
+	QUIET_INFO_ALT      = echo -n '   ' INFO '';
+	QUIET_MKDIR_ALT     = echo '   ' MKDIR $@;
 endif
 	SPACES              = "    "
 	SPACING             = echo -n "    ";
@@ -35,7 +37,6 @@ endif
 CC  = LD_LIBRARY="" /usr/bin/gcc
 LD  = LD_LIBRARY="" /usr/bin/ld
 RM  = rm -rf
-
 
 ### Common targets ###
 
@@ -47,8 +48,8 @@ help:
 	@echo
 	@echo " === Accelerators Flow ==="
 	@echo
-	@echo " make print-available-accelerators      : print a list of accelerators available for the HLS and Chisel flows."
-	@echo " make <accelerator>-hls                 : run HLS for all configurations available for <accelerator>"
+		@echo " make print-available-accelerators      : print a list of accelerators available for the HLS and Chisel flows."
+		@echo " make <accelerator>-hls                 : run HLS for all configurations available for <accelerator>"
 	@echo "                                          and generate corresponding RTL files."
 	@echo " make <accelerator>                     : run SBT on all available configurations for <accelerator> or the custom"
 	@echo "                                          Makefile of <accelerator> for Chisel or third-party ips respectively."
@@ -1390,7 +1391,11 @@ endif
 	@for dat in $(DAT_SRCS); do \
 		echo "add_files $$dat" >> $@; \
 	done;
-
+### Replace tile with a blackbox if a DPR implementation is chosen
+	@if [ "$(DPR_ENABLED)" == "y" ]; then \
+		$(QUIET_INFO_ALT)echo "generating bbox sources"; \
+		sh ./prepare_sources.sh $(ESP_ROOT) $(BOARD) $(DEVICE); \
+	fi;
 
 vivado/setup.tcl: vivado $(XDC) $(BOARD_FILES)
 	$(QUIET_INFO)echo "generating project script for Vivado"
@@ -1477,11 +1482,12 @@ vivado/syn.tcl: vivado
 	@echo "launch_runs synth_1 -jobs 12" >> $@
 	@echo "get_ips" >> $@
 	@echo "wait_on_run -timeout 360 synth_1" >> $@
-	@echo "set_msg_config -suppress -id {Drc 23-20}" >> $@
-	@echo "launch_runs impl_1 -jobs 12" >> $@
-	@echo "wait_on_run -timeout 360 impl_1" >> $@
-	@echo "launch_runs impl_1 -to_step write_bitstream" >> $@
-	@echo "wait_on_run -timeout 60 impl_1" >> $@
+	@if [ "$(DPR_ENABLED)" != "y" ]; then \
+		echo "launch_runs impl_1 -jobs 12" >> $@; \
+		echo "wait_on_run -timeout 360 impl_1" >> $@; \
+		echo "launch_runs impl_1 -to_step write_bitstream" >> $@; \
+		echo "wait_on_run -timeout 60 impl_1" >> $@; \
+	fi
 
 vivado/program.tcl: vivado
 	$(QUIET_INFO)echo "generating programming script for $(PART)"
@@ -1547,18 +1553,47 @@ vivado-gui: vivado-setup
 	vivado $(DESIGN).xpr; \
 	cd ../;
 
+#Add checks to see checkpoints exist
 vivado-syn: vivado-setup
 	$(QUIET_INFO)echo "launching Vivado implementation script"
 	@cd vivado; \
-	vivado $(VIVADO_BATCH_OPT) -source syn.tcl | tee ../vivado_syn.log; \
-	cd ../;
-	@bit=vivado/$(DESIGN).runs/impl_1/$(TOP).bit; \
-	if test -r $$bit; then \
-		rm -rf $(TOP).bit; \
-		ln -s $$bit; \
+	vivado $(VIVADO_BATCH_OPT) -source syn.tcl | tee ../vivado_syn.log;
+	@if [ "$(DPR_ENABLED)" != "y" ]; then \
+		bit=vivado/$(DESIGN).runs/impl_1/$(TOP).bit; \
+		if  test -r $$bit; then \
+	        rm -rf $(TOP).bit; \
+            ln -s $$bit; \
+		else \
+			echo $(SPACES)"ERROR: bistream not found; synthesis failed"; \
+		fi; \
 	else \
-		echo $(SPACES)"ERROR: bistream not found; synthesis failed"; \
-	fi; \
+		$(QUIET_INFO_ALT)echo "assembling top level static design"; \
+		vivado $(VIVADO_BATCH_OPT) -source $(ESP_ROOT)/socs/$(BOARD)/static_config.tcl | tee ../vivado_syn_dpr.log;
+		$(QUIET_INFO_ALT)echo "creating Vivado dpr directory"; \
+		$(RM) vivado_dpr; \
+		mkdir -p vivado_dpr; \
+		mkdir -p vivado_dpr/Bitstreams; \
+		mkdir -p vivado_dpr/Checkpoint; \
+		mkdir -p vivado_dpr/Implement; \
+		mkdir -p vivado_dpr/Synth; \
+		mkdir -p vivado_dpr/Synth/Static; \
+		cp $(ESP_ROOT)/socs/$(BOARD)/vivado/esp-xilinx-vc707-xc7vx485t.runs/synth_1/top_dpr.dcp vivado_dpr/Synth/Static/top_synth.dcp; \
+    	$(QUIET_INFO_ALT)echo "launching setup script for Vivado DPR flow";  \
+		sh ./setup_dpr.sh $(ESP_ROOT) $(BOARD) $(DEVICE);  \
+		cd vivado_dpr \
+    	$(QUIET_INFO_ALT)pwd;\
+		vivado $(VIVADO_BATCH_OPT) -source ooc_syn.tcl | tee ../vivado_syn_dpr.log \
+		;\
+	fi;
+
+vivado-setup-dpr:
+	$(QUIET_INFO)echo "launching setup script for Vivado DPR flow"	
+	@sh ./setup_dpr.sh $(ESP_ROOT) $(BOARD) $(DEVICE)
+	@cd vivado_dpr; \
+	vivado $(VIVADO_BATCH_OPT) -source ooc_syn.tcl | tee ../vivado_syn_dpr.log; 
+
+vivado-syn-dpr: DPR_ENABLED = y
+vivado-syn-dpr: vivado-syn
 
 vivado-update: vivado vivado/syn.tcl
 	$(QUIET_INFO)echo "Updating implementaiton with Vivado"
@@ -1695,7 +1730,7 @@ fpga-program: vivado-prog-fpga
 endif
 
 
-fpga-run: esplink soft
+fpga-run: esplink fpga-program soft
 	@./esplink --reset
 	@./esplink --brom -i prom.bin
 	@./esplink --dram -i systest.bin
@@ -1712,7 +1747,7 @@ fpga-run-linux: esplink fpga-program soft
 
 
 ### Clean all ###
-clean: 		soft-clean		\
+clean:  soft-clean		\
 		linux-clean		\
 		xilinx_lib-clean 	\
 		sim-clean		\
