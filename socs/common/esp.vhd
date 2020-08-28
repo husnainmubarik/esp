@@ -749,6 +749,8 @@ begin
 	rst                => rst_int,
 	srst               => srst,
 	clk                => refclk_int(i),
+        refclk_noc         => '0',
+        pllclk_noc         => open,
         refclk             => '0',
         pllbypass          => '0',
         pllclk             => open,

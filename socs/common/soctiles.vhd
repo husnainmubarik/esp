@@ -289,6 +289,8 @@ package soctiles is
       rst                : in  std_ulogic;
       srst               : out std_ulogic;
       clk                : in  std_ulogic;
+      refclk_noc         : in  std_ulogic;
+      pllclk_noc         : out std_ulogic;
       refclk             : in  std_ulogic;
       pllbypass          : in  std_ulogic;
       pllclk             : out std_ulogic;
