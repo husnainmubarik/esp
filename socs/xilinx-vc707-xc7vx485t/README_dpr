@@ -1,0 +1,68 @@
+A guide to using the dynamic partial reconfiguration (DPR) flow in ESP.
+
+The major advantage of using the DPR flow in ESP is reducing the duration of the design loop. This guide demonstrates FPGA prototyping 
+of ESP in 2x2 tile configuration using the DPR flow. The tiles are configured as, a cpu tile, an accelerator tile, a mem tile and an I/O tile. The example
+focuses on implementing ESP with a FIR accelerator in the accelerator tile in the first design run, and then replacing the MAC accelerator with a FIR 
+acceleraator in the second run. Both accelerators are designed using the Vivado HLS based acceleration design flow from the ESP 
+website, https://www.esp.cs.columbia.edu/docs/cpp_acc/cpp_acc-guide but it should also work for the systemC based flow. 
+
+The DPR flow was tested on the Xilinx VC707 design folder.  
+
+First design run: MAC accelerator implementaion
+--------------------------------------------
+Protoyping ESP with the DPR flow is almost the same as the non-dpr flow except the targets to generate the FPGA bitstream and programming the FPGA in Xilinx Vivado.
+
+1. Follow the steps to create the MAC acclerator using the guide https://www.esp.cs.columbia.edu/docs/cpp_acc/cpp_acc-guide/ up until "the Accelerator integration" step.
+2. Follow the steps to generate a single-core ESP SoC https://www.esp.cs.columbia.edu/docs/singlecore/singlecore-guide/ except the "FPGA prototyping section".
+3. At the FPGA prototyping stage replace the "make vivado-syn" target with "make vivado-syn-dpr".
+4. Finally when deploying the bitstream into the FPGA, replace the "fpga-run" and "fpga-run-linux" targets with "fpga-run-dpr" and "fpga-run-linux-dpr", to load the 
+bitstream to the FPGA and run a baremetal application or linux.
+
+
+Second design run: Replacing the MAC accelerator with a FIR accelerator
+---------------------------------------------------------------------
+In the second design run, the MAC accelerator is replaced with FIR accelerator. All the other tiles in the design remain unchanged. 
+
+1. Follow the steps to create the FIR accelerator using the guide https://www.esp.cs.columbia.edu/docs/cpp_acc/cpp_acc-guide/ up until "the Accelerator integration" step.
+2. Replace the body of the compute() function in accelerators/vivado_hls/fir/src/espacc.cpp with the following code
+    unsigned in_length = fir_in;                                                                                                       
+    unsigned out_length = fir_out;                                                                                                     
+    const unsigned N  = 10;
+    
+    int j, i;                                                                                                                          
+    int coeff[N] = {13, -2, 9, 11, 26, 18, 95, -43, 6, 74};
+    
+    //Shift registersint                                                                                                               
+    int shift_reg[N] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+                                                                                                                                       
+    // loop through each output
+    for (i = 0; i < in_length; i++ ) {
+        int acc = 0;                                                                                                                   
+            
+        // shift registers
+        for (j = N -1; j > 0; j--) {                                                                                                   
+            shift_reg[j] = shift_reg[j -1];                                                                                            
+                                                                                                                                       
+        }   
+            
+        // put the new input value into the first register                                                                             
+        shift_reg[0] = _inbuff[i];                                                                                                     
+                
+        // do multiply-accumulate operation                                                                                            
+        for (j = 0; j < N; j++) {                                                                                                      
+            acc += shift_reg[j] * coeff[j];                                                                                            
+        }                                                                                                                              
+                                                                                                                                       
+        _outbuff[i] = acc; 
+
+3. run the "make esp-xconfig" target to change the accelerator tile from MAC to FIR
+4. run "make vivado-syn-dpr-acc" to replace the accelerator and run vivado implementation
+5. Finally when deploying the bitstream into the FPGA, replace the "fpga-run" and "fpga-run-linux" targets with "fpga-run-dpr" and "fpga-run-linux-dpr", to load the 
+bitstream to the FPGA and run a baremetal application or linux.
+
+Things to Note
+-------------------------------------------------
+If any of the tiles are modified, then the flow must be run again with "make vivado-syn-dpr".
+
+For now the design supports configurations with only one reconfigurable acc_tile. But once the floorplanning is automated, it can support any tile configuration with no modification.
+

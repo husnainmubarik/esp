@@ -58,6 +58,12 @@ bool thread_is_p2p(esp_thread_info_t *thread)
 {
      switch (thread->type) {
         // <<--esp-p2p-thread-->>
+		case fir :
+			return (thread->desc.fir_desc.esp.p2p_store
+				|| thread->desc.fir_desc.esp.p2p_nsrcs);
+		case mac_dummy :
+			return (thread->desc.mac_dummy_desc.esp.p2p_store
+				|| thread->desc.mac_dummy_desc.esp.p2p_nsrcs);
          case fftaccelerator :
             return (thread->desc.fftaccelerator_desc.esp.p2p_store 
                     || thread->desc.fftaccelerator_desc.esp.p2p_nsrcs);
@@ -113,6 +119,12 @@ void *accelerator_thread( void *ptr )
     gettime(&th_start);
 	switch (info->type) {
 	// <<--esp-ioctl-->>
+	case fir :
+		rc = ioctl(info->fd, FIR_IOC_ACCESS, info->desc.fir_desc);
+		break;
+	case mac_dummy :
+		rc = ioctl(info->fd, MAC_DUMMY_IOC_ACCESS, info->desc.mac_dummy_desc);
+		break;
 	case fftaccelerator :
 		rc = ioctl(info->fd, FFTACCELERATOR_IOC_ACCESS, info->desc.fftaccelerator_desc);
 		break;
@@ -208,6 +220,12 @@ void *accelerator_thread_serial(void *ptr)
         gettime(&th_start);
         switch (info->type) {
         // <<--esp-ioctl-->>
+	case fir :
+		rc = ioctl(info->fd, FIR_IOC_ACCESS, info->desc.fir_desc);
+		break;
+	case mac_dummy :
+		rc = ioctl(info->fd, MAC_DUMMY_IOC_ACCESS, info->desc.mac_dummy_desc);
+		break;
         case fftaccelerator :
             rc = ioctl(info->fd, FFTACCELERATOR_IOC_ACCESS, info->desc.fftaccelerator_desc);
             break;
@@ -289,6 +307,12 @@ static void esp_config(esp_thread_info_t* cfg[], unsigned nthreads, unsigned *na
             contig_handle_t *handle = lookup_handle(info->hw_buf, &policy);
             switch (info->type) {
             // <<--esp-prepare-->>
+		case fir :
+			esp_prepare(&info->desc.fir_desc.esp, handle, policy);
+			break;
+		case mac_dummy :
+			esp_prepare(&info->desc.mac_dummy_desc.esp, handle, policy);
+			break;
             case fftaccelerator :
                 esp_prepare(&info->desc.fftaccelerator_desc.esp, handle, policy);
                 break;
