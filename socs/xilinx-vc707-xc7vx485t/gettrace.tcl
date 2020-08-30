@@ -1,0 +1,31 @@
+add list \
+sim:/testbench/top_1/esp_1/tiles_gen(1)/cpu_tile/tile_cpu_i/sync_noc_set_cpu/noc1_input_port \
+sim:/testbench/top_1/esp_1/tiles_gen(1)/cpu_tile/tile_cpu_i/sync_noc_set_cpu/noc1_data_void_in \
+sim:/testbench/top_1/esp_1/tiles_gen(1)/cpu_tile/tile_cpu_i/sync_noc_set_cpu/noc1_stop_out \
+sim:/testbench/top_1/esp_1/tiles_gen(1)/cpu_tile/tile_cpu_i/sync_noc_set_cpu/noc2_output_port \
+sim:/testbench/top_1/esp_1/tiles_gen(1)/cpu_tile/tile_cpu_i/sync_noc_set_cpu/noc2_data_void_out \
+sim:/testbench/top_1/esp_1/tiles_gen(1)/cpu_tile/tile_cpu_i/sync_noc_set_cpu/noc2_stop_in \
+sim:/testbench/top_1/esp_1/tiles_gen(1)/cpu_tile/tile_cpu_i/sync_noc_set_cpu/noc3_input_port \
+sim:/testbench/top_1/esp_1/tiles_gen(1)/cpu_tile/tile_cpu_i/sync_noc_set_cpu/noc3_data_void_in \
+sim:/testbench/top_1/esp_1/tiles_gen(1)/cpu_tile/tile_cpu_i/sync_noc_set_cpu/noc3_stop_out \
+sim:/testbench/top_1/esp_1/tiles_gen(1)/cpu_tile/tile_cpu_i/sync_noc_set_cpu/noc3_output_port \
+sim:/testbench/top_1/esp_1/tiles_gen(1)/cpu_tile/tile_cpu_i/sync_noc_set_cpu/noc3_data_void_out \
+sim:/testbench/top_1/esp_1/tiles_gen(1)/cpu_tile/tile_cpu_i/sync_noc_set_cpu/noc3_stop_in \
+sim:/testbench/top_1/esp_1/tiles_gen(1)/cpu_tile/tile_cpu_i/sync_noc_set_cpu/noc4_input_port \
+sim:/testbench/top_1/esp_1/tiles_gen(1)/cpu_tile/tile_cpu_i/sync_noc_set_cpu/noc4_data_void_in \
+sim:/testbench/top_1/esp_1/tiles_gen(1)/cpu_tile/tile_cpu_i/sync_noc_set_cpu/noc4_stop_out \
+sim:/testbench/top_1/esp_1/tiles_gen(1)/cpu_tile/tile_cpu_i/sync_noc_set_cpu/noc4_output_port \
+sim:/testbench/top_1/esp_1/tiles_gen(1)/cpu_tile/tile_cpu_i/sync_noc_set_cpu/noc4_data_void_out \
+sim:/testbench/top_1/esp_1/tiles_gen(1)/cpu_tile/tile_cpu_i/sync_noc_set_cpu/noc4_stop_in \
+sim:/testbench/top_1/esp_1/tiles_gen(1)/cpu_tile/tile_cpu_i/sync_noc_set_cpu/noc5_input_port \
+sim:/testbench/top_1/esp_1/tiles_gen(1)/cpu_tile/tile_cpu_i/sync_noc_set_cpu/noc5_data_void_in \
+sim:/testbench/top_1/esp_1/tiles_gen(1)/cpu_tile/tile_cpu_i/sync_noc_set_cpu/noc5_stop_out \
+sim:/testbench/top_1/esp_1/tiles_gen(1)/cpu_tile/tile_cpu_i/sync_noc_set_cpu/noc5_output_port \
+sim:/testbench/top_1/esp_1/tiles_gen(1)/cpu_tile/tile_cpu_i/sync_noc_set_cpu/noc5_data_void_out \
+sim:/testbench/top_1/esp_1/tiles_gen(1)/cpu_tile/tile_cpu_i/sync_noc_set_cpu/noc5_stop_in \
+sim:/testbench/top_1/esp_1/tiles_gen(1)/cpu_tile/tile_cpu_i/sync_noc_set_cpu/noc6_input_port \
+sim:/testbench/top_1/esp_1/tiles_gen(1)/cpu_tile/tile_cpu_i/sync_noc_set_cpu/noc6_data_void_in \
+sim:/testbench/top_1/esp_1/tiles_gen(1)/cpu_tile/tile_cpu_i/sync_noc_set_cpu/noc6_stop_out \
+sim:/testbench/top_1/esp_1/tiles_gen(1)/cpu_tile/tile_cpu_i/sync_noc_set_cpu/noc6_output_port \
+sim:/testbench/top_1/esp_1/tiles_gen(1)/cpu_tile/tile_cpu_i/sync_noc_set_cpu/noc6_data_void_out \
+sim:/testbench/top_1/esp_1/tiles_gen(1)/cpu_tile/tile_cpu_i/sync_noc_set_cpu/noc6_stop_in 

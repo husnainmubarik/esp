@@ -1,3 +1,6 @@
+ -- Copyright (c) 2011-2020 Columbia University, System Level Design Group
+-- SPDX-License-Identifier: Apache-2.0
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -32,1147 +35,1056 @@ use work.socmap.all;
 
 entity jtag_test is
   port (
-    rst                :        in  std_ulogic;
-    refclk             :        in  std_ulogic;
+    rst    : in std_ulogic;
+    refclk : in std_ulogic;
 
-    tdi                :        in  std_logic;
-    tdo                :        out std_logic;
-    tms                :        in  std_logic;
-    tclk               :        in  std_logic;
-    
-    noc1_output_port:           in noc_flit_type;
-    noc1_cpu_data_void_out:     in std_ulogic;
-    noc2_output_port:           in noc_flit_type;
-    noc2_cpu_data_void_out:     in std_ulogic;
-    noc3_output_port:           in noc_flit_type;
-    noc3_cpu_data_void_out:     in std_ulogic;
-    noc4_output_port:           in noc_flit_type;
-    noc4_cpu_data_void_out:     in std_ulogic;
-    noc5_output_port:           in misc_noc_flit_type;
-    noc5_cpu_data_void_out:     in std_ulogic;
-    noc6_output_port:           in noc_flit_type;
-    noc6_cpu_data_void_out:     in std_ulogic;      
+    tdi  : in  std_logic;
+    tdo  : out std_logic;
+    tms  : in  std_logic;
+    tclk : in  std_logic;
 
-    test1_cpu_data_void_out:    out std_ulogic;
-    test1_output_port:          out noc_flit_type;
-    test2_cpu_data_void_out:    out std_ulogic;
-    test2_output_port      :    out noc_flit_type;
-    test3_cpu_data_void_out:    out std_ulogic;
-    test3_output_port      :    out noc_flit_type;
-    test4_cpu_data_void_out:    out std_ulogic;
-    test4_output_port      :    out noc_flit_type;
-    test5_cpu_data_void_out:    out std_ulogic;
-    test5_output_port      :    out misc_noc_flit_type;
-    test6_cpu_data_void_out:    out std_ulogic;
-    test6_output_port      :    out noc_flit_type;
+    noc1_output_port       : in noc_flit_type;
+    noc1_cpu_data_void_out : in std_ulogic;
+    noc2_output_port       : in noc_flit_type;
+    noc2_cpu_data_void_out : in std_ulogic;
+    noc3_output_port       : in noc_flit_type;
+    noc3_cpu_data_void_out : in std_ulogic;
+    noc4_output_port       : in noc_flit_type;
+    noc4_cpu_data_void_out : in std_ulogic;
+    noc5_output_port       : in misc_noc_flit_type;
+    noc5_cpu_data_void_out : in std_ulogic;
+    noc6_output_port       : in noc_flit_type;
+    noc6_cpu_data_void_out : in std_ulogic;
 
-    noc1_in_port           :     in noc_flit_type;
-    tonoc1_cpu_data_void_in:     in std_ulogic;
-    noc2_in_port           :     in noc_flit_type;
-    tonoc2_cpu_data_void_in:     in std_ulogic;
-    noc3_in_port           :     in noc_flit_type;
-    tonoc3_cpu_data_void_in:     in std_ulogic;
-    noc4_in_port           :     in noc_flit_type;
-    tonoc4_cpu_data_void_in:     in std_ulogic;
-    noc5_in_port           :     in misc_noc_flit_type;
-    tonoc5_cpu_data_void_in:     in std_ulogic;
-    noc6_in_port           :     in noc_flit_type;
-    tonoc6_cpu_data_void_in:     in std_ulogic;
- 
-    
-    noc1_input_port:             out noc_flit_type;
-    noc1_cpu_data_void_in:       out std_ulogic;
-    noc2_input_port:             out noc_flit_type;
-    noc2_cpu_data_void_in:       out std_ulogic;
-    noc3_input_port:             out noc_flit_type;
-    noc3_cpu_data_void_in:       out std_ulogic;
-    noc4_input_port:             out noc_flit_type;
-    noc4_cpu_data_void_in:       out std_ulogic;
-    noc5_input_port:             out misc_noc_flit_type;
-    noc5_cpu_data_void_in:       out std_ulogic;
-    noc6_input_port:             out noc_flit_type;
-    noc6_cpu_data_void_in:       out std_ulogic;
+    test1_cpu_data_void_out : out std_ulogic;
+    test1_output_port       : out noc_flit_type;
+    test2_cpu_data_void_out : out std_ulogic;
+    test2_output_port       : out noc_flit_type;
+    test3_cpu_data_void_out : out std_ulogic;
+    test3_output_port       : out noc_flit_type;
+    test4_cpu_data_void_out : out std_ulogic;
+    test4_output_port       : out noc_flit_type;
+    test5_cpu_data_void_out : out std_ulogic;
+    test5_output_port       : out misc_noc_flit_type;
+    test6_cpu_data_void_out : out std_ulogic;
+    test6_output_port       : out noc_flit_type;
 
-    noc1_stop_out_s4:            in std_logic;
-    noc2_stop_out_s4:            in std_logic;
-    noc3_stop_out_s4:            in std_logic;
-    noc4_stop_out_s4:            in std_logic;
-    noc5_stop_out_s4:            in std_logic;
-    noc6_stop_out_s4:            in std_logic;
+    noc1_in_port            : in noc_flit_type;
+    tonoc1_cpu_data_void_in : in std_ulogic;
+    noc2_in_port            : in noc_flit_type;
+    tonoc2_cpu_data_void_in : in std_ulogic;
+    noc3_in_port            : in noc_flit_type;
+    tonoc3_cpu_data_void_in : in std_ulogic;
+    noc4_in_port            : in noc_flit_type;
+    tonoc4_cpu_data_void_in : in std_ulogic;
+    noc5_in_port            : in misc_noc_flit_type;
+    tonoc5_cpu_data_void_in : in std_ulogic;
+    noc6_in_port            : in noc_flit_type;
+    tonoc6_cpu_data_void_in : in std_ulogic;
 
-    noc1_cpu_stop_out:           out std_ulogic;
-    noc2_cpu_stop_out:           out std_ulogic;
-    noc3_cpu_stop_out:           out std_ulogic;
-    noc4_cpu_stop_out:           out std_ulogic;
-    noc5_cpu_stop_out:           out std_ulogic;
-    noc6_cpu_stop_out:           out std_ulogic;
 
-    noc1_cpu_stop_in:            in std_ulogic;
-    noc2_cpu_stop_in:            in std_ulogic;
-    noc3_cpu_stop_in:            in std_ulogic;
-    noc4_cpu_stop_in:            in std_ulogic;
-    noc5_cpu_stop_in:            in std_ulogic;
-    noc6_cpu_stop_in:            in std_ulogic);
+    noc1_input_port       : out noc_flit_type;
+    noc1_cpu_data_void_in : out std_ulogic;
+    noc2_input_port       : out noc_flit_type;
+    noc2_cpu_data_void_in : out std_ulogic;
+    noc3_input_port       : out noc_flit_type;
+    noc3_cpu_data_void_in : out std_ulogic;
+    noc4_input_port       : out noc_flit_type;
+    noc4_cpu_data_void_in : out std_ulogic;
+    noc5_input_port       : out misc_noc_flit_type;
+    noc5_cpu_data_void_in : out std_ulogic;
+    noc6_input_port       : out noc_flit_type;
+    noc6_cpu_data_void_in : out std_ulogic;
+
+    noc1_stop_out_s4 : in std_logic;
+    noc2_stop_out_s4 : in std_logic;
+    noc3_stop_out_s4 : in std_logic;
+    noc4_stop_out_s4 : in std_logic;
+    noc5_stop_out_s4 : in std_logic;
+    noc6_stop_out_s4 : in std_logic;
+
+    noc1_cpu_stop_out : out std_ulogic;
+    noc2_cpu_stop_out : out std_ulogic;
+    noc3_cpu_stop_out : out std_ulogic;
+    noc4_cpu_stop_out : out std_ulogic;
+    noc5_cpu_stop_out : out std_ulogic;
+    noc6_cpu_stop_out : out std_ulogic;
+
+    noc1_cpu_stop_in : in std_ulogic;
+    noc2_cpu_stop_in : in std_ulogic;
+    noc3_cpu_stop_in : in std_ulogic;
+    noc4_cpu_stop_in : in std_ulogic;
+    noc5_cpu_stop_in : in std_ulogic;
+    noc6_cpu_stop_in : in std_ulogic);
 
 end;
 
 
 architecture rtl of jtag_test is
 
-  type jtag_state_type is (rti,rti1,inject1,inject2,inject3,inject4,inject5,inject6,extract, inject_instruction, read_and_check, writein,extr_source,waitfirstvoid,waitforvoid1,waitforvoid2,waitforvoid3,waitforvoid4,waitforvoid5,waitforvoid6,waitforvoid_fin);
+  type jtag_state_type is (rti, rti1, inject1, inject2, inject3,
+                           inject4, inject5, inject6, extract,
+                           read_and_check, request_instr,
+                           waitforvoid1, waitforvoid2, waitforvoid3,
+                           waitforvoid4, waitforvoid5, waitforvoid6);
 
-  signal jtag_current, jtag_next : jtag_state_type;
+  type jtag_ctrl_t is record
+    state        : jtag_state_type;
+    demux_sel    : std_logic_vector(5 downto 0);
+    compare      : std_logic_vector(5 downto 0);
+    sipo_clear   : std_ulogic;
+    piso_load0   : std_ulogic;
+    piso_en      : std_ulogic;
+    piso_en0     : std_ulogic;
+    piso_clear   : std_ulogic;
+    piso_clear0  : std_ulogic;
+    skip         : std_ulogic;
+    lastwrite    : std_ulogic;
+    rd_i_out     : std_logic_vector(1 to 6);
+  end record jtag_ctrl_t;
 
-  signal demux_sel:std_logic_vector(5 downto 0);
-  signal compare_reg,compare_reg1:std_logic_vector(5 downto 0);
-  signal tdo_data,tdo_data0,sipo_clear,sel,sipo_en_in,sipo_en_out,sipo_done,en_sipo_comp,piso_load,piso_load0,piso_en,piso_en0,piso_done,piso_done0,skipwait,skip,lastw,lastwrite,nextin,cnt_en,cnt_rs :std_logic;
-  signal sipo_en_i,sipo_en_o,sipo_en_ii,sipo_en_is,op_i,sipo_done_i,sipo_clear_i,tdi_i: std_logic_vector (5 downto 0);
-  signal cnt_r :unsigned(3 downto 0);
-  --signals for logic JTAG->CPU 
+  constant JTAG_CTRL_RESET : jtag_ctrl_t := (
+    state        => rti,
+    demux_sel    => (others => '0'),
+    compare      => (others => '0'),
+    sipo_clear   => '0',
+    piso_load0   => '0',
+    piso_en      => '0',
+    piso_en0     => '0',
+    piso_clear   => '0',
+    piso_clear0  => '0',
+    skip         => '0',
+    lastwrite    => '0',
+    rd_i_out     => (others => '0')
+    );
 
-  signal rd_i1,rd_i2,rd_i3,rd_i5,rd_i4,rd_i6: std_logic;
-  signal fwd_wr_full_o1,fwd_wr_full_o2,fwd_wr_full_o3,fwd_wr_full_o4,fwd_wr_full_o5,fwd_wr_full_o6: std_logic;
-  signal fwd_rd_empty_o1,fwd_rd_empty_o2,fwd_rd_empty_o3,fwd_rd_empty_o4,fwd_rd_empty_o5,fwd_rd_empty_o6:std_logic;
+  signal r, rin : jtag_ctrl_t;
+
+  -- Main FSM output signals
+  signal tdo_data     : std_ulogic;
+  signal tdo_data0    : std_ulogic;
+  signal sipo_done    : std_ulogic;
+  signal piso_load    : std_ulogic;
+  signal piso_done    : std_ulogic;
+  signal piso_done0   : std_ulogic;
+  signal skipwait     : std_ulogic;
+  signal sipo_en_in   : std_ulogic;
+  signal sipo_en_i    : std_logic_vector(1 to 6);
+  signal op_i         : std_logic_vector(1 to 6);  -- maybe unused
+  signal sipo_done_i  : std_logic_vector(1 to 6);
+  signal sipo_clear_i : std_logic_vector(1 to 6);
+  signal tdi_i        : std_logic_vector(1 to 6);
+
+  --signals for logic JTAG->CPU
+  signal rd_i            : std_logic_vector(1 to 6);
+  signal we_in           : std_logic_vector(1 to 6);
+  signal fwd_wr_full_o   : std_logic_vector(1 to 6);
+  signal end_trace       : std_logic_vector(1 to 6);
+  signal fwd_rd_empty_o1 : std_ulogic;
+  signal fwd_rd_empty_o2 : std_ulogic;
+  signal fwd_rd_empty_o3 : std_ulogic;
+  signal fwd_rd_empty_o4 : std_ulogic;
+  signal fwd_rd_empty_o5 : std_ulogic;
+  signal fwd_rd_empty_o6 : std_ulogic;
+
+  type test_vect is array(1 to 6) of noc_flit_type;
+  signal test_in, test_in_sync : test_vect;
+
+  signal sipo_comp         : std_logic_vector(NOC_FLIT_SIZE downto 0);
+  signal test_comp, sipo_c : std_logic_vector(NOC_FLIT_SIZE-1 downto 0);
+  signal data              : std_logic_vector(NOC_FLIT_SIZE+7 downto 0);
+  signal data0             : std_logic_vector(7 downto 0);
+  type t_comp is array (1 to 6) of std_logic_vector(NOC_FLIT_SIZE+8 downto 0);
+  signal sipo_comp_i       : t_comp;
+
+  signal source_compare : std_logic_vector(6 downto 0);
+  signal test_out       : std_logic_vector(NOC_FLIT_SIZE downto 0);
+  signal piso_in        : std_logic_vector(NOC_FLIT_SIZE+7 downto 0);
+  signal piso0_in       : std_logic_vector(7 downto 0);
   
-  type test_vect is array(0 to 5) of std_logic_vector(NOC_FLIT_SIZE downto 0);
+  --signals for logic CPU->JTAG
+  signal A, B, C, D, E, F : std_logic_vector(NOC_FLIT_SIZE downto 0);
 
-  signal test_in,test_in_sync: test_vect;
+  signal test1_out, t1_out      : noc_flit_type;
+  signal test1_cpu_data_void_in : std_ulogic;
+  signal test1_cpu_stop_out     : std_ulogic;
+  signal t1_cpu_data_void_in    : std_ulogic;
 
-  signal sipo_comp                                : std_logic_vector(NOC_FLIT_SIZE downto 0);
-  signal test_comp,sipo_c                                : std_logic_vector(NOC_FLIT_SIZE-1 downto 0);
-  type t_comp is array (0 to 5) of std_logic_vector(NOC_FLIT_SIZE+8 downto 0);
-  signal sipo_comp_i            : t_comp;
+  signal test2_out, t2_out      : noc_flit_type;
+  signal test2_cpu_data_void_in : std_ulogic;
+  signal test2_cpu_stop_out     : std_ulogic;
+  signal t2_cpu_data_void_in    : std_ulogic;
 
-  signal test_compare          :std_logic_vector(NOC_FLIT_SIZE+6 downto 0);
-  signal source_compare          :std_logic_vector(5 downto 0);
-  signal test_out               :std_logic_vector(NOC_FLIT_SIZE downto 0);
-  signal piso_in                  : std_logic_vector(NOC_FLIT_SIZE+6 downto 0);
+  signal test3_out, t3_out      : noc_flit_type;
+  signal test3_cpu_data_void_in : std_ulogic;
+  signal test3_cpu_stop_out     : std_ulogic;
+  signal t3_cpu_data_void_in    : std_ulogic;
 
-  --signals for logic CPU->JTAG 
+  signal test4_out, t4_out      : noc_flit_type;
+  signal test4_cpu_data_void_in : std_ulogic;
+  signal test4_cpu_stop_out     : std_ulogic;
+  signal t4_cpu_data_void_in    : std_ulogic;
+
+  signal test6_out, t6_out      : noc_flit_type;
+  signal test6_cpu_data_void_in : std_ulogic;
+  signal test6_cpu_stop_out     : std_ulogic;
+  signal t6_cpu_data_void_in    : std_ulogic;
+
+  signal test5_out, t5_out      : misc_noc_flit_type;
+  signal test5_cpu_data_void_in : std_ulogic;
+  signal test5_cpu_stop_out     : std_ulogic;
+  signal t5_cpu_data_void_in    : std_ulogic;
+
+  signal rd_i_out     : std_logic_vector(1 to 6);
   
-  signal A,B,C,D,E,F                  : std_logic_vector(NOC_FLIT_SIZE downto 0);
-    
-  signal test1_out,t1_out              :noc_flit_type;
-  signal test1_cpu_data_void_in,t1_cpu_data_void_in:std_ulogic;
+  signal we_in_out          : std_logic_vector(1 to 6);
 
-  signal test2_out,t2_out              :noc_flit_type;
-  signal test2_cpu_data_void_in,t2_cpu_data_void_in:std_ulogic;
+  signal fwd_rd_empty_o5out : std_ulogic;
+  signal fwd_wr_full_o5out  : std_ulogic;
+
+--  variable v : jtag_ctrl_t;
   
-  signal test3_out,t3_out              :noc_flit_type;
-  signal test3_cpu_data_void_in,t3_cpu_data_void_in :std_ulogic;
- 
-  signal test4_out,t4_out              :noc_flit_type;
-  signal test4_cpu_data_void_in,t4_cpu_data_void_in :std_ulogic;
- 
-
-  signal test6_out,t6_out              :noc_flit_type;
-  signal test6_cpu_data_void_in,t6_cpu_data_void_in :std_ulogic;
- 
-  
-  signal test5_out,t5_out              :misc_noc_flit_type;
-  
-  signal test5_cpu_data_void_in,t5_cpu_data_void_in :std_ulogic;
-
-  signal noc_stop_out_test: std_logic_vector(5 downto 0);
-
-
-  signal noc1_in_ext,noc2_in_ext,noc3_in_ext,noc4_in_ext,noc6_in_ext         : std_logic_vector(NOC_FLIT_SIZE downto 0);
-  signal noc1_in_port_sync,noc2_in_port_sync,noc3_in_port_sync,noc4_in_port_sync,noc6_in_port_sync   : std_logic_vector(NOC_FLIT_SIZE downto 0);
-  signal fwd_rd_empty_o1out,fwd_rd_empty_o2out,fwd_rd_empty_o3out,fwd_rd_empty_o4out,fwd_rd_empty_o6out: std_logic;
-  signal fwd_wr_full_o1out,fwd_wr_full_o2out,fwd_wr_full_o3out,fwd_wr_full_o4out,fwd_wr_full_o6out   : std_logic;
-  signal rd_i1_out,rd_i2_out,rd_i3_out,rd_i4_out,rd_i6_out                           : std_logic;
-  signal we_in1_out,we_in2_out,we_in3_out,we_in4_out,we_in6_out                        : std_logic;
-
-
-
-  signal noc5_in_ext             : std_logic_vector(34 downto 0);
-  signal noc5_in_port_sync       : std_logic_vector(34 downto 0);
-  signal fwd_rd_empty_o5out      : std_logic;
-  signal fwd_wr_full_o5out       : std_logic;
-  signal rd_i5_out                : std_logic;
-  signal we_in5_out              : std_logic;
-
 begin
-  
---jtag_fsm
 
-CU_REG : process (tclk, rst)
-begin
-   if rst = '0' then
-      jtag_current<= rti;
-   elsif tclk'event and tclk='1' then
-      jtag_current<=jtag_next;
-   end if;
-end process CU_REG;
-
-NSL : process(jtag_current,cnt_r,tms,sipo_comp,sipo_done,sipo_done_i,piso_done,piso_done0,tonoc1_cpu_data_void_in,tonoc5_cpu_data_void_in,noc5_in_port_sync,noc1_in_port_sync,noc4_in_port_sync,noc3_in_port_sync,compare_reg1,skipwait,lastwrite) 
-begin 
-   jtag_next <= jtag_current;
-   case jtag_current is
-     when rti =>                if tms='1' then
-                                  jtag_next<=inject1;
-                                end if;
-                                noc_stop_out_test<=(others=>'1');
-                                cnt_rs<='1';
-                                cnt_en<='0';
-                                skip<='0';
-                                sel<='0';
-                                piso_en<='0';
-                                piso_en0<='0';
-                                demux_sel<="000000";
-                                nextin<='0';
-                                
-                                
-     when inject1 =>            demux_sel<="100000";
-                                sel<='1';
-                                cnt_rs<='0';
-                                nextin<='1';
-                                sipo_en_ii(0)<='1';
-                                if sipo_done_i(0)='1' then
-                                  jtag_next<=inject2;
-                                  sipo_en_ii(0)<='0';
-                                end if ;
-     when inject2 =>            sipo_en_ii(1)<='1';
-                                demux_sel<="010000";
-                                nextin<='0';
-                                if sipo_done_i(1)='1' then
-                                  jtag_next<=inject3;
-                                  sipo_en_ii(1)<='0';
-                                end if ;
-     when inject3 =>            sipo_en_ii(2)<='1';
-                                demux_sel<="001000";
-                                if sipo_done_i(2)='1' then
-                                  jtag_next<=inject4;
-                                  sipo_en_ii(2)<='0';
-                                end if ;
-     when inject4 =>            sipo_en_ii(3)<='1';
-                                demux_sel<="000100";
-                                if sipo_done_i(3)='1' then
-                                  jtag_next<=inject5;
-                                  sipo_en_ii(3)<='0';
-                                end if ;
-     when inject5 =>            sipo_en_ii(4)<='1';
-                                demux_sel<="000010";
-                                if sipo_done_i(4)='1' then
-                                  jtag_next<=inject6;
-                                  sipo_en_ii(4)<='0';
-                                end if ;
-
-
-     when inject6 =>            sipo_en_ii(5)<='1';
-                                demux_sel<="000001";
-                                
-                                if sipo_done_i(5)='1' then
-                                  sipo_en_ii(5)<='0';
-                                  jtag_next<=writein;
-                                end if ;
-
-                              
-     when rti1 =>               sipo_clear<='1';
-                                nextin<='0';
-                                piso_en<='0';
-                                
-                                piso_load<='0';
-
-                                piso_en0<='0';
-                                en_sipo_comp<='0';
-
-
-                                sipo_en_out<='0';
-                                if tms= '1' then 
-                                jtag_next<=inject_instruction;                      
-                                end if;
-                                
-                                
-     when inject_instruction => sipo_clear<='0';
-                                sipo_en_in<='1';   
-                                sel<='1';
-                                nextin<='1';
-                                demux_sel<=compare_reg1;
-                                en_sipo_comp<='1';
-                                if sipo_done='1' then
-                                  if cnt_r="0110" then
-                                    noc_stop_out_test(4)<='0';
-                                    if noc5_in_port_sync(0)='0' then
-                                      compare_reg<="000010";
-                                      piso_load<='1';
-                                    end if ;
-                                    jtag_next<=waitfirstvoid;
-                                    
-                                  else
-                                    if (lastwrite='1' and compare_reg1="000010" and sipo_comp(0)='1') then
-                                      skip<='1';
-                                    else
-                                      skip<='0';
-                                    end if;
-                                    sipo_en_in<='0';
-                                    jtag_next<=waitforvoid1;
-                                  end if;
-                                end if;
-     when writein =>            sipo_en_out<='1';
-                                en_sipo_comp<='1';
-                                lastw<='1';
-                                cnt_en<='1';
-                                if sipo_comp_i(4)(1)='1' then
-                                  compare_reg<="000010";
-                                elsif sipo_comp_i(5)(1)='1' then
-                                  compare_reg<="000001";                                  
-                                elsif sipo_comp_i(2)(1)='1' then
-                                  compare_reg<="001000";
-                                elsif sipo_comp_i(1)(1)='1' then
-                                  compare_reg<="010000";
-                                end if;
-                                piso_load0<='1';
-                                                                                   
-                                jtag_next<=extr_source; 
-                                
-     when extr_source =>        sipo_en_out<='0';
-                                piso_load0<='0';
-                                piso_en0<='1';
-                                cnt_en<='0';
-                                if piso_done0='1' then
-                                  jtag_next<=rti1;
-                                end if;
-                                
-       
-     when waitfirstvoid =>      cnt_rs<='1';
-                                if noc5_in_port_sync(0)='0' then 
-                                  piso_load<='1';
-                                  jtag_next<=read_and_check; 
-                                  noc_stop_out_test(4)<='1';
-                                end if;
-                                  
-
-
-                                
-     when waitforvoid1 =>       en_sipo_comp<='0';
-                                lastw<='0';
-                                nextin<='0';
-                                if skipwait='0' then 
-                                  noc_stop_out_test(0)<='0';
-                                  if  noc1_in_port_sync(0)='0' then 
-                                    compare_reg<="100000";
-                                  end if;
-                                end if;
-                                jtag_next<=waitforvoid2;
-                                
-     when waitforvoid2 =>       if (skipwait='0' and noc1_in_port_sync(0)='0' ) then 
-                                  piso_load<='1';
-                                  jtag_next<=read_and_check;
-                                  noc_stop_out_test(0)<='1';
-                                else
-                                  jtag_next<=waitforvoid3;
-                                  if skipwait='0' then 
-                                    noc_stop_out_test(0)<='1';
-                                    noc_stop_out_test(1)<='0';
-                                    if  noc2_in_port_sync(0)='0' then
-                                      compare_reg<="010000";
-                                    end if ;
-                                  end if;  
-                                end if;
-     when waitforvoid3 =>       if (skipwait='0' and noc1_in_port_sync(0)='0' ) then 
-                                  piso_load<='1';
-                                  jtag_next<=read_and_check;
-                                  noc_stop_out_test(1)<='1';
-                                else
-                                  jtag_next<=waitforvoid4;
-                                  if skipwait='0' then 
-                                    noc_stop_out_test(1)<='1';
-                                    noc_stop_out_test(2)<='0';
-                                    if  noc3_in_port_sync(0)='0' then
-                                      compare_reg<="001000";
-                                    end if ;
-                                  end if;  
-                                end if;
-     when waitforvoid4 =>       if (skipwait='0' and noc3_in_port_sync(0)='0') then
-                                  jtag_next<=read_and_check;
-                                  noc_stop_out_test(2)<='1';
-                                  piso_load<='1';
-                                else
-                                  jtag_next<=waitforvoid5;
-                                  if skipwait='0' then
-                                    noc_stop_out_test(2)<='1';
-                                    noc_stop_out_test(3)<='0';
-                                    if  noc4_in_port_sync(0)='0' then
-                                      compare_reg<="000100";
-                                    end if ;
-                                  end if;
-                                  
-                                end if;
-     when waitforvoid5 =>        if (skipwait='0' and noc4_in_port_sync(0)='0') then
-                                  jtag_next<=read_and_check;
-                                  noc_stop_out_test(3)<='1';
-                                  piso_load<='1';
-                                 else
-                                  jtag_next<=waitforvoid6;
-                                  if skipwait='0' then
-                                    
-                                    noc_stop_out_test(3)<='1';
-                                    noc_stop_out_test(4)<='0';
-                                    if  noc5_in_port_sync(0)='0' then
-                                      compare_reg<="000010";
-                                    end if ;
-                                  end if;
-                                 end if;
-
-    when waitforvoid6 =>         if (skipwait='0' and noc5_in_port_sync(0)='0') then
-                                  jtag_next<=read_and_check;
-                                  noc_stop_out_test(4)<='1';
-                                  piso_load<='1';
-                                 else
-                                  jtag_next<=waitforvoid_fin;
-                                  if skipwait='0' then
-                                    
-                                    noc_stop_out_test(4)<='1';
-                                    noc_stop_out_test(5)<='0';
-                                    if  noc6_in_port_sync(0)='0' then
-                                      compare_reg<="000001";
-                                    end if ;
-                                  end if;
-                                 end if;
-                            
-
-
-
-     when waitforvoid_fin =>    if (skipwait='0' and noc6_in_port_sync(0)='0') then  
-                                  jtag_next<=read_and_check;
-                                  piso_load<='1';
-                                else
-                                    jtag_next<=writein;
-                                end if;
-                                noc_stop_out_test(5)<='1';
-                                                         
-     when read_and_check =>     en_sipo_comp<='1';
-                                piso_load<='0';
-                                jtag_next<=extract;
-                                
-     when extract =>           
-                                piso_load<='0';
-                                en_sipo_comp<='0';
-                                piso_en<='1';
-                                if piso_done='1'then
-                                  jtag_next<=rti1;
-                                  sipo_clear<='1';
-                                  
-                                end if;
-                                
- end case;
-end process NSL;
-
-lastwrite<=lastw;
-skipwait<=skip;
-compare_reg1<=compare_reg;
-
-
-
-process(tclk,cnt_en,cnt_rs)
-begin
-  if cnt_rs='1' then
-    cnt_r<=(others=>'0');
-  elsif tclk'event and tclk='1' and cnt_en='1' then
-    cnt_r<=cnt_r+1;
-  end if ;
-end process;
-
-
-process(tms,noc1_stop_out_s4,noc2_stop_out_s4,noc3_stop_out_s4,noc4_stop_out_s4,noc5_stop_out_s4,noc6_stop_out_s4,noc_stop_out_test)
-begin
-  if tms='0' then
-    noc1_cpu_stop_out<=noc1_stop_out_s4;
-    noc2_cpu_stop_out<=noc2_stop_out_s4;
-    noc3_cpu_stop_out<=noc3_stop_out_s4;
-    noc4_cpu_stop_out<=noc4_stop_out_s4;
-    noc5_cpu_stop_out<=noc5_stop_out_s4;
-    noc6_cpu_stop_out<=noc6_stop_out_s4;
-  else
-    noc1_cpu_stop_out<=noc_stop_out_test(0);
-    noc2_cpu_stop_out<=noc_stop_out_test(1);
-    noc3_cpu_stop_out<=noc_stop_out_test(2);
-    noc4_cpu_stop_out<=noc_stop_out_test(3);
-    noc5_cpu_stop_out<=noc_stop_out_test(4);
-    noc6_cpu_stop_out<=noc_stop_out_test(5);
-  end if;
-end process;
-
-
-
-process(sipo_en_is,sipo_en_ii,jtag_current)
-begin
-  if jtag_current=inject_instruction then
-    sipo_en_i<=sipo_en_is;
-  else
-    sipo_en_i<=sipo_en_ii;
-  end if ;
-end process;
-
-process(compare_reg,sipo_done_i)
-begin
-  case compare_reg is
-    when "100000" => sipo_done<=sipo_done_i(0);
-    when "010000" => sipo_done<=sipo_done_i(1);
-    when "001000" => sipo_done<=sipo_done_i(2);
-    when "000100" => sipo_done<=sipo_done_i(3);
-    when "000010" => sipo_done<=sipo_done_i(4);
-    when "000001" => sipo_done<=sipo_done_i(5);
-    when others => null;
-  end case;
-
-end process;
-
-
-
-
-process(sipo_en_in,compare_reg)
-begin
-  if sipo_en_in='1' then
-    case compare_reg is
-      when "100000" =>     sipo_en_is(0)<='1';     
-      when "010000" =>     sipo_en_is(1)<='1';
-      when "001000" =>     sipo_en_is(2)<='1';              
-      when "000100" =>     sipo_en_is(3)<='1';
-      when "000010" =>     sipo_en_is(4)<='1';
-      when "000001" =>     sipo_en_is(5)<='1';
-      when others =>    null;
-    end case;
-  else
-    sipo_en_is<=(others=>'0');
-  end if ;
-end process;
-
-
-process(sipo_en_out,compare_reg)
-begin
-  if sipo_en_out='1' then
-    if compare_reg="100000" then
-      sipo_en_o(0)<='1';
-    elsif compare_reg="010000" then
-      sipo_en_o(1)<='1';
-    elsif compare_reg="001000" then
-      sipo_en_o(2)<='1';
-    elsif compare_reg="000100" then
-      sipo_en_o(3)<='1';
-    elsif compare_reg="000010" then
-      sipo_en_o(4)<='1';
-    elsif compare_reg="000010" then
-      sipo_en_o(5)<='1';
+  -- jtag_fsm
+  CU_REG : process (tclk, rst)
+  begin
+    if rst = '0' then
+      r <= JTAG_CTRL_RESET;
+    elsif tclk'event and tclk = '1' then
+      r <= rin;
     end if;
-  else
-    sipo_en_o<=(others=>'0');
-  end if;
-end process;
+  end process CU_REG;
+
+  NSL : process(r, sipo_done, sipo_done_i,
+                piso_done, piso_done0,
+                tms, sipo_comp, sipo_comp_i)
     
-process(sipo_clear,compare_reg)
-begin
-  if sipo_clear='1' then
-    case compare_reg is
-      when "100000" =>     sipo_clear_i(0)<='1';
-      when "010000" =>     sipo_clear_i(1)<='1';
-      when "001000" =>     sipo_clear_i(2)<='1';
-      when "000100" =>     sipo_clear_i(3)<='1';
-      when "000010" =>     sipo_clear_i(4)<='1';
-      when "000001" =>     sipo_clear_i(5)<='1';
+    variable v : jtag_ctrl_t;
+  begin
+    -- Default assignments
+    v := r;
+    -- 
+    rd_i_out<=(others=>'0');
+    we_in<=(others=>'0');
+        
+    
+    case r.state is
 
-      when others =>    null;
+      when rti =>
+        if tms = '1' then
+          v.state := waitforvoid1;
+        end if;
+
+      when request_instr =>  v.piso_load0 :='0';
+                             we_in <= (others =>'0');
+                             v.piso_en0 :='1';
+                             v.sipo_clear :='1';
+                             if piso_done0 ='1' then
+                               v.sipo_clear :='0';
+                               case r.compare is
+                                 when "100000" => v.state := inject1;
+                                 when "010000" => v.state := inject2;
+                                 when "001000" => v.state := inject3;
+                                 when "000100" => v.state := inject4;
+                                 when "000010" => v.state := inject5;
+                                 when "000001" => v.state := inject6;
+                                 when others => null;
+                               end case;
+                             end if;
+                             
+  
+        
+      when inject1 =>   v.piso_en0 := '0';
+                        v.demux_sel := "100000";
+                        sipo_en_in <='1';
+                        
+                        if sipo_done_i(1) = '1' then
+                          --v.piso_clear0:='1';
+                          sipo_en_in <='0';
+                          v.compare := (others => '0');
+                          v.state := waitforvoid1;
+                        end if;
+                    
+
+
+      when inject2 =>   v.piso_en0 := '0';
+                        v.demux_sel := "010000";
+                        sipo_en_in <='1';
+                        if sipo_done_i(2) = '1' then
+                          --v.piso_clear0:='1';
+                          sipo_en_in <='0';
+                          v.compare := (others => '0');
+                          v.state := waitforvoid2;
+                        end if;
+                      
+      
+      when inject3 =>   v.piso_en0 := '0';
+                        v.demux_sel := "001000";
+                        sipo_en_in <='1';
+                        if sipo_done_i(3) = '1' then
+                          --v.piso_clear0:='1';
+                          sipo_en_in <='0';
+                          v.compare := (others => '0');
+                          v.state := waitforvoid3;
+                        end if;
+                     
+      
+      when inject4 =>   v.piso_en0 := '0';
+                        v.demux_sel := "000100";
+                        sipo_en_in <='1';
+                        if sipo_done_i(4) = '1' then
+                          --v.piso_clear0:='1';
+                          sipo_en_in <='0';
+                          v.compare := (others => '0');
+                          v.state := waitforvoid4;
+                        end if;
+                      
+      
+      when inject5 =>   v.piso_en0 := '0';
+                        v.demux_sel := "000010";
+                        sipo_en_in <='1';
+                        if sipo_done_i(5) = '1' then
+                          --v.piso_clear0:='1';
+                          sipo_en_in <='0';
+                          v.compare := (others => '0');
+                          v.state := waitforvoid5;
+                        end if;
+                      
+      
+      when inject6 =>   v.piso_en0 := '0';
+                        v.demux_sel := "000001";
+                        sipo_en_in <='1';
+                        if sipo_done_i(6) = '1' then
+                          --v.piso_clear0:='1';
+                          sipo_en_in <='0';
+                          v.compare := (others => '0');
+                          v.state := waitforvoid6;
+                        end if;
+                      
+      
+                      
+                      
+      when rti1 => if end_trace(1)='0' then
+                     v.state:=waitforvoid1;
+                   elsif end_trace(2)='0' then
+                     v.state:=waitforvoid2;
+                   elsif end_trace(3)='0' then
+                     v.state:=waitforvoid3;
+                   elsif end_trace(4)='0' then
+                     v.state:=waitforvoid4;
+                   elsif end_trace(5)='0' then
+                     v.state:=waitforvoid5;
+                   elsif end_trace(6)='0' then
+                     v.state:=waitforvoid6;
+                   end if;
+                   
+      when waitforvoid1 =>  if sipo_done_i(1)='1' then 
+                             if op_i(1)='0' then            -- instr is a wait
+                               if test1_cpu_data_void_in = '0' then -- check queue
+                                 v.compare:="100000";
+                                 --piso_load<='1';
+                                 --rd_i_out(1)<='1';
+                                 v.state:=read_and_check;
+                               else                       --plane not manageable
+                                 v.state:=waitforvoid2; 
+                               end if;
+                             else                              -- instr is a write
+                               if fwd_wr_full_o(1)='0' then    -- check queue
+                                 v.compare:="100000";
+                                 
+                                 we_in(1)<='1';
+                                 v.piso_load0:='1';
+                                 v.state:=request_instr;
+                               else                     --plane not manageable
+                                 v.state:=waitforvoid2;
+                              end if;
+                             end if;
+                            else           -- register still empty 
+                              v.state:=request_instr;
+                              v.compare:="100000";
+                              v.piso_load0:='1';
+                            end if ;
+
+      when waitforvoid2 =>  if sipo_done_i(2)='1' then 
+                             if op_i(2)='0' then            -- instr is a wait
+                               if test2_cpu_data_void_in = '0' then -- check queue
+                                 v.compare:="010000";
+                                 --piso_load<='1';
+                                 --rd_i_out(2)<='1';
+                                 v.state:=read_and_check;
+                               else                       --plane not manageable
+                                 v.state:=waitforvoid3; 
+                               end if;
+                             else                              -- instr is a write
+                               if fwd_wr_full_o(2)='0' then    -- check queue
+                                 v.compare:="010000";
+                                 
+                                 we_in(2)<='1';
+                                 v.piso_load0:='1';
+                                 v.piso_clear0:='0';
+                                 v.state:=request_instr;
+                               else                     --plane not manageable
+                                 v.state:=waitforvoid3;
+                               end if;
+                             end if;
+                            else           -- register still empty 
+                             
+                             v.state:=request_instr;
+                             v.compare:="010000";
+                             v.piso_load0:='1';
+                            end if ;
+                           
+      when waitforvoid3 =>  if sipo_done_i(3)='1' then 
+                              if op_i(3)='0' then            -- instr is a wait
+                                if test3_cpu_data_void_in = '0' then -- check queue
+                                  v.compare:="001000";
+                                  --piso_load<='1';
+                                  --rd_i_out(3)<='1';
+                                  v.state:=read_and_check;
+                                else                       --plane not manageable
+                                  v.state:=waitforvoid4; 
+                                end if;
+                              else                              -- instr is a write
+                                if fwd_wr_full_o(3)='0' then    -- check queue
+                                  v.compare:="001000";
+                                  
+                                  we_in(3)<='1';
+                                  v.piso_load0:='1';
+                                  v.piso_clear0:='0';
+                                  v.state:=request_instr;
+                                else                     --plane not manageable
+                                  v.state:=waitforvoid4;
+                                end if;
+                              end if;
+                            else           -- register still empty 
+                              v.state:=request_instr;
+                              v.compare:="001000";
+                              v.piso_load0:='1';
+                            end if ;
+
+      when waitforvoid4 =>  if sipo_done_i(4)='1' then 
+                             if op_i(4)='0' then            -- instr is a wait
+                               if test4_cpu_data_void_in = '0' then -- check queue
+                                 v.compare:="000100";
+                                 --piso_load<='1';
+                                 --rd_i_out(4)<='1';
+                                 v.state:=read_and_check;
+                               else                       --plane not manageable
+                                 v.state:=waitforvoid5; 
+                               end if;
+                             else                              -- instr is a write
+                               if fwd_wr_full_o(1)='0' then    -- check queue
+                                 v.compare:="000100";
+
+                                 we_in(4)<='1';
+                                 v.piso_load0:='1';
+                                 v.piso_clear0:='0';
+                                 v.state:=request_instr;
+                               else                     --plane not manageable
+                                 v.state:=waitforvoid5;
+                              end if;
+                             end if;
+                            else           -- register still empty 
+                             v.state:=request_instr;
+                             v.compare:="000100";
+                             v.piso_load0:='1';
+                            end if ;
+
+      when waitforvoid5 =>  if sipo_done_i(5)='1' then 
+                             if op_i(5)='0' then            -- instr is a wait
+                               if test5_cpu_data_void_in = '0' then -- check queue
+                                 v.compare:="000010";
+                                 --piso_load<='1';
+                                 --rd_i_out(5)<='1';
+                                 v.state:=read_and_check;
+                               else                       --plane not manageable
+                                 v.state:=waitforvoid6; 
+                               end if;
+                             else                              -- instr is a write
+                               if fwd_wr_full_o(5)='0' then    -- check queue
+                                 v.compare:="000010";
+                                 
+                                 we_in(5)<='1';
+                                 v.piso_load0:='1';
+                                 v.piso_clear0:='0';
+                                 v.state:=request_instr;
+                               else                     --plane not manageable
+                                 v.state:=waitforvoid6;
+                              end if;
+                             end if;
+                            else           -- register still empty 
+                             v.state:=request_instr;
+                             v.compare:="000010";
+                             v.piso_load0:='1';
+                            end if ;
+
+      when waitforvoid6 =>  if sipo_done_i(6)='1' then 
+                             if op_i(6)='0' then            -- instr is a wait
+                               if test6_cpu_data_void_in = '0' then -- check queue
+                                 v.compare:="000001";
+                                 --piso_load<='1';
+                                 --rd_i_out(6)<='1';
+                                 v.state:=read_and_check;
+                               else                       --plane not manageable
+                                 v.state:=rti1; 
+                               end if;
+                             else                              -- instr is a write
+                               if fwd_wr_full_o(6)='0' then    -- check queue
+                                 v.compare:="000001";
+                                 
+                                 we_in(1)<='1';
+                                 v.piso_load0:='1';
+                                 v.piso_clear0:='0';
+                                 v.state:=request_instr;
+                               else                     --plane not manageable
+                                 v.state:=rti1;
+                              end if;
+                             end if;
+                            else           -- register still empty 
+                             v.piso_load0:='1';
+                             v.state:=request_instr;
+                             v.compare:="000001";
+                            end if ;
+
+
+      when read_and_check => case r.compare is
+                               when "100000" => rd_i_out(1)<='1';
+                               when "010000" => rd_i_out(2)<='1';
+                               when "001000" => rd_i_out(3)<='1';
+                               when "000100" => rd_i_out(4)<='1';
+                               when "000010" => rd_i_out(5)<='1';
+                               when "000001" => rd_i_out(6)<='1';
+                               when others=>null;
+                             end case;
+                             piso_load <='1';
+                             v.state := extract;
+                             v.piso_en      := '1';
+                          
+
+      when extract =>   piso_load<='0';
+                        rd_i_out<=(others=>'0');
+                        if piso_done = '1' then
+                          v.state:= request_instr;
+                          v.piso_load0 :='1';
+                          v.sipo_clear := '1';
+                          v.piso_en :='0';
+                        end if;
+
     end case;
-  else
-    sipo_clear_i<=(others=>'0');
-  end if ;
-end process;  
 
-  GEN_SIPO: for i in 0 to 5 generate
+    rin <= v;
 
-    sipo_i: sipo
-      generic map (DIM=>NOC_FLIT_SIZE+9)
+  end process NSL;
+
+  -- lastwrite    <= lastw;
+  -- skipwait     <= skip;
+  -- compare_reg1 <= compare_reg;
+
+
+
+--  process(tclk, cnt_en, cnt_rs)
+--  begin
+--    if cnt_rs = '1' then
+--      cnt_r <= (others => '0');
+--    elsif tclk'event and tclk = '1' and cnt_en = '1' then
+--      cnt_r <= cnt_r+1;
+--    end if;
+--  end process;
+
+
+
+  -- process(sipo_en_is, sipo_en_ii, jtag_current)
+  -- begin
+  --   if jtag_current = inject_instruction then
+  --     sipo_en_i <= sipo_en_is;
+  --   else
+  --     sipo_en_i <= sipo_en_ii;
+  --   end if;
+  -- end process;
+
+  process(r.compare, sipo_done_i)
+  begin
+    case r.compare is
+      when "100000" => sipo_done <= sipo_done_i(1);
+      when "010000" => sipo_done <= sipo_done_i(2);
+      when "001000" => sipo_done <= sipo_done_i(3);
+      when "000100" => sipo_done <= sipo_done_i(4);
+      when "000010" => sipo_done <= sipo_done_i(5);
+      when "000001" => sipo_done <= sipo_done_i(6);
+      when others   => null;
+    end case;
+
+  end process;
+
+
+  -- Enable serial-in-parallel-out register to get next instruction from trace
+
+  process(sipo_en_in, r.compare)
+  begin
+    if sipo_en_in = '1' then
+      case r.compare is
+        when "100000" => sipo_en_i(1) <= '1';
+        when "010000" => sipo_en_i(2) <= '1';
+        when "001000" => sipo_en_i(3) <= '1';
+        when "000100" => sipo_en_i(4) <= '1';
+        when "000010" => sipo_en_i(5) <= '1';
+        when "000001" => sipo_en_i(6) <= '1';
+        when others   => sipo_en_i <= (others => '0');
+      end case;
+    else
+      sipo_en_i <= (others => '0');
+    end if;
+  end process;
+
+  process(r.sipo_clear, r.compare)
+  begin
+    if r.sipo_clear = '1' then
+      case r.compare is
+        when "100000" => sipo_clear_i(1) <= '1';
+        when "010000" => sipo_clear_i(2) <= '1';
+        when "001000" => sipo_clear_i(3) <= '1';
+        when "000100" => sipo_clear_i(4) <= '1';
+        when "000010" => sipo_clear_i(5) <= '1';
+        when "000001" => sipo_clear_i(6) <= '1';
+
+        when others => null;
+      end case;
+    else
+      sipo_clear_i <= (others => '0');
+    end if;
+  end process;
+
+  GEN_SIPO : for i in 1 to 6 generate
+
+    sipo_i : sipo
+      generic map (DIM => NOC_FLIT_SIZE+9)
       port map (
-        clk          =>tclk,
-        clear        =>sipo_clear_i(i),
-        en_in        =>sipo_en_i(i),
-        en_out       =>sipo_en_o(i),
-        en_comp      =>en_sipo_comp,
-        serial_in    =>tdi_i(i),
-        test_comp    =>sipo_comp_i(i),
-        data_out     =>test_in(i),
-        op           =>op_i(i),
-        done         =>sipo_done_i(i));
+        clk       => tclk,
+        clear     => sipo_clear_i(i),
+        en_in     => sipo_en_i(i),
+        serial_in => tdi_i(i),
+        test_comp => sipo_comp_i(i),
+        data_out  => test_in(i),
+        op        => op_i(i),
+        done      => sipo_done_i(i),
+        end_trace => end_trace(i));
 
 
   end generate GEN_SIPO;
 
 
-demux_1to6_1: demux_1to6
-port map(
-  data_in =>tdi,
-  sel     =>demux_sel,
-  out1   =>tdi_i(0),
-  out2   =>tdi_i(1),
-  out3   =>tdi_i(2),
-  out4   =>tdi_i(3),
-  out5   =>tdi_i(4),
-  out6   =>tdi_i(5));
+  demux_1to6_1 : demux_1to6
+    port map(
+      data_in => tdi,
+      sel     => r.demux_sel,
+      out1    => tdi_i(1),
+      out2    => tdi_i(2),
+      out3    => tdi_i(3),
+      out4    => tdi_i(4),
+      out5    => tdi_i(5),
+      out6    => tdi_i(6));
 
 
---from NoC plane 1
+  --from NoC plane 1
+  rd_i(1) <= noc1_cpu_stop_in nor fwd_rd_empty_o1;
 
-rd_i1<=not(noc1_cpu_stop_in);
-
-async_fifo_00: async_fifo
-  generic map (
-    g_data_width => NOC_FLIT_SIZE+1,
-    g_size       => 8)
-  port map (
-    rst_n_i    => rst,
-    clk_wr_i   => tclk,
-    we_i       => sipo_en_o(0),
-    d_i        => test_in(0),
-    wr_full_o  => fwd_wr_full_o1,
-    clk_rd_i   => refclk,
-    rd_i       => rd_i1,
-    q_o        => test_in_sync(0),
-    rd_empty_o => fwd_rd_empty_o1);
-
+  async_fifo_01 : inferred_async_fifo
+    generic map (
+      g_data_width => NOC_FLIT_SIZE,
+      g_size       => 2)
+    port map (
+      rst_n_i    => rst,
+      clk_wr_i   => tclk,
+      we_i       => we_in(1),
+      d_i        => test_in(1),
+      wr_full_o  => fwd_wr_full_o(1),
+      clk_rd_i   => refclk,
+      rd_i       => rd_i(1),
+      q_o        => test_in_sync(1),
+      rd_empty_o => fwd_rd_empty_o1);
 
 
-mux_2to1_0:mux_2to1
-  generic map(sz=>NOC_FLIT_SIZE)
-  port map(
-    sel=>sel,
-    A=>test_in_sync(0)(NOC_FLIT_SIZE downto 1),
-    B=>noc1_output_port,
-    X=>test1_output_port);
-
-mux2to1_0:mux2to1
-  port map(
-    sel=>sel,
-    A=>fwd_rd_empty_o1,
-    B=>noc1_cpu_data_void_out,
-    X=>test1_cpu_data_void_out);
-
-            
-
---from NoC plane 2
-
-rd_i2<=not(noc2_cpu_stop_in);
-
-async_fifo_0: async_fifo
-  generic map (
-    g_data_width => NOC_FLIT_SIZE+1,
-    g_size       => 8)
-  port map (
-    rst_n_i    => rst,
-    clk_wr_i   => tclk,
-    we_i       => sipo_en_o(1),
-    d_i        => test_in(1),
-    wr_full_o  => fwd_wr_full_o2,
-    clk_rd_i   => refclk,
-    rd_i       => rd_i2,
-    q_o        => test_in_sync(1),
-    rd_empty_o => fwd_rd_empty_o2);
+  test1_output_port <= test_in_sync(1) when tms = '1' else noc1_output_port;
+  test1_cpu_data_void_out <= fwd_rd_empty_o1 when tms = '1' else noc1_cpu_data_void_out;
 
 
 
-mux_2to1_1:mux_2to1
-  generic map(sz=>NOC_FLIT_SIZE)
-  port map(
-    sel=>sel,
-    A=>test_in_sync(1)(NOC_FLIT_SIZE downto 1),
-    B=>noc2_output_port,
-    X=>test2_output_port);
+  --from NoC plane 2
+  rd_i(2) <= noc2_cpu_stop_in nor fwd_rd_empty_o2;
 
-mux2to1_1:mux2to1
-  port map(
-    sel=>sel,
-    A=>fwd_rd_empty_o2,
-    B=>noc2_cpu_data_void_out,
-    X=>test2_cpu_data_void_out);
-
---from NoC plane 3
-
-
-rd_i3<=not(noc3_cpu_stop_in) ;
-
-async_fifo_1: async_fifo
-  generic map (
-    g_data_width => NOC_FLIT_SIZE+1,
-    g_size       => 8)
-  port map (
-    rst_n_i    => rst,
-    clk_wr_i   => tclk,
-    we_i       => sipo_en_o(2),
-    d_i        => test_in(2),
-    wr_full_o  => fwd_wr_full_o3,
-    clk_rd_i   => refclk,
-    rd_i       => rd_i3,
-    q_o        => test_in_sync(2),
-    rd_empty_o => fwd_rd_empty_o3);
+  async_fifo_02 : inferred_async_fifo
+    generic map (
+      g_data_width => NOC_FLIT_SIZE,
+      g_size       => 2)
+    port map (
+      rst_n_i    => rst,
+      clk_wr_i   => tclk,
+      we_i       => we_in(2),
+      d_i        => test_in(2),
+      wr_full_o  => fwd_wr_full_o(2),
+      clk_rd_i   => refclk,
+      rd_i       => rd_i(2),
+      q_o        => test_in_sync(2),
+      rd_empty_o => fwd_rd_empty_o2);
 
 
-
-mux_2to1_2:mux_2to1
-  generic map(sz=>NOC_FLIT_SIZE)
-  port map(
-    sel=>sel,
-    A=>test_in_sync(2)(NOC_FLIT_SIZE downto 1),
-    B=>noc3_output_port,
-    X=>test3_output_port);
-
-mux2to1_2:mux2to1
-  port map(
-    sel=>sel,
-    A=>fwd_rd_empty_o3,
-    B=>noc3_cpu_data_void_out,
-    X=>test3_cpu_data_void_out);
+  test2_output_port <= test_in_sync(2) when tms = '1' else noc2_output_port;
+  test2_cpu_data_void_out <= fwd_rd_empty_o2 when tms = '1' else noc2_cpu_data_void_out;
 
 
---from NoC plane 4
+  --from NoC plane 3
+  rd_i(3) <= noc3_cpu_stop_in nor fwd_rd_empty_o3;
+
+  async_fifo_03 : inferred_async_fifo
+    generic map (
+      g_data_width => NOC_FLIT_SIZE,
+      g_size       => 2)
+    port map (
+      rst_n_i    => rst,
+      clk_wr_i   => tclk,
+      we_i       => we_in(3),
+      d_i        => test_in(3),
+      wr_full_o  => fwd_wr_full_o(3),
+      clk_rd_i   => refclk,
+      rd_i       => rd_i(3),
+      q_o        => test_in_sync(3),
+      rd_empty_o => fwd_rd_empty_o3);
 
 
-rd_i4<=not(noc4_cpu_stop_in) ;
+  test3_output_port <= test_in_sync(3) when tms = '1' else noc3_output_port;
+  test3_cpu_data_void_out <= fwd_rd_empty_o3 when tms = '1' else noc3_cpu_data_void_out;
 
-async_fifo_2: async_fifo
-  generic map (
-    g_data_width => NOC_FLIT_SIZE+1,
-    g_size       => 8)
-  port map (
-    rst_n_i    => rst,
-    clk_wr_i   => tclk,
-    we_i       => sipo_en_o(3),
-    d_i        => test_in(3),
-    wr_full_o  => fwd_wr_full_o4,
-    clk_rd_i   => refclk,
-    rd_i       => rd_i4,
-    q_o        => test_in_sync(3),
-    rd_empty_o => fwd_rd_empty_o4);
+  --from NoC plane 4
+  rd_i(4) <= noc4_cpu_stop_in nor fwd_rd_empty_o4;
+
+  async_fifo_04 : inferred_async_fifo
+    generic map (
+      g_data_width => NOC_FLIT_SIZE,
+      g_size       => 2)
+    port map (
+      rst_n_i    => rst,
+      clk_wr_i   => tclk,
+      we_i       => we_in(4),
+      d_i        => test_in(4),
+      wr_full_o  => fwd_wr_full_o(4),
+      clk_rd_i   => refclk,
+      rd_i       => rd_i(4),
+      q_o        => test_in_sync(4),
+      rd_empty_o => fwd_rd_empty_o4);
+
+
+  test4_output_port <= test_in_sync(4) when tms = '1' else noc4_output_port;
+  test4_cpu_data_void_out <= fwd_rd_empty_o4 when tms = '1' else noc4_cpu_data_void_out;
 
 
 
-mux_2to1_3:mux_2to1
-  generic map(sz=>NOC_FLIT_SIZE)
-  port map(
-    sel=>sel,
-    A=>test_in_sync(3)(NOC_FLIT_SIZE downto 1),
-    B=>noc4_output_port,
-    X=>test4_output_port);
+  --from NoC plane 5
+  rd_i(5) <= noc5_cpu_stop_in nor fwd_rd_empty_o5;
 
-mux2to1_3:mux2to1
-  port map(
-    sel=>sel,
-    A=>fwd_rd_empty_o4,
-    B=>noc4_cpu_data_void_out,
-    X=>test4_cpu_data_void_out);
-
-
-            
---from NoC plane 5
-
-rd_i5<=not(noc5_cpu_stop_in) ;
-
-async_fifo_3:async_fifo
-  generic map (
-    g_data_width => MISC_NOC_FLIT_SIZE+1,
-    g_size       => 8)
-  port map (
-    rst_n_i    => rst,
-    clk_wr_i   => tclk,
-    we_i       => sipo_en_o(4),
-    d_i        => test_in(4)(34 downto 0),
-    wr_full_o  => fwd_wr_full_o5,
-    clk_rd_i   => refclk,
-    rd_i       => rd_i5,
-    q_o        => test_in_sync(4)(34 downto 0),
-    rd_empty_o => fwd_rd_empty_o5);
+  async_fifo_05 : inferred_async_fifo
+    generic map (
+      g_data_width => MISC_NOC_FLIT_SIZE,
+      g_size       => 2)
+    port map (
+      rst_n_i    => rst,
+      clk_wr_i   => tclk,
+      we_i       => we_in(5),
+      d_i        => test_in(5)(MISC_NOC_FLIT_SIZE-1 downto 0),
+      wr_full_o  => fwd_wr_full_o(5),
+      clk_rd_i   => refclk,
+      rd_i       => rd_i(5),
+      q_o        => test_in_sync(5)(MISC_NOC_FLIT_SIZE-1 downto 0),
+      rd_empty_o => fwd_rd_empty_o5);
 
 
-mux_2to1_4:mux_2to1
-  generic map(sz=>MISC_NOC_FLIT_SIZE)
-  port map(
-    sel=>sel,
-    A=>test_in_sync(4)(34 downto 1),
-    B=>noc5_output_port,
-    X=>test5_output_port);
-
-mux2to1_4:mux2to1
-  port map(
-    sel=>sel,
-    A=>fwd_rd_empty_o5,
-    B=>noc5_cpu_data_void_out,
-    X=>test5_cpu_data_void_out);
-
---from NoC plane 6
+  test5_output_port <= test_in_sync(5)(MISC_NOC_FLIT_SIZE-1 downto 0) when tms = '1' else noc5_output_port;
+  test5_cpu_data_void_out <= fwd_rd_empty_o5 when tms = '1' else noc5_cpu_data_void_out;
 
 
-rd_i6<=not(noc6_cpu_stop_in) ;
+  --from NoC plane 6
+  rd_i(6) <= noc6_cpu_stop_in nor fwd_rd_empty_o6;
 
-async_fifo_4: async_fifo
-  generic map (
-    g_data_width => NOC_FLIT_SIZE+1,
-    g_size       => 8)
-  port map (
-    rst_n_i    => rst,
-    clk_wr_i   => tclk,
-    we_i       => sipo_en_o(5),
-    d_i        => test_in(5),
-    wr_full_o  => fwd_wr_full_o6,
-    clk_rd_i   => refclk,
-    rd_i       => rd_i6,
-    q_o        => test_in_sync(5),
-    rd_empty_o => fwd_rd_empty_o6);
-
-
-
-mux_2to1_5:mux_2to1
-  generic map(sz=>NOC_FLIT_SIZE)
-  port map(
-    sel=>sel,
-    A=>test_in_sync(5)(NOC_FLIT_SIZE downto 1),
-    B=>noc3_output_port,
-    X=>test6_output_port);
-
-mux2to1_5:mux2to1
-  port map(
-    sel=>sel,
-    A=>fwd_rd_empty_o6,
-    B=>noc6_cpu_data_void_out,
-    X=>test6_cpu_data_void_out);
+  async_fifo_06 : inferred_async_fifo
+    generic map (
+      g_data_width => NOC_FLIT_SIZE,
+      g_size       => 2)
+    port map (
+      rst_n_i    => rst,
+      clk_wr_i   => tclk,
+      we_i       => we_in(6),
+      d_i        => test_in(6),
+      wr_full_o  => fwd_wr_full_o(6),
+      clk_rd_i   => refclk,
+      rd_i       => rd_i(6),
+      q_o        => test_in_sync(6),
+      rd_empty_o => fwd_rd_empty_o6);
 
 
-  process(compare_reg,sipo_comp_i)
+  test6_output_port <= test_in_sync(6) when tms = '1' else noc6_output_port;
+  test6_cpu_data_void_out <= fwd_rd_empty_o6 when tms = '1' else noc6_cpu_data_void_out;
+
+  -- Pick data for comparison with expected value
+  process(r.compare, sipo_comp_i)
   begin
-    case compare_reg is
-      when "100000" => sipo_comp<=sipo_comp_i(0)(NOC_FLIT_SIZE+8 downto 9) & sipo_comp_i(0)(1);
-      when "010000" => sipo_comp<=sipo_comp_i(1)(NOC_FLIT_SIZE+8 downto 9) & sipo_comp_i(1)(1);
-      when "001000" => sipo_comp<=sipo_comp_i(2)(NOC_FLIT_SIZE+8 downto 9) & sipo_comp_i(2)(1);
-      when "000100" => sipo_comp<=sipo_comp_i(3)(NOC_FLIT_SIZE+8 downto 9) & sipo_comp_i(3)(1);
-      when "000010" => sipo_comp<=sipo_comp_i(4)(NOC_FLIT_SIZE+8 downto 9) & sipo_comp_i(4)(1);
-      when "000001" => sipo_comp<=sipo_comp_i(5)(NOC_FLIT_SIZE+8 downto 9) & sipo_comp_i(5)(1);
-      when others => sipo_comp<=(others=>'0');
+    case r.compare is
+      when "100000" => sipo_comp <= sipo_comp_i(1)(NOC_FLIT_SIZE+8 downto 9) & sipo_comp_i(1)(1);
+      when "010000" => sipo_comp <= sipo_comp_i(2)(NOC_FLIT_SIZE+8 downto 9) & sipo_comp_i(2)(1);
+      when "001000" => sipo_comp <= sipo_comp_i(3)(NOC_FLIT_SIZE+8 downto 9) & sipo_comp_i(3)(1);
+      when "000100" => sipo_comp <= sipo_comp_i(4)(NOC_FLIT_SIZE+8 downto 9) & sipo_comp_i(4)(1);
+      when "000010" => sipo_comp <= sipo_comp_i(5)(NOC_FLIT_SIZE+8 downto 9) & sipo_comp_i(5)(1);
+      when "000001" => sipo_comp <= sipo_comp_i(6)(NOC_FLIT_SIZE+8 downto 9) & sipo_comp_i(6)(1);
+      when others   => sipo_comp <= (others => '0');
     end case;
   end process;
-  
-  
-  
-  tdoout: process(piso_en,piso_en0,nextin,test_out,sipo_comp,tdo_data,tdo_data0,jtag_current,test_comp)
+
+  -- Drive tdo
+  tdoout : process(r.piso_en, r.piso_en0, sipo_comp, tdo_data, tdo_data0, r.state, test_comp, sipo_c)
   begin
-    if piso_en='1' then
-      tdo<=tdo_data;
-    elsif piso_en0='1' then
-      tdo<=tdo_data0;     
+    if r.piso_en = '1' then
+      tdo <= tdo_data;
+    elsif r.piso_en0 = '1' then
+      tdo <= tdo_data0;
     else
-      if (jtag_current=read_and_check and test_comp=sipo_comp(NOC_FLIT_SIZE downto 1)) or nextin='1' then
-        tdo<='1';
+      if (r.state = read_and_check and test_comp = sipo_c) then
+        tdo <= '1';
       else
-        tdo<='0';
+        tdo <= '0';
       end if;
     end if;
   end process tdoout;
 
-  sipo_c<=sipo_comp(NOC_FLIT_SIZE downto 1);
-   
---to NoC plane 1
-  
-  rd_i1_out<=not(noc_stop_out_test(0));
-  noc1_in_ext<=t1_out & t1_cpu_data_void_in ; 
-  we_in1_out<=not(tonoc1_cpu_data_void_in);
+  sipo_c <= sipo_comp(NOC_FLIT_SIZE downto 1);
 
-  test1_out<=noc1_in_port_sync(NOC_FLIT_SIZE downto 1);
-  test1_cpu_data_void_in<=noc1_in_port_sync(0);
-  
-  async_fifo_5: async_fifo
+  -- to NoC plane 1
+  we_in_out(1)  <=  t1_cpu_data_void_in nor test1_cpu_stop_out;
+
+  async_fifo_i1 : inferred_async_fifo
     generic map (
-      g_data_width => NOC_FLIT_SIZE+1,
-      g_size       => 8)
+      g_data_width => NOC_FLIT_SIZE,
+      g_size       => 4)
     port map (
       rst_n_i    => rst,
       clk_wr_i   => refclk,
-      we_i       => we_in1_out,
-      d_i        => noc1_in_ext,
-      wr_full_o  => fwd_wr_full_o1out,
+      we_i       => we_in_out(1),
+      d_i        => t1_out,
+      wr_full_o  => test1_cpu_stop_out,
       clk_rd_i   => tclk,
-      rd_i       => rd_i1_out,
-      q_o        => noc1_in_port_sync,
-      rd_empty_o => fwd_rd_empty_o1out);
+      rd_i       => rd_i_out(1),
+      q_o        => test1_out,
+      rd_empty_o => test1_cpu_data_void_in);
+
+  noc1_input_port <= noc1_in_port;
+  noc1_cpu_data_void_in <= '1' when tms = '1' else tonoc1_cpu_data_void_in;
+
+  t1_out <= noc1_in_port;
+  t1_cpu_data_void_in <= tonoc1_cpu_data_void_in when tms = '1' else '1';
 
 
-  
-demux_2to1_1:demux_1to2
-  generic map(sz=>NOC_FLIT_SIZE)
-  port map(
-    sel=>sel,
-    data_in=>noc1_in_port,
-    out1=>t1_out,
-    out2=>noc1_input_port);
+  -- to NoC plane 2
+  we_in_out(2)  <=  t2_cpu_data_void_in nor test2_cpu_stop_out;
 
-demux2to1_1:demux1to2
-  port map(
-    sel=>sel,
-    data_in=>tonoc1_cpu_data_void_in,
-    out1=>t1_cpu_data_void_in,
-    out2=>noc1_cpu_data_void_in);
-
-
---to NoC plane 2
-  
-  rd_i2_out<=not(noc_stop_out_test(1));
-  noc2_in_ext<=t2_out & t2_cpu_data_void_in ; 
-  we_in2_out<=not(tonoc2_cpu_data_void_in);
-
-  test2_out<=noc2_in_port_sync(NOC_FLIT_SIZE downto 1);
-  test2_cpu_data_void_in<=noc2_in_port_sync(0);
-  
-  async_fifo_6: async_fifo
+  async_fifo_i2 : inferred_async_fifo
     generic map (
-      g_data_width => NOC_FLIT_SIZE+1,
-      g_size       => 8)
+      g_data_width => NOC_FLIT_SIZE,
+      g_size       => 4)
     port map (
       rst_n_i    => rst,
       clk_wr_i   => refclk,
-      we_i       => we_in2_out,
-      d_i        => noc2_in_ext,
-      wr_full_o  => fwd_wr_full_o2out,
+      we_i       => we_in_out(2),
+      d_i        => t2_out,
+      wr_full_o  => test2_cpu_stop_out,
       clk_rd_i   => tclk,
-      rd_i       => rd_i2_out,
-      q_o        => noc2_in_port_sync,
-      rd_empty_o => fwd_rd_empty_o2out);
+      rd_i       => rd_i_out(2),
+      q_o        => test2_out,
+      rd_empty_o => test2_cpu_data_void_in);
+
+  noc2_input_port <= noc2_in_port;
+  noc2_cpu_data_void_in <= '1' when tms = '1' else tonoc2_cpu_data_void_in;
+
+  t2_out <= noc2_in_port;
+  t2_cpu_data_void_in <= tonoc2_cpu_data_void_in when tms = '1' else '1';
 
 
-  
-demux_2to1_2:demux_1to2
-  generic map(sz=>NOC_FLIT_SIZE)
-  port map(
-    sel=>sel,
-    data_in=>noc2_in_port,
-    out1=>t2_out,
-    out2=>noc2_input_port);
+  -- to NoC plane 3
+  we_in_out(3)  <= t3_cpu_data_void_in nor test3_cpu_stop_out;
 
-demux2to1_2:demux1to2
-  port map(
-    sel=>sel,
-    data_in=>tonoc2_cpu_data_void_in,
-    out1=>t2_cpu_data_void_in,
-    out2=>noc2_cpu_data_void_in);
-
-
-
-  
---to Noc plane 3
-
-  rd_i3_out<=not(noc_stop_out_test(2));
-  noc3_in_ext<=t3_out & t3_cpu_data_void_in ;
-  we_in3_out<=not(tonoc3_cpu_data_void_in);
-
-  test3_out<=noc3_in_port_sync(NOC_FLIT_SIZE downto 1);
-  test3_cpu_data_void_in<=noc3_in_port_sync(0);
-  
-  async_fifo_7: async_fifo
+  async_fifo_i3 : inferred_async_fifo
     generic map (
-      g_data_width => NOC_FLIT_SIZE+1,
-      g_size       => 8)
+      g_data_width => NOC_FLIT_SIZE,
+      g_size       => 4)
     port map (
       rst_n_i    => rst,
       clk_wr_i   => refclk,
-      we_i       => we_in3_out,
-      d_i        => noc3_in_ext,
-      wr_full_o  => fwd_wr_full_o3out,
+      we_i       => we_in_out(3),
+      d_i        => t3_out,
+      wr_full_o  => test3_cpu_stop_out,
       clk_rd_i   => tclk,
-      rd_i       => rd_i3_out,
-      q_o        => noc3_in_port_sync,
-      rd_empty_o => fwd_rd_empty_o3out);
+      rd_i       => rd_i_out(3),
+      q_o        => test3_out,
+      rd_empty_o => test3_cpu_data_void_in);
+
+  noc3_input_port <= noc3_in_port;
+  noc3_cpu_data_void_in <= '1' when tms = '1' else tonoc3_cpu_data_void_in;
+
+  t3_out <= noc3_in_port;
+  t3_cpu_data_void_in <= tonoc3_cpu_data_void_in when tms = '1' else '1';
 
 
-  
-demux_2to1_3:demux_1to2
-  generic map(sz=>NOC_FLIT_SIZE)
-  port map(
-    sel=>sel,
-    data_in=>noc3_in_port,
-    out1=>t3_out,
-    out2=>noc3_input_port);
+  -- to NoC plane 4
+  we_in_out(4)  <= t4_cpu_data_void_in nor test4_cpu_stop_out;
 
-demux2to1_3:demux1to2
-  port map(
-    sel=>sel,
-    data_in=>tonoc3_cpu_data_void_in,
-    out1=>t3_cpu_data_void_in,
-    out2=>noc3_cpu_data_void_in);
-
-
-
--- to NoC plane 4
-
-  rd_i4_out<=not(noc_stop_out_test(3));
-  noc4_in_ext<=t4_out & t4_cpu_data_void_in ;
-  we_in4_out<=not(tonoc4_cpu_data_void_in);
-
-  test4_out<=noc4_in_port_sync(NOC_FLIT_SIZE downto 1);
-  test4_cpu_data_void_in<=noc4_in_port_sync(0);
-  
-  async_fifo_8: async_fifo
+  async_fifo_i4 : inferred_async_fifo
     generic map (
-      g_data_width => NOC_FLIT_SIZE+1,
-      g_size       => 8)
+      g_data_width => NOC_FLIT_SIZE,
+      g_size       => 4)
     port map (
       rst_n_i    => rst,
       clk_wr_i   => refclk,
-      we_i       => we_in4_out,
-      d_i        => noc4_in_ext,
-      wr_full_o  => fwd_wr_full_o4out,
+      we_i       => we_in_out(4),
+      d_i        => t4_out,
+      wr_full_o  => test4_cpu_stop_out,
       clk_rd_i   => tclk,
-      rd_i       => rd_i4_out,
-      q_o        => noc4_in_port_sync,
-      rd_empty_o => fwd_rd_empty_o4out);
+      rd_i       => rd_i_out(4),
+      q_o        => test4_out,
+      rd_empty_o => test4_cpu_data_void_in);
+
+  noc4_input_port <= noc4_in_port;
+  noc4_cpu_data_void_in <= '1' when tms = '1' else tonoc4_cpu_data_void_in;
+
+  t4_out <= noc4_in_port;
+  t4_cpu_data_void_in <= tonoc4_cpu_data_void_in when tms = '1' else '1';
 
 
-  
-demux_2to1_4:demux_1to2
-  generic map(sz=>NOC_FLIT_SIZE)
-  port map(
-    sel=>sel,
-    data_in=>noc4_in_port,
-    out1=>t4_out,
-    out2=>noc4_input_port);
+  -- to NoC plane 5
+  we_in_out(5)  <= t5_cpu_data_void_in nor test5_cpu_stop_out;
 
-demux2to1_4:demux1to2
-  port map(
-    sel=>sel,
-    data_in=>tonoc4_cpu_data_void_in,
-    out1=>t4_cpu_data_void_in,
-    out2=>noc4_cpu_data_void_in);
-
-
---to NoC plane 5
-
- 
-  rd_i5_out<=not(noc_stop_out_test(4));
-  noc5_in_ext<=t5_out & t5_cpu_data_void_in ;
-  we_in5_out<=not(tonoc5_cpu_data_void_in);
-
-  test5_out<=noc5_in_port_sync(MISC_NOC_FLIT_SIZE downto 1);
-  test5_cpu_data_void_in<=noc5_in_port_sync(0);
-  
-  async_fifo_9: async_fifo
+  async_fifo_i5 : inferred_async_fifo
     generic map (
-      g_data_width => MISC_NOC_FLIT_SIZE+1,
-      g_size       => 8)
+      g_data_width => MISC_NOC_FLIT_SIZE,
+      g_size       => 4)
     port map (
       rst_n_i    => rst,
       clk_wr_i   => refclk,
-      we_i       => we_in5_out,
-      d_i        => noc5_in_ext,
-      wr_full_o  => fwd_wr_full_o5out,
+      we_i       => we_in_out(5),
+      d_i        => t5_out,
+      wr_full_o  => test5_cpu_stop_out,
       clk_rd_i   => tclk,
-      rd_i       => rd_i5_out,
-      q_o        => noc5_in_port_sync,
-      rd_empty_o => fwd_rd_empty_o5out);
+      rd_i       => rd_i_out(5),
+      q_o        => test5_out,
+      rd_empty_o => test5_cpu_data_void_in);
+
+  noc5_input_port <= noc5_in_port;
+  noc5_cpu_data_void_in <= '1' when tms = '1' else tonoc5_cpu_data_void_in;
+
+  t5_out <= noc5_in_port;
+  t5_cpu_data_void_in <= tonoc5_cpu_data_void_in when tms = '1' else '1';
 
 
-demux_2to1_5:demux_1to2
-  generic map(sz=>MISC_NOC_FLIT_SIZE)
-  port map(
-    sel=>sel,
-    data_in=>noc5_in_port,
-    out1=>t5_out,
-    out2=>noc5_input_port);
+  -- to NoC plane 6
+  we_in_out(6)  <= t6_cpu_data_void_in nor test6_cpu_stop_out;
 
-demux2to1_5:demux1to2
-  port map(
-    sel=>sel,
-    data_in=>tonoc5_cpu_data_void_in,
-    out1=>t5_cpu_data_void_in,
-    out2=>noc5_cpu_data_void_in);
-
-  
-
---to NoC plane 6
-
- 
-  rd_i6_out<=not(noc_stop_out_test(5));
-  noc6_in_ext<=t6_out & t6_cpu_data_void_in ;
-  we_in6_out<=not(tonoc6_cpu_data_void_in);
-
-  test6_out<=noc6_in_port_sync(NOC_FLIT_SIZE downto 1);
-  test6_cpu_data_void_in<=noc6_in_port_sync(0);
-  
-  async_fifo_10: async_fifo
+  async_fifo_i6 : inferred_async_fifo
     generic map (
-      g_data_width => NOC_FLIT_SIZE+1,
-      g_size       => 8)
+      g_data_width => NOC_FLIT_SIZE,
+      g_size       => 4)
     port map (
       rst_n_i    => rst,
       clk_wr_i   => refclk,
-      we_i       => we_in6_out,
-      d_i        => noc6_in_ext,
-      wr_full_o  => fwd_wr_full_o6out,
+      we_i       => we_in_out(6),
+      d_i        => t6_out,
+      wr_full_o  => test6_cpu_stop_out,
       clk_rd_i   => tclk,
-      rd_i       => rd_i6_out,
-      q_o        => noc6_in_port_sync,
-      rd_empty_o => fwd_rd_empty_o6out);
+      rd_i       => rd_i_out(6),
+      q_o        => test6_out,
+      rd_empty_o => test6_cpu_data_void_in);
+
+  noc6_input_port <= noc6_in_port;
+  noc6_cpu_data_void_in <= '1' when tms = '1' else tonoc6_cpu_data_void_in;
+
+  t6_out <= noc6_in_port;
+  t6_cpu_data_void_in <= tonoc6_cpu_data_void_in when tms = '1' else '1';
+
+  -- Stop signals from NoC/JTAG to tile
+  process(tms,
+          noc1_stop_out_s4,
+          noc2_stop_out_s4,
+          noc3_stop_out_s4,
+          noc4_stop_out_s4,
+          noc5_stop_out_s4,
+          noc6_stop_out_s4,
+          test1_cpu_stop_out,
+          test2_cpu_stop_out,
+          test3_cpu_stop_out,
+          test4_cpu_stop_out,
+          test5_cpu_stop_out,
+          test6_cpu_stop_out)
+  begin
+    if tms = '0' then
+      noc1_cpu_stop_out <= noc1_stop_out_s4;
+      noc2_cpu_stop_out <= noc2_stop_out_s4;
+      noc3_cpu_stop_out <= noc3_stop_out_s4;
+      noc4_cpu_stop_out <= noc4_stop_out_s4;
+      noc5_cpu_stop_out <= noc5_stop_out_s4;
+      noc6_cpu_stop_out <= noc6_stop_out_s4;
+    else
+      noc1_cpu_stop_out <= test1_cpu_stop_out;
+      noc2_cpu_stop_out <= test2_cpu_stop_out;
+      noc3_cpu_stop_out <= test3_cpu_stop_out;
+      noc4_cpu_stop_out <= test4_cpu_stop_out;
+      noc5_cpu_stop_out <= test5_cpu_stop_out;
+      noc6_cpu_stop_out <= test6_cpu_stop_out;
+    end if;
+  end process;
+
+  --final mux to test_out_reg
+  A <=test1_out & test1_cpu_data_void_in;
+  B <=test2_out & test2_cpu_data_void_in;
+  C <=test3_out & test3_cpu_data_void_in;
+  D <=test4_out & test4_cpu_data_void_in;
+  E <=noc_flit_pad & test5_out & test5_cpu_data_void_in;
+  F <=test6_out & test6_cpu_data_void_in;
 
 
-  
-demux_2to1_6:demux_1to2
-  generic map(sz=>NOC_FLIT_SIZE)
-  port map(
-    sel=>sel,
-    data_in=>noc6_in_port,
-    out1=>t6_out,
-    out2=>noc6_input_port);
+  mux_6to1_1 : mux_6to1
+    generic map(sz => NOC_FLIT_SIZE+1)
+    port map(
+      sel => r.compare,
+      A   =>A,
+      B   =>B,
+      C   =>C,
+      D   =>D,
+      E   =>E,
+      F   =>F,
+      X   =>test_out);
 
-demux2to1_6:demux1to2
-  port map(
-    sel=>sel,
-    data_in=>tonoc6_cpu_data_void_in,
-    out1=>t6_cpu_data_void_in,
-    out2=>noc6_cpu_data_void_in);
+  piso_in <= "0" & test_out & r.compare;
+  piso0_in <= "11" & r.compare ;
 
+  piso_0 : piso
+    generic map(sz => 8)
+    port map(
+      clk      =>tclk,
+      clear    =>r.piso_clear0,
+      load     =>r.piso_load0,
+      A        =>piso0_in,
+      B        =>data0,
+      shift_en =>r.piso_en0,
+      Y        =>tdo_data0,
+      done     =>piso_done0);
 
+  test_comp<=piso_in(NOC_FLIT_SIZE+6 downto 7);
 
---final mux to test_out_reg
+  piso_1 : piso
+    generic map(sz => NOC_FLIT_SIZE+8)
+    port map(
+      clk      =>tclk,
+      clear    =>r.piso_clear,
+      load     =>piso_load,
+      A        =>piso_in,
+      B        =>data,
+      shift_en =>r.piso_en,
+      Y        =>tdo_data,
+      done     =>piso_done);
 
-  A<=test1_out & test1_cpu_data_void_in;
-  B<=test2_out & test2_cpu_data_void_in;
-  C<=test3_out & test3_cpu_data_void_in;
-  D<=test4_out & test4_cpu_data_void_in;
-  E<=noc_flit_pad & test5_out & test5_cpu_data_void_in;
-  F<=test6_out & test6_cpu_data_void_in;
-
-  
-mux_6to1_1:mux_6to1
-  generic map(sz=>NOC_FLIT_SIZE+1)
-  port map(
-    sel=>compare_reg,
-    A=>A,
-    B=>B,
-    C=>C,
-    D=>D,
-    E=>E,
-    F=>F,
-    X=>test_out);
-
-  piso_in<=test_out & compare_reg;
-
-
-piso_0:piso
- generic map(sz=>6 )
- port map(
-   clk=>tclk,
-   load=> piso_load0,
-   A=>compare_reg,
-   shift_en=>piso_en0,
-   B=>source_compare,
-   Y=>tdo_data0,
-   done=>piso_done0);
-  
-
-  test_comp<=test_compare(NOC_FLIT_SIZE+6 downto 7);
-  
-piso_1:piso
- generic map(sz=>NOC_FLIT_SIZE+7 )
- port map(
-   clk=>tclk,
-   load=> piso_load,
-   A=>piso_in,
-   shift_en=>piso_en,
-   B=>test_compare,
-   Y=>tdo_data,
-   done=>piso_done);
-  
 end;

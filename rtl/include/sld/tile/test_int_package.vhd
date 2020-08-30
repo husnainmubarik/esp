@@ -38,12 +38,11 @@ package test_int_package is
       clear    : in std_logic;
       en_in    : in std_logic;
       serial_in: in std_logic;
-      en_out   : in std_logic;
-      en_comp  : in std_logic;
       test_comp: out std_logic_vector(DIM-3 downto 0);
       data_out : out std_logic_vector(DIM-6 downto 0);
       op       : out std_logic;
-      done     : out std_logic);
+      done     : out std_logic;
+      end_trace: out std_logic);
   end component sipo;
 
   
@@ -126,10 +125,11 @@ package test_int_package is
   component piso
     generic (sz:integer);
     port ( clk :  in   std_logic;
+           clear : in  std_logic;
            load : in   std_logic;
            A :    in   std_logic_vector(sz-1 downto 0);
+           B :    out  std_logic_vector(sz-1 downto 0);
            shift_en: in std_logic;
-           B:     out std_logic_vector(sz-2 downto 0);
            Y :    out  std_logic;
            done:  out  std_logic);
   end component piso;

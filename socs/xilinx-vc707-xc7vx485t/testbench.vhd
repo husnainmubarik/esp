@@ -165,360 +165,120 @@ begin
     
 
   begin
-
+    
     wait until (tms(1)='1' or tms(0)='1');
-    readline(text_file1, text_line);
-    read(text_line, instr_no,ok);
-    read(text_line, wait_time,ok);
-    read(text_line,instruction,ok);
-    instr_n<=instr_no;
-    waittime<=wait_time;
-    testin<=To_StdLogicVector(instruction);
 
-    wait until tdo='1';
+    source <= "000000";
 
-    for i in 0 to 74  loop
-      tdi<=testin(i);
-      wait until rising_edge(tclk) ;
-    end loop;
-    wait until rising_edge(tclk) ;
+    while (tms(1)='1' or tms(0)='1') loop
 
-    readline(text_file2, text_line);
-    read(text_line, instr_no,ok);
-    read(text_line, wait_time,ok);
-    read(text_line,instruction,ok);
-    instr_n<=instr_no;
-    waittime<=wait_time;
-    testin<=To_StdLogicVector(instruction);
-    for i in 0 to 74  loop
-      tdi<=testin(i);
-      wait until rising_edge(tclk) ;
-    end loop;
-
-    wait until rising_edge(tclk) ;
-
-    readline(text_file3, text_line);
-    read(text_line, instr_no,ok);
-    read(text_line, wait_time,ok);
-    read(text_line,instruction,ok);
-    instr_n<=instr_no;
-    waittime<=wait_time;
-    testin<=To_StdLogicVector(instruction);
-    for i in 0 to 74  loop
-      tdi<=testin(i);
-      wait until rising_edge(tclk) ;
-    end loop;
-
-    wait until rising_edge(tclk) ;
-
-    
-    
-    readline(text_file4, text_line);
-    read(text_line, instr_no,ok);
-    read(text_line, wait_time,ok);
-    read(text_line,instruction,ok);
-    instr_n<=instr_no;
-    waittime<=wait_time;
-    testin<=To_StdLogicVector(instruction);
-    for i in 0 to 74  loop
-      tdi<=testin(i);
-      wait until rising_edge(tclk) ;
-    end loop;
-
-    wait until rising_edge(tclk) ;
-
-
-    readline(text_file5, text_line);
-    read(text_line, instr_no,ok);
-    read(text_line, wait_time,ok);
-    read(text_line,instruction,ok);
-    instr_n<=instr_no;
-    waittime<=wait_time;
-    testin<=To_StdLogicVector(instruction);
-    for i in 0 to 74  loop
-      tdi<=testin(i);
-      wait until rising_edge(tclk) ;
-    end loop;
-
-    wait until rising_edge(tclk) ;
-
-    
-    readline(text_file6, text_line);
-    read(text_line, instr_no,ok);
-    read(text_line, wait_time,ok);
-    read(text_line,instruction,ok);
-    instr_n<=instr_no;
-    waittime<=wait_time;
-    testin<=To_StdLogicVector(instruction);
-
-    for i in 0 to 73  loop
-      tdi<=testin(i);
-      wait until rising_edge(tclk) ;
-    end loop;
---
-
+      wait until rising_edge(tclk);
+      if tdo='1' then 
+        assert tdo='0' report "TDO_RISE" severity note;
         
-    assert tdo='1' report "////// writein entered" severity note;
-    for i in 0 to 2 loop
-      wait until rising_edge(tclk) ;
-
-      assert tdo='1' report "////// writein1 entered" severity note;
-
-    
-      wait until falling_edge(tclk);
-
-      assert tdo='1' report "////// writein2 entered" severity note;
-    end loop;
-  
-    
-    for i in 0 to 5 loop
-      source(5-i)<=tdo;
-      wait until falling_edge(tclk) ;
-    end loop;
-
-    wait until falling_edge(tdo);
---
---    wait until falling_edge(tdo);
---    wait until rising_edge(tclk);
-
---    for i in 0 to 66 loop
---      write(out_line,to_bit(tdo));
---      wait until rising_edge(tclk) ;
---    end loop;
-    
---    for i in 0 to 5 loop
---      write(out_line,to_bit(tdo));
---      source(5-i)<=tdo;
---      wait until rising_edge(tclk) ;
---    end loop;
-
---    writeline(out_file,out_line);
-
-
-    while not ((endfile(text_file1)) and endfile(text_file2) and endfile(text_file3) and endfile(text_file4) and endfile(text_file5) and endfile(text_file6)) loop
-
-      
-      wait until rising_edge(tdo);
-
-      assert tdo='0' report "while loop entered"  severity note;
-
-      case source is
-        when "100000" => readline(text_file1, text_line);
-        when "010000" => readline(text_file2, text_line);
-        when "001000" => readline(text_file3, text_line);
-        when "000100" => readline(text_file4, text_line);
-        when "000010" => readline(text_file5, text_line);
-        when "000001" => readline(text_file6, text_line);
-
-        when others=> null;
-      end case;
-
-
-
-      read(text_line, instr_no,ok);
-      read(text_line, wait_time,ok);
-      read(text_line,instruction,ok);
-      waittime<=wait_time;
-      instr_n<=instr_no;
-      testin<=To_StdLogicVector(instruction);
-
-      for i in 0 to 74  loop
-        tdi<=testin(i);
-      wait until rising_edge(tclk) ;
-      end loop;
-
-      for i in 0 to 2 loop
         wait until rising_edge(tclk);
-      end loop;
 
-      wait until falling_edge(tclk);
-      
-      if tdo='1' then
-
-        assert tdo='0' report "--------if1 entered"  severity note;
-
-        wait until falling_edge(tdo);
-        wait until rising_edge(tclk);
-        
-        for i in 0 to 66 loop
-          write(out_line,to_bit(tdo));
-          wait until rising_edge(tclk) ;
-        end loop;
-
-        for i in 0 to 5 loop
-          write(out_line,to_bit(tdo));
-          source(5-i)<=tdo;
-          wait until rising_edge(tclk) ;
-        end loop;
-
-        writeline(out_file,out_line);
-
-      else
-        wait until rising_edge(tclk) ;
-        wait until falling_edge(tclk);
-
-        if tdo='1' then
-
-          assert tdo='0' report "------------------if2 entered"  severity note;
-
-          wait until falling_edge(tdo);
-          wait until rising_edge(tclk);
- 
-
+        if tdo='0' then
+          --extract
+          assert tdo='1' report "start_extract " severity note;
           for i in 0 to 66 loop
             write(out_line,to_bit(tdo));
-            wait until rising_edge(tclk) ;
-          end loop; 
-
-          for i in 0 to 5 loop
-            write(out_line,to_bit(tdo));
-            source(5-i)<=tdo;
-            wait until rising_edge(tclk) ;
+            wait until rising_edge(tclk);
           end loop;
 
-          assert tdo='1' report "write5"  severity note;
+          for i in 0 to 7 loop
+            wait until rising_edge(tclk);
+          end loop;
+
+          
+          assert tms(1)='0' report "end_extract" severity note; 
+            
+          
           writeline(out_file,out_line);
 
         else
-        wait until rising_edge(tclk) ;
-        wait until falling_edge(tclk);
-         
+           
+          --- update plane+inject 
+          assert tdo='0' report " update plane+inject" severity note;
+          wait until rising_edge(tclk);
           
-          if tdo='1' then
-
-            assert tdo='0' report "------------------if3 entered"  severity note;
-
-            wait until falling_edge(tdo);
-            wait until rising_edge(tclk);
- 
-
-            for i in 0 to 66 loop
-              write(out_line,to_bit(tdo));
-              wait until rising_edge(tclk) ;
-            end loop; 
-
-            for i in 0 to 5 loop
-              write(out_line,to_bit(tdo));
-              source(5-i)<=tdo;
-              wait until rising_edge(tclk) ;
-            end loop;
-
-            assert tdo='1' report "write5"  severity note;
-            writeline(out_file,out_line);
-
-          else
-
+          for i in 0 to 5 loop
+            source(5-i)<=tdo;
             wait until rising_edge(tclk) ;
-
-            wait until falling_edge(tclk);
+          end loop;
           
-            if tdo='1' then
+          case source is
+            when "100000" =>  readline(text_file1, text_line);
+                              read(text_line, instr_no,ok);
+                              read(text_line, wait_time,ok);
+                              read(text_line,instruction,ok);
+                              instr_n<=instr_no;
+                              waittime<=wait_time;
+                              testin<=To_StdLogicVector(instruction);
 
-              assert tdo='0' report "------------------if4 entered"  severity note;
+            when "010000" =>  readline(text_file2, text_line);
+                              read(text_line, instr_no,ok);
+                              read(text_line, wait_time,ok);
+                              read(text_line,instruction,ok);
+                              instr_n<=instr_no;
+                              waittime<=wait_time;
+                              testin<=To_StdLogicVector(instruction);
 
-              wait until falling_edge(tdo);
-              wait until rising_edge(tclk);
- 
+            when "001000" =>  readline(text_file3, text_line);
+                              read(text_line, instr_no,ok);
+                              read(text_line, wait_time,ok);
+                              read(text_line,instruction,ok);
+                              instr_n<=instr_no;
+                              waittime<=wait_time;
+                              testin<=To_StdLogicVector(instruction);
 
-              for i in 0 to 66 loop
-                write(out_line,to_bit(tdo));
-                wait until rising_edge(tclk) ;
-              end loop;
+            when "000100" =>  readline(text_file4, text_line);
+                              read(text_line, instr_no,ok);
+                              read(text_line, wait_time,ok);
+                              read(text_line,instruction,ok);
+                              instr_n<=instr_no;
+                              waittime<=wait_time;
+                              testin<=To_StdLogicVector(instruction);
 
-              for i in 0 to 5 loop
-                write(out_line,to_bit(tdo));
-                source(5-i)<=tdo;
-                wait until rising_edge(tclk) ;
-              end loop;
+            when "000010" =>  readline(text_file5, text_line);
+                              read(text_line, instr_no,ok);
+                              read(text_line, wait_time,ok);
+                              read(text_line,instruction,ok);
+                              instr_n<=instr_no;
+                              waittime<=wait_time;
+                              testin<=To_StdLogicVector(instruction);
 
-              assert tdo='1' report "write5"  severity note;
-              writeline(out_file,out_line);
+            when "000001" =>  readline(text_file6, text_line);
+                              read(text_line, instr_no,ok);
+                              read(text_line, wait_time,ok);
+                              read(text_line,instruction,ok);
+                              instr_n<=instr_no;
+                              waittime<=wait_time;
+                              testin<=To_StdLogicVector(instruction);
 
-            else
+            when others => null;
+                           
+          end case ;
+
+          assert tms(1)='0' report "start_injection" severity note; 
             
-              wait until rising_edge(tclk) ;
+          
+          for i in 0 to 74  loop
+            wait until rising_edge(tclk);
+            tdi<=testin(i);
+            --wait until rising_edge(tclk) ;
+          end loop;
 
-              wait until falling_edge(tclk);
-            
-              if tdo='1' then
-
-                assert tdo='0' report "------------------if5 entered"  severity note;
-
-                wait until falling_edge(tdo);
-                wait until rising_edge(tclk);
- 
-
-                for i in 0 to 66 loop
-                  write(out_line,to_bit(tdo));
-                  wait until rising_edge(tclk) ;
-                end loop;
-
-                for i in 0 to 5 loop
-                  write(out_line,to_bit(tdo));
-                  source(5-i)<=tdo;
-                  wait until rising_edge(tclk) ;
-                end loop;
-
-                assert tdo='1' report "write5"  severity note;
-                writeline(out_file,out_line);
-
-              else
-            
-                wait until rising_edge(tclk) ;
-
-                wait until falling_edge(tclk);
-            
-                if tdo='1' then
-
-                  assert tdo='0' report "------------------if6 entered"  severity note;
-
-                  wait until falling_edge(tdo);
-                  wait until rising_edge(tclk);
-              
-                  for i in 0 to 66 loop
-                    write(out_line,to_bit(tdo));
-                    wait until rising_edge(tclk) ;
-                  end loop;
-
-                  for i in 0 to 5 loop
-                    write(out_line,to_bit(tdo));
-                    source(5-i)<=tdo;
-                    wait until rising_edge(tclk) ;
-                  end loop;
-
-                  assert tdo='1' report "write6"  severity note;
-                  writeline(out_file,out_line);
-
-                else
-                     
+          wait until rising_edge(tclk);
+          tdi<='0';
         
-                  assert tdo='1' report "////// writein entered" severity note;
-
-                  wait until rising_edge(tclk) ;
-
-                  assert tdo='1' report "////// writein1 entered" severity note;
-
-              
-                  wait until falling_edge(tclk);
-
-                  assert tdo='1' report "////// writein2 entered" severity note;
-
-              
-                  for i in 0 to 5 loop
-                    source(5-i)<=tdo;
-                    wait until falling_edge(tclk) ;
-                  end loop;
-
-                end if ;
-              end if;
-            end if;
-          end if;
+          assert tms(1)='0' report "end_injection" severity note; 
+            
         end if;
-      end if;
-  end loop;
-
+      end if ;
+    end loop;
   end process;
-
+  
 
   
   -- DDR3

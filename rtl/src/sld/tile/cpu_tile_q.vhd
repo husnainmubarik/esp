@@ -572,6 +572,7 @@ begin  -- rtl
                         to_noc5_fifos_next <= packet_remote_ahbs_snd;
                       end if;
 
+
                     elsif (remote_apb_snd_empty = '0' and remote_apb_snd_to_local = '0') then
                       if noc5_in_stop = '0' then
                         noc5_in_data <= remote_apb_snd_data_out;
@@ -599,6 +600,8 @@ begin  -- rtl
                         to_noc5_fifos_next <= packet_local_apb_snd;
                       end if;
 
+                    
+                                   
                     end if;
 
       when packet_remote_apb_snd => to_noc5_preamble := get_preamble(MISC_NOC_FLIT_SIZE, noc_flit_pad & remote_apb_snd_data_out);
