@@ -225,8 +225,9 @@ void print64(char * s1,int voidbit, int noc, int out,char * time,int k)
 int main () {
 	FILE *fp;
 	FILE *fc;
-	char buf[410];
-
+	char buf[500];
+	int i;
+	
 	fp = fopen("list.lst" , "r");
 	fc = fopen("stim1.txt","w");
 	fclose(fc);
@@ -350,6 +351,11 @@ int main () {
 		
 	}
 
+	for (i=0; i<3; i++) {
+		fgets (buf,sizeof(buf),fp);
+		printf("%s ", buf);
+	}
+	
 	while (fgets (buf, sizeof(buf), fp) !=NULL )
 	{
 

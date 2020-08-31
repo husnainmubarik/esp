@@ -1,0 +1,41 @@
+In order to get the simulation traces for a functional test, the following steps 
+should be followed:
+
+
+              ## Generate the simulation List in normal test mode ##
+
+The content of the file esp/socs/xilinx-vc707-xc7vx485t/gettrace.tcl must be used
+to create the simulation list and the list preferences should  then be modified as 
+follows from the dedicated window (List>List preferences):
+
+>Window properties:
+
+-Signal names:1
+-Max Title Rows: 0
+-Dataset Prefix: Never show Dataset Prefix 
+
+>Triggers:
+
+-No deltas
+
+At this point, after modifying the content of the bootrom according to the type of
+test that needs to be executed and running the simulation, the list can be exported 
+(File>Export>Tabular List) and saved to the folder esp/socs/xilinx-vc707-xc7vx485t 
+with the name list.lst .
+
+                  ## Obtain the traces from the simulation list ##
+
+The list can now be turned into the 6 simulation traces ( one for each NoC plane) 
+by running the script listotxt.c with the following commands from the deisgn folder:
+
+gcc listotxt.c -lm -o listotxt.bin 
+./listotxt.bin 
+
+As a result, 6 stimulus files named as "stim(#NoC_plane).txt" will be generated in the deisgn 
+folder and directly used from the testbench in test mode.
+
+Finally, in order to run the simulation in test mode, using the generated stimulus files, 
+the testbench must be modified by disenabling the comment for the tms bit activation. 
+(Some meaningful signals that could be added to the simulation waveforms in test mode are
+indicated in the file esp/socs/xilinx-vc707-xc7vx485t/addwave.tcl)
+
