@@ -148,3 +148,24 @@ begin
   end generate;
 end;
 
+
+library ieee;
+use ieee.std_logic_1164.all;
+use work.gencomp.all;
+
+entity outpadvvv is
+  generic (tech : integer := 0; level : integer := 0; slew : integer := 0;
+	voltage : integer := 0; strength : integer := 12; width : integer := 1);
+  port (
+    pad : out std_logic_vector(width-1 downto 0);
+    i   : in  std_logic_vector(width-1 downto 0);
+    cfgi: in std_logic_vector(width*20 - 1 downto 0) := (others => '0'));
+end;
+architecture rtl of outpadvvv is
+begin
+  v : for j in width-1 downto 0 generate
+    x0 : outpad generic map (tech, level, slew, voltage, strength)
+	 port map (pad(j), i(j), cfgi((j+1) * 20 - 1 downto j * 20));
+  end generate;
+end;
+

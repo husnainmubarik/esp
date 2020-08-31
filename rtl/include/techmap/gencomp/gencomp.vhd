@@ -910,6 +910,19 @@ component iopadvv is
   );
 end component;
 
+component iopadvvv is
+  generic (tech : integer := 0; level : integer := 0; slew : integer := 0;
+	voltage : integer := x33v; strength : integer := 12; width : integer := 1;
+	oepol : integer := 0; filter : integer := 0);
+  port (
+    pad : inout std_logic_vector(width-1 downto 0);
+    i   : in  std_logic_vector(width-1 downto 0);
+    en  : in  std_logic_vector(width-1 downto 0);
+    o   : out std_logic_vector(width-1 downto 0);
+    cfgi: in std_logic_vector(width*20 - 1 downto 0) := (others => '0')
+  );
+end component;
+
 component iodpad
   generic (tech : integer := 0; level : integer := 0; slew : integer := 0;
 	   voltage : integer := x33v; strength : integer := 12;
@@ -941,6 +954,15 @@ component outpadv
     pad : out std_logic_vector(width-1 downto 0);
     i   : in  std_logic_vector(width-1 downto 0);
     cfgi: in  std_logic_vector(19 downto 0) := "00000000000000000000");
+end component;
+
+component outpadvvv
+  generic (tech : integer := 0; level : integer := 0; slew : integer := 0;
+	   voltage : integer := x33v; strength : integer := 12; width : integer := 1);
+  port (
+    pad : out std_logic_vector(width-1 downto 0);
+    i   : in  std_logic_vector(width-1 downto 0);
+    cfgi: in std_logic_vector(width*20 - 1 downto 0) := (others => '0'));
 end component;
 
 component odpad

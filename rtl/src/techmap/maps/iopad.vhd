@@ -206,3 +206,26 @@ begin
   end generate;
 end;
 
+library ieee;
+use ieee.std_logic_1164.all;
+use work.gencomp.all;
+
+entity iopadvvv is
+  generic (tech : integer := 0; level : integer := 0; slew : integer := 0;
+	voltage : integer := x33v; strength : integer := 12; width : integer := 1;
+	oepol : integer := 0; filter : integer := 0);
+  port (
+    pad : inout std_logic_vector(width-1 downto 0);
+    i   : in  std_logic_vector(width-1 downto 0);
+    en  : in  std_logic_vector(width-1 downto 0);
+    o   : out std_logic_vector(width-1 downto 0);
+    cfgi: in std_logic_vector(width*20 - 1 downto 0) := (others => '0'));
+end;
+architecture rtl of iopadvvv is
+begin
+  v : for j in width-1 downto 0 generate
+    x0 : iopad generic map (tech, level, slew, voltage, strength, oepol, filter)
+	 port map (pad(j), i(j), en(j), o(j), cfgi((j+1) * 20 - 1 downto j * 20));
+  end generate;
+end;
+
