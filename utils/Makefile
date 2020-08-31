@@ -1394,7 +1394,7 @@ endif
 ### Replace tile with a blackbox if a DPR implementation is chosen
 	@if [ "$(DPR_ENABLED)" == "y" ]; then \
 		$(QUIET_INFO_ALT)echo "generating bbox sources"; \
-		sh ./prepare_sources.sh $(ESP_ROOT) $(BOARD) $(DEVICE); \
+		sh ./process_dpr.sh $(ESP_ROOT) $(BOARD) $(DEVICE) BBOX; \
 	fi;
 
 vivado/setup.tcl: vivado $(XDC) $(BOARD_FILES)
@@ -1554,10 +1554,11 @@ vivado-gui: vivado-setup
 	cd ../;
 
 #Add checks to see checkpoints exist
-vivado-syn: vivado-setup
+# copy bitstream from vivado_dpr
+vivado-syn: 
 	$(QUIET_INFO)echo "launching Vivado implementation script"
-	@cd vivado; \
-	vivado $(VIVADO_BATCH_OPT) -source syn.tcl | tee ../vivado_syn.log;
+	@cd vivado; 
+	#vivado $(VIVADO_BATCH_OPT) -source syn.tcl | tee ../vivado_syn.log;
 	@if [ "$(DPR_ENABLED)" != "y" ]; then \
 		bit=vivado/$(DESIGN).runs/impl_1/$(TOP).bit; \
 		if  test -r $$bit; then \
@@ -1567,8 +1568,15 @@ vivado-syn: vivado-setup
 			echo $(SPACES)"ERROR: bistream not found; synthesis failed"; \
 		fi; \
 	else \
+		$(QUIET_INFO_ALT)echo "starting DPR implementation"; \
 		$(QUIET_INFO_ALT)echo "assembling top level static design"; \
-		vivado $(VIVADO_BATCH_OPT) -source $(ESP_ROOT)/socs/$(BOARD)/static_config.tcl | tee ../vivado_syn_dpr.log;
+		$(RM) static_config.tcl; \
+		echo "open_checkpoint $(ESP_ROOT)/socs/$(BOARD)/vivado/esp-xilinx-vc707-xc7vx485t.runs/synth_1/top.dcp" >> static_config.tcl; \
+		echo "read_checkpoint -cell eth0.sgmii0/core_wrapper $(ESP_ROOT)/socs/$(BOARD)/vivado/esp-xilinx-vc707-xc7vx485t.runs/sgmii_synth_1/sgmii.dcp" >> static_config.tcl; \
+		echo "read_checkpoint -cell gen_mig.ddrc/MCB_inst $(ESP_ROOT)/socs/$(BOARD)/vivado/esp-xilinx-vc707-xc7vx485t.runs/mig_synth_1/mig.dcp" >> static_config.tcl; \
+		echo "write_checkpoint -force $(ESP_ROOT)/socs/$(BOARD)/vivado/esp-xilinx-vc707-xc7vx485t.runs/synth_1/top_dpr.dcp" >> static_config.tcl; \
+		echo "close_project" >> static_config.tcl; \
+		echo "exit" >> static_config.tcl; \
 		$(QUIET_INFO_ALT)echo "creating Vivado dpr directory"; \
 		$(RM) vivado_dpr; \
 		mkdir -p vivado_dpr; \
@@ -1577,23 +1585,27 @@ vivado-syn: vivado-setup
 		mkdir -p vivado_dpr/Implement; \
 		mkdir -p vivado_dpr/Synth; \
 		mkdir -p vivado_dpr/Synth/Static; \
+		cp .esp_conf vivado_dpr/; \
 		cp $(ESP_ROOT)/socs/$(BOARD)/vivado/esp-xilinx-vc707-xc7vx485t.runs/synth_1/top_dpr.dcp vivado_dpr/Synth/Static/top_synth.dcp; \
     	$(QUIET_INFO_ALT)echo "launching setup script for Vivado DPR flow";  \
-		sh ./setup_dpr.sh $(ESP_ROOT) $(BOARD) $(DEVICE);  \
-		cd vivado_dpr \
-    	$(QUIET_INFO_ALT)pwd;\
-		vivado $(VIVADO_BATCH_OPT) -source ooc_syn.tcl | tee ../vivado_syn_dpr.log \
-		;\
+		sh ./process_dpr.sh $(ESP_ROOT) $(BOARD) $(DEVICE) DPR;  \
+		cd vivado_dpr; \
+		vivado $(VIVADO_BATCH_OPT) -source ooc_syn.tcl | tee ../vivado_syn_dpr.log;\
 	fi;
-
-vivado-setup-dpr:
-	$(QUIET_INFO)echo "launching setup script for Vivado DPR flow"	
-	@sh ./setup_dpr.sh $(ESP_ROOT) $(BOARD) $(DEVICE)
-	@cd vivado_dpr; \
-	vivado $(VIVADO_BATCH_OPT) -source ooc_syn.tcl | tee ../vivado_syn_dpr.log; 
 
 vivado-syn-dpr: DPR_ENABLED = y
 vivado-syn-dpr: vivado-syn
+
+vivado-syn-dpr-acc:
+	$(QUIET_INFO)echo "launching setup script for Vivado DPR flow"	
+	@if ! test -d vivado_dpr; then \
+		$(QUIET_INFO_ALT)echo "vivado_dpr directory not found"; \
+		$(QUIET_INFO_ALT)echo "you should run vivado-syn-dpr first"; \
+	else \
+        sh ./process_dpr.sh $(ESP_ROOT) $(BOARD) $(DEVICE) ACC;  \
+        cd vivado_dpr; \
+		vivado $(VIVADO_BATCH_OPT) -source ooc_syn.tcl | tee ../vivado_syn_dpr.log; \
+	fi;
 
 vivado-update: vivado vivado/syn.tcl
 	$(QUIET_INFO)echo "Updating implementaiton with Vivado"
@@ -1630,8 +1642,9 @@ vivado-distclean: vivado-clean
 	$(QUIET_CLEAN)$(RM) \
 		vivado	\
 		mem_tile_floorplanning.xdc \
-		*.bit
-
+		*.bit \
+		vivado_dpr
+		
 .PHONY: vivado-clean vivado-distclean vivado-syn vivado-prog-fpga vivado/$(DESIGN) vivado-setup vivado-gui
 
 
