@@ -864,14 +864,15 @@ constant m010     : integer := 13;
 component inpad
   generic (tech : integer := 0; level : integer := 0;
 	voltage : integer := x33v; filter : integer := 0;
-	strength : integer := 0);
+	strength : integer := 0; loc : std_logic := '0');
   port (pad : in std_ulogic; o : out std_ulogic);
 end component;
 
 component inpadv
   generic (tech : integer := 0; level : integer := 0;
 	   voltage : integer := x33v; width : integer := 1;
-           filter : integer := 0; strength : integer := 0);
+           filter : integer := 0; strength : integer := 0;
+           loc : std_logic_vector := (31 downto 0 => '0'));
   port (
     pad : in  std_logic_vector(width-1 downto 0);
     o   : out std_logic_vector(width-1 downto 0));
@@ -880,7 +881,7 @@ end component;
 component iopad
   generic (tech : integer := 0; level : integer := 0; slew : integer := 0;
 	   voltage : integer := x33v; strength : integer := 12;
-	   oepol : integer := 0; filter : integer := 0);
+	   oepol : integer := 0; filter : integer := 0; loc : std_logic := '0');
   port (pad : inout std_ulogic; i, en : in std_ulogic; o : out std_ulogic;
         cfgi: in std_logic_vector(19 downto 0) := "00000000000000000000");
 end component;
@@ -888,7 +889,7 @@ end component;
 component iopadv
   generic (tech : integer := 0; level : integer := 0; slew : integer := 0;
 	voltage : integer := x33v; strength : integer := 12; width : integer := 1;
-	   oepol : integer := 0; filter : integer := 0);
+	   oepol : integer := 0; filter : integer := 0; loc : std_logic_vector := (31 downto 0 => '0'));
   port (
     pad : inout std_logic_vector(width-1 downto 0);
     i   : in  std_logic_vector(width-1 downto 0);
@@ -900,7 +901,7 @@ end component;
 component iopadvv is
   generic (tech : integer := 0; level : integer := 0; slew : integer := 0;
 	voltage : integer := x33v; strength : integer := 12; width : integer := 1;
-	oepol : integer := 0; filter : integer := 0);
+	oepol : integer := 0; filter : integer := 0; loc : std_logic_vector := (31 downto 0 => '0'));
   port (
     pad : inout std_logic_vector(width-1 downto 0);
     i   : in  std_logic_vector(width-1 downto 0);
@@ -913,7 +914,7 @@ end component;
 component iopadvvv is
   generic (tech : integer := 0; level : integer := 0; slew : integer := 0;
 	voltage : integer := x33v; strength : integer := 12; width : integer := 1;
-	oepol : integer := 0; filter : integer := 0);
+	oepol : integer := 0; filter : integer := 0; loc : std_logic_vector := (31 downto 0 => '0'));
   port (
     pad : inout std_logic_vector(width-1 downto 0);
     i   : in  std_logic_vector(width-1 downto 0);
@@ -926,14 +927,14 @@ end component;
 component iodpad
   generic (tech : integer := 0; level : integer := 0; slew : integer := 0;
 	   voltage : integer := x33v; strength : integer := 12;
-	   oepol : integer := 0);
+	   oepol : integer := 0; loc : std_logic := '0');
   port (pad : inout std_ulogic; i : in std_ulogic; o : out std_ulogic);
 end component;
 
 component iodpadv
   generic (tech : integer := 0; level : integer := 0; slew : integer := 0;
 	voltage : integer := x33v; strength : integer := 12; width : integer := 1;
-	   oepol : integer := 0);
+	   oepol : integer := 0; loc : std_logic_vector := (31 downto 0 => '0'));
   port (
     pad : inout std_logic_vector(width-1 downto 0);
     i   : in  std_logic_vector(width-1 downto 0);
@@ -942,14 +943,14 @@ end component;
 
 component outpad
   generic (tech : integer := 0; level : integer := 0; slew : integer := 0;
-	   voltage : integer := x33v; strength : integer := 12);
+	   voltage : integer := x33v; strength : integer := 12; loc : std_logic := '0');
   port (pad : out std_ulogic; i : in std_ulogic;
   cfgi : in std_logic_vector(19 downto 0) := "00000000000000000000");
 end component;
 
 component outpadv
   generic (tech : integer := 0; level : integer := 0; slew : integer := 0;
-	   voltage : integer := x33v; strength : integer := 12; width : integer := 1);
+	   voltage : integer := x33v; strength : integer := 12; width : integer := 1; loc : std_logic_vector := (31 downto 0 => '0'));
   port (
     pad : out std_logic_vector(width-1 downto 0);
     i   : in  std_logic_vector(width-1 downto 0);
@@ -958,7 +959,7 @@ end component;
 
 component outpadvvv
   generic (tech : integer := 0; level : integer := 0; slew : integer := 0;
-	   voltage : integer := x33v; strength : integer := 12; width : integer := 1);
+	   voltage : integer := x33v; strength : integer := 12; width : integer := 1; loc : std_logic_vector := (31 downto 0 => '0'));
   port (
     pad : out std_logic_vector(width-1 downto 0);
     i   : in  std_logic_vector(width-1 downto 0);
@@ -1052,7 +1053,7 @@ end component;
 component clkpad
   generic (tech : integer := 0; level : integer := 0;
 	   voltage : integer := x33v; arch : integer := 0;
-	   hf : integer := 0; filter : integer := 0);
+	   hf : integer := 0; filter : integer := 0; loc : std_logic := '0');
   port (pad : in std_ulogic; o : out std_ulogic; rstn : std_ulogic := '1'; lock : out std_ulogic);
 end component;
 

@@ -31,7 +31,7 @@ use work.allpads.all;
 
 entity outpad is
   generic (tech : integer := 0; level : integer := 0; slew : integer := 0;
-	   voltage : integer := x33v; strength : integer := 12);
+	   voltage : integer := x33v; strength : integer := 12; loc : std_logic := '0');
   port (pad : out std_ulogic; i : in std_ulogic;
         cfgi: in std_logic_vector(19 downto 0) := "00000000000000000000");
 end;
@@ -48,7 +48,7 @@ begin
 	when slew = 0 else i;
   end generate;
   gf12p : if (tech = gf12) generate
-    x0 : gf12_outpad port map (pad, i, cfgi(2), cfgi(1), cfgi(0));
+    x0 : gf12_outpad generic map (PAD_TYPE => loc) port map (pad, i, cfgi(2), cfgi(1), cfgi(0));
   end generate;
   xcv : if (is_unisim(tech) = 1) generate
     x0 : unisim_outpad generic map (level, slew, voltage, strength) port map (pad, i);
@@ -134,7 +134,8 @@ use work.gencomp.all;
 
 entity outpadv is
   generic (tech : integer := 0; level : integer := 0; slew : integer := 0;
-	voltage : integer := 0; strength : integer := 12; width : integer := 1);
+	voltage : integer := 0; strength : integer := 12; width : integer := 1;
+        loc : std_logic_vector := (31 downto 0 => '0'));
   port (
     pad : out std_logic_vector(width-1 downto 0);
     i   : in  std_logic_vector(width-1 downto 0);
@@ -143,7 +144,7 @@ end;
 architecture rtl of outpadv is
 begin
   v : for j in width-1 downto 0 generate
-    x0 : outpad generic map (tech, level, slew, voltage, strength)
+    x0 : outpad generic map (tech, level, slew, voltage, strength, loc(j))
 	 port map (pad(j), i(j), cfgi);
   end generate;
 end;
@@ -155,7 +156,8 @@ use work.gencomp.all;
 
 entity outpadvvv is
   generic (tech : integer := 0; level : integer := 0; slew : integer := 0;
-	voltage : integer := 0; strength : integer := 12; width : integer := 1);
+           voltage : integer := 0; strength : integer := 12; width : integer := 1;
+           loc : std_logic_vector := (31 downto 0 => '0'));
   port (
     pad : out std_logic_vector(width-1 downto 0);
     i   : in  std_logic_vector(width-1 downto 0);
@@ -164,7 +166,7 @@ end;
 architecture rtl of outpadvvv is
 begin
   v : for j in width-1 downto 0 generate
-    x0 : outpad generic map (tech, level, slew, voltage, strength)
+    x0 : outpad generic map (tech, level, slew, voltage, strength, loc(j))
 	 port map (pad(j), i(j), cfgi((j+1) * 20 - 1 downto j * 20));
   end generate;
 end;

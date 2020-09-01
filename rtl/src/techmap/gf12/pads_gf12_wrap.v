@@ -1,5 +1,5 @@
 
-module PBDIRCMD125_H
+module PBIDIRN_18_18_H
   (
    PAD,
    Y,
@@ -20,7 +20,7 @@ module PBDIRCMD125_H
    input SR;
    input IE;
 
-   PBIDIRCDM125_18_18_FS_DR_H p_i
+   PBIDIRN_18_18_FS_DR_H p_i
      (
       .PAD(PAD),
       .Y(Y),
@@ -41,7 +41,7 @@ module PBDIRCMD125_H
 
 endmodule
 
-module PBDIRCMD125_V
+module PBIDIRN_18_18_V
   (
    PAD,
    Y,
@@ -62,7 +62,7 @@ module PBDIRCMD125_V
    input SR;
    input IE;
 
-   PBIDIRCDM125_18_18_FS_DR_V p_i
+   PBIDIRN_18_18_FS_DR_V p_i
      (
       .PAD(PAD),
       .Y(Y),
