@@ -682,6 +682,7 @@ begin
       mon_acc => mon_acc_int,
       mon_dvfs => mon_dvfs_int,
       config => config,
+      srst => open,
       apbi => apbi,
       apbo => apbo(0)
     );

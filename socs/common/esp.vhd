@@ -72,7 +72,6 @@ type noc_ctrl_matrix is array (1 to nocs_num) of std_logic_vector(CFG_TILES_NUM-
 type handshake_vec is array (CFG_TILES_NUM-1 downto 0) of std_logic_vector(3 downto 0);
 
 signal rst_int       : std_logic;
-signal srst          : std_logic;
 signal sys_clk_int   : std_logic_vector(0 to CFG_NMEM_TILE - 1);
 signal refclk_int    : std_logic_vector(CFG_TILES_NUM -1 downto 0);
 signal pllbypass_int : std_logic_vector(CFG_TILES_NUM - 1 downto 0);
@@ -529,7 +528,6 @@ begin
         HAS_SYNC           => CFG_HAS_SYNC)
       port map (
         rst                => rst_int,
-        srst               => srst,
         refclk             => refclk_int(i),
         pllbypass          => pllbypass_int(i),
         pllclk             => clk_tile(i),
@@ -747,7 +745,6 @@ begin
         HAS_SYNC     => CFG_HAS_SYNC)
       port map (
 	rst                => rst_int,
-	srst               => srst,
 	clk                => refclk_int(i),
         refclk_noc         => '0',
         pllclk_noc         => open,
@@ -868,7 +865,6 @@ begin
         HAS_SYNC     => CFG_HAS_SYNC)
       port map (
 	rst                => rst_int,
-	srst               => srst,
 	clk                => sys_clk_int(tile_mem_id(i)),
         pllbypass          => '0',
         pllclk             => open,
