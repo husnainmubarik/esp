@@ -32,17 +32,20 @@ package allpads is
 
 component gf12_inpad 
   generic (PAD_TYPE : std_logic := '0');
-  port (pad : in std_ulogic; o : out std_ulogic);
+  port (pad : in std_ulogic; o : out std_ulogic;
+        RTO : in std_ulogic := '1'; SNS : in std_ulogic := '1');
 end component; 
 
 component gf12_iopad 
   generic (PAD_TYPE : std_logic := '0');
-  port (pad : inout std_logic; i, en : in std_ulogic; o : out std_logic; sr, ds0, ds1 : in std_ulogic);
+  port (pad : inout std_logic; i, en : in std_ulogic; o : out std_logic; sr, ds0, ds1 : in std_ulogic;
+        RTO : in std_ulogic := '1'; SNS : in std_ulogic := '1');
 end component;
 
 component gf12_outpad 
   generic (PAD_TYPE : std_logic := '0');
-  port (pad : out std_ulogic; i : in std_ulogic; sr, ds0, ds1 : in std_ulogic);
+  port (pad : out std_ulogic; i : in std_ulogic; sr, ds0, ds1 : in std_ulogic;
+        RTO : in std_ulogic := '1'; SNS : in std_ulogic := '1');
 end component;
 
 component apa3_clkpad 

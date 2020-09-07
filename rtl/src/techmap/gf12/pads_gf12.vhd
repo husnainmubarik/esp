@@ -11,7 +11,10 @@ entity gf12_inpad is
     PAD_TYPE : std_logic := '0');
   port (
     pad : in  std_ulogic;
-    o   : out std_ulogic);
+    o   : out std_ulogic;
+    RTO : in  std_ulogic;
+    SNS : in  std_ulogic
+    );
 end;
 
 architecture rtl of gf12_inpad is
@@ -25,7 +28,9 @@ architecture rtl of gf12_inpad is
       DS0 : in    std_ulogic;
       DS1 : in    std_ulogic;
       SR  : in    std_ulogic;
-      IE  : in    std_ulogic);
+      IE  : in    std_ulogic;
+      RTO : in    std_ulogic;
+      SNS : in    std_ulogic);
   end component PBIDIRN_18_18_H;
 
   component PBIDIRN_18_18_V is
@@ -37,7 +42,9 @@ architecture rtl of gf12_inpad is
       DS0 : in    std_ulogic;
       DS1 : in    std_ulogic;
       SR  : in    std_ulogic;
-      IE  : in    std_ulogic);
+      IE  : in    std_ulogic;
+      RTO : in    std_ulogic;
+      SNS : in    std_ulogic);
   end component PBIDIRN_18_18_V;
 
   signal pad_int : std_logic;
@@ -56,7 +63,9 @@ begin
         DS0 => '1',
         DS1 => '1',
         SR  => '0',
-        IE  => '1');
+        IE  => '1',
+        RTO => RTO,
+        SNS => SNS);
   end generate pad_v_gen;
 
   pad_h_gen: if PAD_TYPE = '1' generate
@@ -69,7 +78,9 @@ begin
         DS0 => '1',
         DS1 => '1',
         SR  => '0',
-        IE  => '1');
+        IE  => '1',
+        RTO => RTO,
+        SNS => SNS);
   end generate pad_h_gen;
 
 end;
@@ -92,7 +103,9 @@ entity gf12_iopad is
     o   : out   std_logic;
     sr  : in    std_ulogic;
     ds0 : in    std_ulogic;
-    ds1 : in    std_ulogic
+    ds1 : in    std_ulogic;
+    RTO : in    std_ulogic;
+    SNS : in    std_ulogic
     );
 end;
 
@@ -107,7 +120,9 @@ architecture rtl of gf12_iopad is
       DS0 : in    std_ulogic;
       DS1 : in    std_ulogic;
       SR  : in    std_ulogic;
-      IE  : in    std_ulogic);
+      IE  : in    std_ulogic;
+      RTO : in    std_ulogic;
+      SNS : in    std_ulogic);
   end component PBIDIRN_18_18_H;
 
   component PBIDIRN_18_18_V is
@@ -119,7 +134,9 @@ architecture rtl of gf12_iopad is
       DS0 : in    std_ulogic;
       DS1 : in    std_ulogic;
       SR  : in    std_ulogic;
-      IE  : in    std_ulogic);
+      IE  : in    std_ulogic;
+      RTO : in    std_ulogic;
+      SNS : in    std_ulogic);
   end component PBIDIRN_18_18_V;
 
   signal ien : std_ulogic;
@@ -138,7 +155,9 @@ begin
         DS0 => ds0,
         DS1 => ds1,
         SR  => sr,
-        IE  => ien);
+        IE  => ien,
+        RTO => RTO,
+        SNS => SNS);
   end generate pad_v_gen;
 
   pad_h_gen: if PAD_TYPE = '1' generate
@@ -151,7 +170,9 @@ begin
         DS0 => ds0,
         DS1 => ds1,
         SR  => sr,
-        IE  => ien);
+        IE  => ien,
+        RTO => RTO,
+        SNS => SNS);
   end generate pad_h_gen;
 
 end;
@@ -170,9 +191,11 @@ entity gf12_outpad is
   port (
     pad : out std_ulogic;
     i   : in  std_ulogic;
-    sr  : in    std_ulogic;
-    ds0 : in    std_ulogic;
-    ds1 : in    std_ulogic
+    sr  : in  std_ulogic;
+    ds0 : in  std_ulogic;
+    ds1 : in  std_ulogic;
+    RTO : in  std_ulogic;
+    SNS : in  std_ulogic
     );
 end;
 
@@ -187,7 +210,9 @@ architecture rtl of gf12_outpad is
       DS0 : in    std_ulogic;
       DS1 : in    std_ulogic;
       SR  : in    std_ulogic;
-      IE  : in    std_ulogic);
+      IE  : in    std_ulogic;
+      RTO : in    std_ulogic;
+      SNS : in    std_ulogic);
   end component PBIDIRN_18_18_H;
 
   component PBIDIRN_18_18_V is
@@ -199,7 +224,9 @@ architecture rtl of gf12_outpad is
       DS0 : in    std_ulogic;
       DS1 : in    std_ulogic;
       SR  : in    std_ulogic;
-      IE  : in    std_ulogic);
+      IE  : in    std_ulogic;
+      RTO : in    std_ulogic;
+      SNS : in    std_ulogic);
   end component PBIDIRN_18_18_V;
 
   signal pad_int : std_logic;
@@ -218,7 +245,9 @@ begin
         DS0 => ds0,
         DS1 => ds1,
         SR  => sr,
-        IE  => '0');
+        IE  => '0',
+        RTO => RTO,
+        SNS => SNS);
   end generate pad_v_gen;
 
   pad_h_gen: if PAD_TYPE = '1' generate
@@ -231,7 +260,9 @@ begin
         DS0 => ds0,
         DS1 => ds1,
         SR  => sr,
-        IE  => '0');
+        IE  => '0',
+        RTO => RTO,
+        SNS => SNS);
   end generate pad_h_gen;
 
 

@@ -34,7 +34,8 @@ entity iopad is
 	   voltage : integer := x33v; strength : integer := 12;
 	   oepol : integer := 0; filter : integer := 0; loc : std_logic := '0');
   port (pad : inout std_ulogic; i, en : in std_ulogic; o : out std_ulogic;
-        cfgi: in std_logic_vector(19 downto 0) := "00000000000000000000");
+        cfgi: in std_logic_vector(19 downto 0) := "00000000000000000000";
+        RTO : in std_ulogic := '1'; SNS : in std_ulogic := '1');
 end;
 
 architecture rtl of iopad is
@@ -64,7 +65,7 @@ begin
   end generate;
   gf12p : if (tech = gf12) generate
     x0 : gf12_iopad
-         generic map (PAD_TYPE => loc) port map (pad, i, oen, o, cfgi(2), cfgi(1), cfgi(0));
+         generic map (PAD_TYPE => loc) port map (pad, i, oen, o, cfgi(2), cfgi(1), cfgi(0), RTO, SNS);
   end generate;
   xcv : if (is_unisim(tech) = 1) generate
     x0 : unisim_iopad generic map (level, slew, voltage, strength)
@@ -174,13 +175,14 @@ entity iopadv is
     i   : in  std_logic_vector(width-1 downto 0);
     en  : in  std_ulogic;
     o   : out std_logic_vector(width-1 downto 0);
-    cfgi: in std_logic_vector(19 downto 0) := "00000000000000000000");
+    cfgi: in std_logic_vector(19 downto 0) := "00000000000000000000";
+    RTO : in std_ulogic := '1'; SNS : in std_ulogic := '1');
 end;
 architecture rtl of iopadv is
 begin
   v : for j in width-1 downto 0 generate
     x0 : iopad generic map (tech, level, slew, voltage, strength, oepol, filter, loc(j))
-	 port map (pad(j), i(j), en, o(j), cfgi);
+	 port map (pad(j), i(j), en, o(j), cfgi, RTO, SNS);
   end generate;
 end;
 
@@ -198,13 +200,14 @@ entity iopadvv is
     i   : in  std_logic_vector(width-1 downto 0);
     en  : in  std_logic_vector(width-1 downto 0);
     o   : out std_logic_vector(width-1 downto 0);
-    cfgi: in std_logic_vector(19 downto 0) := "00000000000000000000");  
+    cfgi: in std_logic_vector(19 downto 0) := "00000000000000000000";
+    RTO : in std_ulogic := '1'; SNS : in std_ulogic := '1');
 end;
 architecture rtl of iopadvv is
 begin
   v : for j in width-1 downto 0 generate
     x0 : iopad generic map (tech, level, slew, voltage, strength, oepol, filter, loc(j))
-	 port map (pad(j), i(j), en(j), o(j), cfgi);
+	 port map (pad(j), i(j), en(j), o(j), cfgi, RTO, SNS);
   end generate;
 end;
 
@@ -223,13 +226,14 @@ entity iopadvvv is
     i   : in  std_logic_vector(width-1 downto 0);
     en  : in  std_logic_vector(width-1 downto 0);
     o   : out std_logic_vector(width-1 downto 0);
-    cfgi: in std_logic_vector(width*20 - 1 downto 0) := (others => '0'));
+    cfgi: in std_logic_vector(width*20 - 1 downto 0) := (others => '0');
+    RTO : in std_ulogic := '1'; SNS : in std_ulogic := '1');
 end;
 architecture rtl of iopadvvv is
 begin
   v : for j in width-1 downto 0 generate
     x0 : iopad generic map (tech, level, slew, voltage, strength, oepol, filter, loc(j))
-	 port map (pad(j), i(j), en(j), o(j), cfgi((j+1) * 20 - 1 downto j * 20));
+	 port map (pad(j), i(j), en(j), o(j), cfgi((j+1) * 20 - 1 downto j * 20), RTO, SNS);
   end generate;
 end;
 

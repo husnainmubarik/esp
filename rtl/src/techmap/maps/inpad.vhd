@@ -33,7 +33,8 @@ entity inpad is
   generic (tech : integer := 0; level : integer := 0;
 	voltage : integer := x33v; filter : integer := 0;
 	strength : integer := 0; loc : std_logic := '0');
-  port (pad : in std_ulogic; o : out std_ulogic);
+  port (pad : in std_ulogic; o : out std_ulogic;
+        RTO : in std_ulogic := '1'; SNS : in std_ulogic := '1');
 end;
 
 architecture rtl of inpad is
@@ -46,7 +47,7 @@ begin
 	;
   end generate;
   gf12p : if (tech = gf12) generate
-    x0 : gf12_inpad generic map (PAD_TYPE => loc) port map (pad, o);
+    x0 : gf12_inpad generic map (PAD_TYPE => loc) port map (pad, o, RTO, SNS);
   end generate;
   xcv : if (is_unisim(tech) = 1) generate
     x0 : unisim_inpad generic map (level, voltage) port map (pad, o);
@@ -130,12 +131,13 @@ entity inpadv is
            loc : std_logic_vector := (31 downto 0 => '0'));
   port (
     pad : in  std_logic_vector(width-1 downto 0);
-    o   : out std_logic_vector(width-1 downto 0));
+    o   : out std_logic_vector(width-1 downto 0);
+    RTO : in std_ulogic := '1'; SNS : in std_ulogic := '1');
 end;
 architecture rtl of inpadv is
 begin
   v : for i in width-1 downto 0 generate
-    x0 : inpad generic map (tech, level, voltage, filter, strength, loc(i)) port map (pad(i), o(i));
+    x0 : inpad generic map (tech, level, voltage, filter, strength, loc(i)) port map (pad(i), o(i), RTO, SNS);
   end generate;
 end;
 
