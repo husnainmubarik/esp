@@ -20,8 +20,6 @@ module PBIDIRN_18_18_H
    input SR;
    input IE;
 
-   wire  short;
-
    PBIDIRN_18_18_FS_DR_H p_i
      (
       .PAD(PAD),
@@ -37,8 +35,8 @@ module PBIDIRN_18_18_H
       .IE(IE),
       .IS(1'b0),
       .POE(1'b0),
-      .RTO(short),
-      .SNS(short)
+      .RTO(1'b1),
+      .SNS(1'b1)
       );
 
 endmodule
@@ -64,8 +62,6 @@ module PBIDIRN_18_18_V
    input SR;
    input IE;
 
-   wire  short;
-
    PBIDIRN_18_18_FS_DR_V p_i
      (
       .PAD(PAD),
@@ -81,8 +77,8 @@ module PBIDIRN_18_18_V
       .IE(IE),
       .IS(1'b0),
       .POE(1'b0),
-      .RTO(short),
-      .SNS(short)
+      .RTO(1'b1),
+      .SNS(1'b1)
       );
 
 endmodule
