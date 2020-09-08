@@ -35,8 +35,8 @@ module PBIDIRN_18_18_H
       .IE(IE),
       .IS(1'b0),
       .POE(1'b0),
-      .RTO(1'b1),
-      .SNS(1'b1)
+      .RTO( ),
+      .SNS( )
       );
 
 endmodule
@@ -77,8 +77,8 @@ module PBIDIRN_18_18_V
       .IE(IE),
       .IS(1'b0),
       .POE(1'b0),
-      .RTO(1'b1),
-      .SNS(1'b1)
+      .RTO( ),
+      .SNS( )
       );
 
 endmodule
