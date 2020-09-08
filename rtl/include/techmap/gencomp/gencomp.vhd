@@ -865,8 +865,7 @@ component inpad
   generic (tech : integer := 0; level : integer := 0;
 	voltage : integer := x33v; filter : integer := 0;
 	strength : integer := 0; loc : std_logic := '0');
-  port (pad : in std_ulogic; o : out std_ulogic;
-        RTO : in std_ulogic := '1'; SNS : in std_ulogic := '1');
+  port (pad : in std_ulogic; o : out std_ulogic);
 end component;
 
 component inpadv
@@ -876,8 +875,7 @@ component inpadv
            loc : std_logic_vector := (31 downto 0 => '0'));
   port (
     pad : in  std_logic_vector(width-1 downto 0);
-    o   : out std_logic_vector(width-1 downto 0);
-    RTO : in std_ulogic := '1'; SNS : in std_ulogic := '1');
+    o   : out std_logic_vector(width-1 downto 0));
 end component;
 
 component iopad
@@ -885,8 +883,7 @@ component iopad
 	   voltage : integer := x33v; strength : integer := 12;
 	   oepol : integer := 0; filter : integer := 0; loc : std_logic := '0');
   port (pad : inout std_ulogic; i, en : in std_ulogic; o : out std_ulogic;
-        cfgi: in std_logic_vector(19 downto 0) := "00000000000000000000";
-        RTO : in std_ulogic := '1'; SNS : in std_ulogic := '1');
+        cfgi: in std_logic_vector(19 downto 0) := "00000000000000000000");
 end component;
 
 component iopadv
@@ -898,8 +895,7 @@ component iopadv
     i   : in  std_logic_vector(width-1 downto 0);
     en  : in  std_ulogic;
     o   : out std_logic_vector(width-1 downto 0);
-    cfgi: in std_logic_vector(19 downto 0) := "00000000000000000000";
-    RTO : in std_ulogic := '1'; SNS : in std_ulogic := '1');
+    cfgi: in std_logic_vector(19 downto 0) := "00000000000000000000");
 end component;
 
 component iopadvv is
@@ -911,8 +907,8 @@ component iopadvv is
     i   : in  std_logic_vector(width-1 downto 0);
     en  : in  std_logic_vector(width-1 downto 0);
     o   : out std_logic_vector(width-1 downto 0);
-    cfgi: in std_logic_vector(19 downto 0) := "00000000000000000000";
-    RTO : in std_ulogic := '1'; SNS : in std_ulogic := '1');
+    cfgi: in std_logic_vector(19 downto 0) := "00000000000000000000"
+  );
 end component;
 
 component iopadvvv is
@@ -924,8 +920,8 @@ component iopadvvv is
     i   : in  std_logic_vector(width-1 downto 0);
     en  : in  std_logic_vector(width-1 downto 0);
     o   : out std_logic_vector(width-1 downto 0);
-    cfgi: in std_logic_vector(width*20 - 1 downto 0) := (others => '0');
-    RTO : in std_ulogic := '1'; SNS : in std_ulogic := '1');
+    cfgi: in std_logic_vector(width*20 - 1 downto 0) := (others => '0')
+  );
 end component;
 
 component iodpad
@@ -949,8 +945,7 @@ component outpad
   generic (tech : integer := 0; level : integer := 0; slew : integer := 0;
 	   voltage : integer := x33v; strength : integer := 12; loc : std_logic := '0');
   port (pad : out std_ulogic; i : in std_ulogic;
-        cfgi : in std_logic_vector(19 downto 0) := "00000000000000000000";
-        RTO : in std_ulogic := '1'; SNS : in std_ulogic := '1');
+  cfgi : in std_logic_vector(19 downto 0) := "00000000000000000000");
 end component;
 
 component outpadv
@@ -959,8 +954,7 @@ component outpadv
   port (
     pad : out std_logic_vector(width-1 downto 0);
     i   : in  std_logic_vector(width-1 downto 0);
-    cfgi: in  std_logic_vector(19 downto 0) := "00000000000000000000";
-    RTO : in std_ulogic := '1'; SNS : in std_ulogic := '1');
+    cfgi: in  std_logic_vector(19 downto 0) := "00000000000000000000");
 end component;
 
 component outpadvvv
@@ -969,8 +963,7 @@ component outpadvvv
   port (
     pad : out std_logic_vector(width-1 downto 0);
     i   : in  std_logic_vector(width-1 downto 0);
-    cfgi: in std_logic_vector(width*20 - 1 downto 0) := (others => '0');
-    RTO : in std_ulogic := '1'; SNS : in std_ulogic := '1');
+    cfgi: in std_logic_vector(width*20 - 1 downto 0) := (others => '0'));
 end component;
 
 component odpad
