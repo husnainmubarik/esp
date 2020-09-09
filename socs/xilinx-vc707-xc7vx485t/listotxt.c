@@ -351,9 +351,9 @@ int main () {
 		
 	}
 
-	for (i=0; i<3; i++) {
+	for (i=0; i<5; i++) {
 		fgets (buf,sizeof(buf),fp);
-		printf("%s ", buf);
+//		printf("%s ", buf);
 	}
 	
 	while (fgets (buf, sizeof(buf), fp) !=NULL )
@@ -367,7 +367,7 @@ int main () {
 		memcpy(subnoc1, &noc1[4], 17);
 		subnoc1[17]='\0';
 		void1=strtok(NULL,separators);
-		memcpy(bitvoid1, &void1[3], 1);
+		memcpy(bitvoid1, &void1[0], 1);
 		bitvoid1[1]='\0';
 		stop1=strtok(NULL,separators);
 		
@@ -377,7 +377,7 @@ int main () {
 		memcpy(subnoc2_out, &noc2_out[4], 17);
 		subnoc2_out[17]='\0';
 		void2_out=strtok(NULL,separators);
-		memcpy(bitvoid2_out, &void2_out[3], 1);
+		memcpy(bitvoid2_out, &void2_out[0], 1);
 		bitvoid2_out[1]='\0';
 		stop2_out=strtok(NULL,separators);
 
@@ -386,7 +386,7 @@ int main () {
 		memcpy(subnoc3, &noc3[4], 17);
 		subnoc3[17]='\0';
 		void3=strtok(NULL,separators);
-		memcpy(bitvoid3, &void3[3], 1);
+		memcpy(bitvoid3, &void3[0], 1);
 		bitvoid3[1]='\0';
 		stop3=strtok(NULL,separators);
 
@@ -395,7 +395,7 @@ int main () {
 		memcpy(subnoc3_out, &noc3_out[4], 17);
 		subnoc3_out[17]='\0';
 		void3_out=strtok(NULL,separators);
-		memcpy(bitvoid3_out, &void3_out[3], 1);
+		memcpy(bitvoid3_out, &void3_out[0], 1);
 		bitvoid3_out[1]='\0';
 		stop3_out=strtok(NULL,separators);
 
@@ -406,7 +406,7 @@ int main () {
 		memcpy(subnoc4, &noc4[4], 17);
 		subnoc4[17]='\0';
 		void4=strtok(NULL,separators);
-		memcpy(bitvoid4, &void4[3], 1);
+		memcpy(bitvoid4, &void4[0], 1);
 		bitvoid4[1]='\0';
 		stop4=strtok(NULL,separators);
 
@@ -415,7 +415,7 @@ int main () {
 		memcpy(subnoc4_out, &noc4_out[4], 17);
 		subnoc4_out[17]='\0';
 		void4_out=strtok(NULL,separators);
-		memcpy(bitvoid4_out, &void4_out[3], 1);
+		memcpy(bitvoid4_out, &void4_out[0], 1);
 		bitvoid4_out[1]='\0';
 		stop4_out=strtok(NULL,separators);
 
@@ -425,7 +425,7 @@ int main () {
 		memcpy(subnoc5, &noc5[4], 10);
 		subnoc5[10]='\0';
 		void5=strtok(NULL,separators);
-		memcpy(bitvoid5, &void5[3], 1);
+		memcpy(bitvoid5, &void5[0], 1);
 	        bitvoid5[1]='\0';
 		stop5=strtok(NULL,separators);
 
@@ -434,7 +434,7 @@ int main () {
 		memcpy(subnoc5_out, &noc5_out[4], 10);
                 subnoc5_out[10]='\0';
 		void5_out=strtok(NULL,separators);
-		memcpy(bitvoid5_out, &void5_out[3], 1);
+		memcpy(bitvoid5_out, &void5_out[0], 1);
 		bitvoid5_out[1]='\0';
 		stop5_out=strtok(NULL,separators);
 
@@ -444,7 +444,7 @@ int main () {
 		memcpy(subnoc6, &noc6[4], 10);
 		subnoc6[10]='\0';
 		void6=strtok(NULL,separators);
-		memcpy(bitvoid6, &void6[3], 1);
+		memcpy(bitvoid6, &void6[0], 1);
 	        bitvoid6[1]='\0';
 		stop6=strtok(NULL,separators);
 
@@ -454,12 +454,12 @@ int main () {
 		memcpy(subnoc6_out, &noc6_out[4], 10);
                 subnoc6_out[10]='\0';
 		void6_out=strtok(NULL,separators);
-		memcpy(bitvoid6_out, &void6_out[3], 1);
+		memcpy(bitvoid6_out, &void6_out[0], 1);
 		bitvoid6_out[1]='\0';
 		stop6_out=strtok(NULL,separators);
 
 
-		
+				
 		 if (atoi(bitvoid1)==0)
 		 {
 

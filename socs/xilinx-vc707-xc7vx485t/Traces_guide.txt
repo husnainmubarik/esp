@@ -5,18 +5,7 @@ should be followed:
               ## Generate the simulation List in normal test mode ##
 
 The content of the file esp/socs/xilinx-vc707-xc7vx485t/gettrace.tcl must be used
-to create the simulation list and the list preferences should  then be modified as 
-follows from the dedicated window (List>List preferences):
-
->Window properties:
-
--Signal names:1
--Max Title Rows: 0
--Dataset Prefix: Never show Dataset Prefix 
-
->Triggers:
-
--No deltas
+to create the simulation list with the correct format that can be modified by the listotxt.c scrpit
 
 At this point, after modifying the content of the bootrom according to the type of
 test that needs to be executed and running the simulation, the list can be exported 

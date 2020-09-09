@@ -158,6 +158,7 @@ architecture rtl of jtag_test is
     rd_i_out     => (others => '0')
     );
 
+  signal tms_in,tms_int : std_logic;
   signal r, rin : jtag_ctrl_t;
 
   -- Main FSM output signals
@@ -175,6 +176,7 @@ architecture rtl of jtag_test is
   signal sipo_clear_i : std_logic_vector(1 to 6);
   signal tdi_i        : std_logic_vector(1 to 6);
 
+  signal dummy_wr_full,dummy_rd_empty: std_logic;
   --signals for logic JTAG->CPU
   signal rd_i            : std_logic_vector(1 to 6);
   signal we_in           : std_logic_vector(1 to 6);
@@ -686,6 +688,22 @@ begin
       out6    => tdi_i(6));
 
 
+  --synchronise tms with refclk
+
+  async_fifo_tms : inferred_async_fifo_sb
+    generic map (
+      g_size       => 2)
+    port map (
+      rst_n_i    => rst,
+      clk_wr_i   => tclk,
+      we_i       => '1',
+      d_i        => tms,
+      wr_full_o  => dummy_wr_full,
+      clk_rd_i   => refclk,
+      rd_i       => '1',
+      q_o        => tms_in,
+      rd_empty_o => dummy_rd_empty);
+
   --from NoC plane 1
   rd_i(1) <= noc1_cpu_stop_in nor fwd_rd_empty_o1;
 
@@ -705,8 +723,8 @@ begin
       rd_empty_o => fwd_rd_empty_o1);
 
 
-  test1_output_port <= test_in_sync(1) when tms = '1' else noc1_output_port;
-  test1_cpu_data_void_out <= fwd_rd_empty_o1 when tms = '1' else noc1_cpu_data_void_out;
+  test1_output_port <= test_in_sync(1) when tms_in = '1' else noc1_output_port;
+  test1_cpu_data_void_out <= fwd_rd_empty_o1 when tms_in = '1' else noc1_cpu_data_void_out;
 
 
 
@@ -729,8 +747,8 @@ begin
       rd_empty_o => fwd_rd_empty_o2);
 
 
-  test2_output_port <= test_in_sync(2) when tms = '1' else noc2_output_port;
-  test2_cpu_data_void_out <= fwd_rd_empty_o2 when tms = '1' else noc2_cpu_data_void_out;
+  test2_output_port <= test_in_sync(2) when tms_in = '1' else noc2_output_port;
+  test2_cpu_data_void_out <= fwd_rd_empty_o2 when tms_in = '1' else noc2_cpu_data_void_out;
 
 
   --from NoC plane 3
@@ -752,8 +770,8 @@ begin
       rd_empty_o => fwd_rd_empty_o3);
 
 
-  test3_output_port <= test_in_sync(3) when tms = '1' else noc3_output_port;
-  test3_cpu_data_void_out <= fwd_rd_empty_o3 when tms = '1' else noc3_cpu_data_void_out;
+  test3_output_port <= test_in_sync(3) when tms_in = '1' else noc3_output_port;
+  test3_cpu_data_void_out <= fwd_rd_empty_o3 when tms_in = '1' else noc3_cpu_data_void_out;
 
   --from NoC plane 4
   rd_i(4) <= noc4_cpu_stop_in nor fwd_rd_empty_o4;
@@ -774,10 +792,8 @@ begin
       rd_empty_o => fwd_rd_empty_o4);
 
 
-  test4_output_port <= test_in_sync(4) when tms = '1' else noc4_output_port;
-  test4_cpu_data_void_out <= fwd_rd_empty_o4 when tms = '1' else noc4_cpu_data_void_out;
-
-
+  test4_output_port <= test_in_sync(4) when tms_in = '1' else noc4_output_port;
+  test4_cpu_data_void_out <= fwd_rd_empty_o4 when tms_in = '1' else noc4_cpu_data_void_out;
 
   --from NoC plane 5
   rd_i(5) <= noc5_cpu_stop_in nor fwd_rd_empty_o5;
@@ -798,8 +814,8 @@ begin
       rd_empty_o => fwd_rd_empty_o5);
 
 
-  test5_output_port <= test_in_sync(5)(MISC_NOC_FLIT_SIZE-1 downto 0) when tms = '1' else noc5_output_port;
-  test5_cpu_data_void_out <= fwd_rd_empty_o5 when tms = '1' else noc5_cpu_data_void_out;
+  test5_output_port <= test_in_sync(5)(MISC_NOC_FLIT_SIZE-1 downto 0) when tms_in = '1' else noc5_output_port;
+  test5_cpu_data_void_out <= fwd_rd_empty_o5 when tms_in = '1' else noc5_cpu_data_void_out;
 
 
   --from NoC plane 6
@@ -821,8 +837,8 @@ begin
       rd_empty_o => fwd_rd_empty_o6);
 
 
-  test6_output_port <= test_in_sync(6) when tms = '1' else noc6_output_port;
-  test6_cpu_data_void_out <= fwd_rd_empty_o6 when tms = '1' else noc6_cpu_data_void_out;
+  test6_output_port <= test_in_sync(6) when tms_in = '1' else noc6_output_port;
+  test6_cpu_data_void_out <= fwd_rd_empty_o6 when tms_in = '1' else noc6_cpu_data_void_out;
 
   -- Pick data for comparison with expected value
   process(r.compare, sipo_comp_i)
@@ -875,10 +891,10 @@ begin
       rd_empty_o => test1_cpu_data_void_in);
 
   noc1_input_port <= noc1_in_port;
-  noc1_cpu_data_void_in <= '1' when tms = '1' else tonoc1_cpu_data_void_in;
+  noc1_cpu_data_void_in <= '1' when tms_in = '1' else tonoc1_cpu_data_void_in;
 
   t1_out <= noc1_in_port;
-  t1_cpu_data_void_in <= tonoc1_cpu_data_void_in when tms = '1' else '1';
+  t1_cpu_data_void_in <= tonoc1_cpu_data_void_in when tms_in = '1' else '1';
 
 
   -- to NoC plane 2
@@ -900,10 +916,10 @@ begin
       rd_empty_o => test2_cpu_data_void_in);
 
   noc2_input_port <= noc2_in_port;
-  noc2_cpu_data_void_in <= '1' when tms = '1' else tonoc2_cpu_data_void_in;
+  noc2_cpu_data_void_in <= '1' when tms_in = '1' else tonoc2_cpu_data_void_in;
 
   t2_out <= noc2_in_port;
-  t2_cpu_data_void_in <= tonoc2_cpu_data_void_in when tms = '1' else '1';
+  t2_cpu_data_void_in <= tonoc2_cpu_data_void_in when tms_in = '1' else '1';
 
 
   -- to NoC plane 3
@@ -925,10 +941,10 @@ begin
       rd_empty_o => test3_cpu_data_void_in);
 
   noc3_input_port <= noc3_in_port;
-  noc3_cpu_data_void_in <= '1' when tms = '1' else tonoc3_cpu_data_void_in;
+  noc3_cpu_data_void_in <= '1' when tms_in = '1' else tonoc3_cpu_data_void_in;
 
   t3_out <= noc3_in_port;
-  t3_cpu_data_void_in <= tonoc3_cpu_data_void_in when tms = '1' else '1';
+  t3_cpu_data_void_in <= tonoc3_cpu_data_void_in when tms_in = '1' else '1';
 
 
   -- to NoC plane 4
@@ -950,10 +966,10 @@ begin
       rd_empty_o => test4_cpu_data_void_in);
 
   noc4_input_port <= noc4_in_port;
-  noc4_cpu_data_void_in <= '1' when tms = '1' else tonoc4_cpu_data_void_in;
+  noc4_cpu_data_void_in <= '1' when tms_in = '1' else tonoc4_cpu_data_void_in;
 
   t4_out <= noc4_in_port;
-  t4_cpu_data_void_in <= tonoc4_cpu_data_void_in when tms = '1' else '1';
+  t4_cpu_data_void_in <= tonoc4_cpu_data_void_in when tms_in = '1' else '1';
 
 
   -- to NoC plane 5
@@ -975,10 +991,10 @@ begin
       rd_empty_o => test5_cpu_data_void_in);
 
   noc5_input_port <= noc5_in_port;
-  noc5_cpu_data_void_in <= '1' when tms = '1' else tonoc5_cpu_data_void_in;
+  noc5_cpu_data_void_in <= '1' when tms_in = '1' else tonoc5_cpu_data_void_in;
 
   t5_out <= noc5_in_port;
-  t5_cpu_data_void_in <= tonoc5_cpu_data_void_in when tms = '1' else '1';
+  t5_cpu_data_void_in <= tonoc5_cpu_data_void_in when tms_in = '1' else '1';
 
 
   -- to NoC plane 6
@@ -1000,13 +1016,13 @@ begin
       rd_empty_o => test6_cpu_data_void_in);
 
   noc6_input_port <= noc6_in_port;
-  noc6_cpu_data_void_in <= '1' when tms = '1' else tonoc6_cpu_data_void_in;
+  noc6_cpu_data_void_in <= '1' when tms_in = '1' else tonoc6_cpu_data_void_in;
 
   t6_out <= noc6_in_port;
-  t6_cpu_data_void_in <= tonoc6_cpu_data_void_in when tms = '1' else '1';
+  t6_cpu_data_void_in <= tonoc6_cpu_data_void_in when tms_in = '1' else '1';
 
   -- Stop signals from NoC/JTAG to tile
-  process(tms,
+  process(tms_in,
           noc1_stop_out_s4,
           noc2_stop_out_s4,
           noc3_stop_out_s4,
@@ -1020,7 +1036,7 @@ begin
           test5_cpu_stop_out,
           test6_cpu_stop_out)
   begin
-    if tms = '0' then
+    if tms_in = '0' then
       noc1_cpu_stop_out <= noc1_stop_out_s4;
       noc2_cpu_stop_out <= noc2_stop_out_s4;
       noc3_cpu_stop_out <= noc3_stop_out_s4;
