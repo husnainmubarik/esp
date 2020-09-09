@@ -174,6 +174,17 @@ architecture rtl of gf12_syncram is
     CE0  : in  std_ulogic);
   end component;
 
+  component GF12_SRAM_SP_2048x8
+  port (
+    CLK  : in  std_ulogic;
+    A0   : in  std_logic_vector(10 downto 0);
+    D0   : in  std_logic_vector(7 downto 0);
+    Q0   : out std_logic_vector(7 downto 0);
+    WE0  : in  std_ulogic;
+    WEM0 : in  std_logic_vector(7 downto 0);
+    CE0  : in  std_ulogic);
+  end component;
+
   component GF12_SRAM_SP_2048x16_PG
   port (
     CLK  : in  std_ulogic;
@@ -342,6 +353,12 @@ architecture rtl of gf12_syncram is
   signal do, di : std_logic_vector(63 downto 0);
   signal xa     : std_logic_vector(13 downto 0);
 
+  -- Replace GF12 16kx8 memory with 8 2kx8 banks
+  signal mux_sel : std_logic_vector(2 downto 0);
+  signal enable_int : std_logic_vector(7 downto 0);
+  type bank_out_type is array (0 to 7) of std_logic_vector(7 downto 0);
+  signal do_int : bank_out_type;
+
 begin
 
   dataout                <= do(dbits - 1 downto 0);
@@ -369,7 +386,7 @@ begin
   end generate;
 
   a8 : if abits = 8 generate
-    d8 : if dbits <= 8 generate
+    d8 : if dbits = 8 generate
       s : GF12_SRAM_SP_256x8_PG
         port map (
           CLK  => clk,
@@ -382,7 +399,7 @@ begin
       do(63 downto 8) <= (others => '0');
     end generate d8;
 
-    d16 : if dbits <= 16 generate
+    d16 : if dbits = 16 generate
       s : GF12_SRAM_SP_256x16_PG
         port map (
           CLK  => clk,
@@ -395,7 +412,7 @@ begin
       do(63 downto 16) <= (others => '0');
     end generate d16;
 
-    d32 : if dbits <= 32 generate
+    d32 : if dbits = 32 generate
       s : GF12_SRAM_SP_256x32_PG
         port map (
           CLK  => clk,
@@ -408,7 +425,7 @@ begin
       do(63 downto 32) <= (others => '0');
     end generate d32;
 
-    d64 : if dbits <= 64 generate
+    d64 : if dbits = 64 generate
       s : GF12_SRAM_SP_256x64_PG
         port map (
           CLK  => clk,
@@ -423,7 +440,7 @@ begin
   end generate a8;
 
   a9 : if abits = 9 generate
-    d8 : if dbits <= 8 generate
+    d8 : if dbits = 8 generate
       s : GF12_SRAM_SP_512x8_PG
         port map (
           CLK  => clk,
@@ -436,7 +453,7 @@ begin
       do(63 downto 8) <= (others => '0');
     end generate d8;
 
-    d16 : if dbits <= 16 generate
+    d16 : if dbits = 16 generate
       s : GF12_SRAM_SP_512x16_PG
         port map (
           CLK  => clk,
@@ -449,7 +466,7 @@ begin
       do(63 downto 16) <= (others => '0');
     end generate d16;
 
-    d32 : if dbits <= 32 generate
+    d32 : if dbits = 32 generate
       s : GF12_SRAM_SP_512x32_PG
         port map (
           CLK  => clk,
@@ -462,7 +479,7 @@ begin
       do(63 downto 32) <= (others => '0');
     end generate d32;
 
-    d64 : if dbits <= 64 generate
+    d64 : if dbits = 64 generate
       s : GF12_SRAM_SP_512x64_PG
         port map (
           CLK  => clk,
@@ -477,7 +494,7 @@ begin
   end generate a9;
 
   a10 : if abits = 10 generate
-    d8 : if dbits <= 8 generate
+    d8 : if dbits = 8 generate
       s : GF12_SRAM_SP_1024x8_PG
         port map (
           CLK  => clk,
@@ -490,7 +507,7 @@ begin
       do(63 downto 8) <= (others => '0');
     end generate d8;
 
-    d16 : if dbits <= 16 generate
+    d16 : if dbits = 16 generate
       s : GF12_SRAM_SP_1024x16_PG
         port map (
           CLK  => clk,
@@ -503,7 +520,7 @@ begin
       do(63 downto 16) <= (others => '0');
     end generate d16;
 
-    d32 : if dbits <= 32 generate
+    d32 : if dbits = 32 generate
       s : GF12_SRAM_SP_1024x32_PG
         port map (
           CLK  => clk,
@@ -516,7 +533,7 @@ begin
       do(63 downto 32) <= (others => '0');
     end generate d32;
 
-    d64 : if dbits <= 64 generate
+    d64 : if dbits = 64 generate
       s : GF12_SRAM_SP_1024x64_PG
         port map (
           CLK  => clk,
@@ -531,7 +548,7 @@ begin
   end generate a10;
 
   a11 : if abits = 11 generate
-    d8 : if dbits <= 8 generate
+    d8 : if dbits = 8 generate
       s : GF12_SRAM_SP_2048x8_PG
         port map (
           CLK  => clk,
@@ -544,7 +561,7 @@ begin
       do(63 downto 8) <= (others => '0');
     end generate d8;
 
-    d16 : if dbits <= 16 generate
+    d16 : if dbits = 16 generate
       s : GF12_SRAM_SP_2048x16_PG
         port map (
           CLK  => clk,
@@ -557,7 +574,7 @@ begin
       do(63 downto 16) <= (others => '0');
     end generate d16;
 
-    d32 : if dbits <= 32 generate
+    d32 : if dbits = 32 generate
       s : GF12_SRAM_SP_2048x32_PG
         port map (
           CLK  => clk,
@@ -570,7 +587,7 @@ begin
       do(63 downto 32) <= (others => '0');
     end generate d32;
 
-    d64 : if dbits <= 64 generate
+    d64 : if dbits = 64 generate
       s : GF12_SRAM_SP_2048x64_PG
         port map (
           CLK  => clk,
@@ -585,7 +602,7 @@ begin
   end generate a11;
 
   a12 : if abits = 12 generate
-    d8 : if dbits <= 8 generate
+    d8 : if dbits = 8 generate
       s : GF12_SRAM_SP_4096x8_PG
         port map (
           CLK  => clk,
@@ -598,7 +615,7 @@ begin
       do(63 downto 8) <= (others => '0');
     end generate d8;
 
-    d16 : if dbits <= 16 generate
+    d16 : if dbits = 16 generate
       s : GF12_SRAM_SP_4096x16_PG
         port map (
           CLK  => clk,
@@ -611,7 +628,7 @@ begin
       do(63 downto 16) <= (others => '0');
     end generate d16;
 
-    d32 : if dbits <= 32 generate
+    d32 : if dbits = 32 generate
       s : GF12_SRAM_SP_4096x32_PG
         port map (
           CLK  => clk,
@@ -624,7 +641,7 @@ begin
       do(63 downto 32) <= (others => '0');
     end generate d32;
 
-    d64 : if dbits <= 64 generate
+    d64 : if dbits = 64 generate
       s : GF12_SRAM_SP_4096x64_PG
         port map (
           CLK  => clk,
@@ -639,7 +656,7 @@ begin
   end generate a12;
 
   a13 : if abits = 13 generate
-    d8 : if dbits <= 8 generate
+    d8 : if dbits = 8 generate
       s : GF12_SRAM_SP_8192x8_PG
         port map (
           CLK  => clk,
@@ -652,7 +669,7 @@ begin
       do(63 downto 8) <= (others => '0');
     end generate d8;
 
-    d16 : if dbits <= 16 generate
+    d16 : if dbits = 16 generate
       s : GF12_SRAM_SP_8192x16_PG
         port map (
           CLK  => clk,
@@ -665,7 +682,7 @@ begin
       do(63 downto 16) <= (others => '0');
     end generate d16;
 
-    d32 : if dbits <= 32 generate
+    d32 : if dbits = 32 generate
       s : GF12_SRAM_SP_8192x32_PG
         port map (
           CLK  => clk,
@@ -678,7 +695,7 @@ begin
       do(63 downto 32) <= (others => '0');
     end generate d32;
 
-    d64 : if dbits <= 64 generate
+    d64 : if dbits = 64 generate
       s : GF12_SRAM_SP_8192x64_PG
         port map (
           CLK  => clk,
@@ -693,20 +710,63 @@ begin
   end generate a13;
 
   a14 : if abits = 14 generate
-    d8 : if dbits <= 8 generate
-      s : GF12_SRAM_SP_16384x8_PG
-        port map (
-          CLK  => clk,
-          A0   => xa(13 downto 0),
-          D0   => di(7 downto 0),
-          Q0   => do(7 downto 0),
-          WE0  => write,
-          WEM0 => (others => '1'),
-          CE0  => enable);
+    d8 : if dbits = 8 generate
+      -- Bank chip enable
+      process (xa, enable) is
+      begin  -- process
+        enable_int <= (others => '0');
+        case xa(13 downto 11) is
+          when "000" => enable_int(0) <= enable;
+          when "001" => enable_int(1) <= enable;
+          when "010" => enable_int(2) <= enable;
+          when "011" => enable_int(3) <= enable;
+          when "100" => enable_int(4) <= enable;
+          when "101" => enable_int(5) <= enable;
+          when "110" => enable_int(6) <= enable;
+          when "111" => enable_int(7) <= enable;
+          when others => null;
+        end case;
+      end process;
+
+      -- Output
+      process (clk) is
+      begin
+        if clk'event and clk = '1' then  -- rising clock edge
+          mux_sel <= xa(13 downto 11);
+        end if;
+      end process;
+
+      process (mux_sel, do_int) is
+      begin  -- process
+        case mux_sel is
+          when "000" => do(7 downto 0) <= do_int(0);
+          when "001" => do(7 downto 0) <= do_int(1);
+          when "010" => do(7 downto 0) <= do_int(2);
+          when "011" => do(7 downto 0) <= do_int(3);
+          when "100" => do(7 downto 0) <= do_int(4);
+          when "101" => do(7 downto 0) <= do_int(5);
+          when "110" => do(7 downto 0) <= do_int(6);
+          when "111" => do(7 downto 0) <= do_int(7);
+          when others => do(7 downto 0) <= do_int(0);
+        end case;
+      end process;
       do(63 downto 8) <= (others => '0');
+
+      -- banks
+      b8: for b in 0 to 7 generate
+        s : GF12_SRAM_SP_2048x8
+          port map (
+            CLK  => clk,
+            A0   => xa(10 downto 0),
+            D0   => di(7 downto 0),
+            Q0   => do_int(b),
+            WE0  => write,
+            WEM0 => (others => '1'),
+            CE0  => enable_int(b));
+      end generate b8;
     end generate d8;
 
-    d16 : if dbits <= 16 generate
+    d16 : if dbits = 16 generate
       s : GF12_SRAM_SP_16384x16_PG
         port map (
           CLK  => clk,
@@ -719,7 +779,7 @@ begin
       do(63 downto 16) <= (others => '0');
     end generate d16;
 
-    d32 : if dbits <= 32 generate
+    d32 : if dbits = 32 generate
       s : GF12_SRAM_SP_16384x32_PG
         port map (
           CLK  => clk,
@@ -732,7 +792,7 @@ begin
       do(63 downto 32) <= (others => '0');
     end generate d32;
 
-    d64 : if dbits <= 64 generate
+    d64 : if dbits = 64 generate
       s : GF12_SRAM_SP_16384x64_PG
         port map (
           CLK  => clk,
