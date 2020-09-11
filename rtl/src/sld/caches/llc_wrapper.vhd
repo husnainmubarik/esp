@@ -86,7 +86,15 @@ entity llc_wrapper is
     dma_snd_wrreq              : out std_ulogic;
     dma_snd_data_in            : out noc_flit_type;
     dma_snd_full               : in  std_ulogic;
-
+    -- LLC->ext
+    ext_req_ready              : in  std_ulogic;
+    ext_req_valid              : out std_ulogic;
+    ext_req_data               : out std_logic_vector(ARCH_BITS - 1 downto 0);
+    -- ext->LLC
+    ext_rsp_ready              : out std_ulogic;
+    ext_rsp_valid              : in  std_ulogic;
+    ext_rsp_data               : in  std_logic_vector(ARCH_BITS - 1 downto 0);
+    -- Monitor
     mon_cache                  : out monitor_cache_type
     );
 
@@ -562,6 +570,15 @@ architecture rtl of llc_wrapper is
   -- attribute mark_debug of rsp_in_state   : signal is "true";
 
 begin  -- architecture rtl
+
+-------------------------------------------------------------------------------
+-- Memory request through FPGA link
+-------------------------------------------------------------------------------
+
+  ext_req_data <= (others => '0');
+  ext_req_valid <= '0';
+  ext_rsp_ready <= '0';
+
 -------------------------------------------------------------------------------
 -- APB slave interface (flush, soft reset)
 -------------------------------------------------------------------------------

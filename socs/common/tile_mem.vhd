@@ -47,9 +47,11 @@ entity tile_mem is
     ddr_ahbsi          : out ahb_slv_in_type;
     ddr_ahbso          : in  ahb_slv_out_type;
     -- FPGA proxy memory link (this_has_ddr -> 0)
-    fpga_data_in       : in  std_logic_vector(ARCH_BITS downto 0);
-    fpga_data_out      : out std_logic_vector(ARCH_BITS downto 0);
+    fpga_data_in       : in  std_logic_vector(ARCH_BITS - 1 downto 0);
+    fpga_data_out      : out std_logic_vector(ARCH_BITS - 1 downto 0);
     fpga_oen           : out std_ulogic;
+    fpga_valid_in      : in  std_ulogic;
+    fpga_valid_out     : out std_ulogic;
     fpga_clk_in        : in  std_ulogic;
     fpga_clk_out       : out std_ulogic;
     fpga_credit_in     : in  std_ulogic;
@@ -437,6 +439,7 @@ begin
   -- TODO FPGA link
   fpga_data_out <= (others => '0');
   fpga_oen <= '0';
+  fpga_valid_out <= '0';
   fpga_clk_out <= '0';
   fpga_credit_out <= '0';
 
@@ -642,11 +645,17 @@ begin
   -----------------------------------------------------------------------------
 
   -- DDR Controller
-  ddr_ahbso_gen: process (ddr_ahbso, this_ddr_hconfig) is
-  begin  -- process ddr_ahbso_gen
-    ahbso(0)         <= ddr_ahbso;
-    ahbso(0).hconfig <= this_ddr_hconfig;
-  end process ddr_ahbso_gen;
+  ddr_gen: if this_has_ddr = 1 generate
+    ddr_ahbso_gen: process (ddr_ahbso, this_ddr_hconfig) is
+    begin  -- process ddr_ahbso_gen
+      ahbso(0)         <= ddr_ahbso;
+      ahbso(0).hconfig <= this_ddr_hconfig;
+    end process ddr_ahbso_gen;
+  end generate ddr_gen;
+
+  fpga_mem_gen: if this_has_ddr = 0 generate
+    ahbso(0) <= ahbs_none;
+  end generate fpga_mem_gen;
 
   ddr_ahbsi <= ahbsi;
 
@@ -696,9 +705,14 @@ begin
   mon_ddr.clk <= clk;
   detect_ddr_access : process(ahbsi)
   begin
-    mon_ddr.word_transfer <= '0';
-    if ahbsi.hready =  '1' and ahbsi.htrans /= HTRANS_IDLE then
-      mon_ddr.word_transfer <= '1';
+    if this_has_ddr = 1 then
+      mon_ddr.word_transfer <= '0';
+      if ahbsi.hready =  '1' and ahbsi.htrans /= HTRANS_IDLE then
+        mon_ddr.word_transfer <= '1';
+      end if;
+    else
+      -- TODO: connect to FPGA link activity
+      mon_ddr.word_transfer <= '0';
     end if;
   end process detect_ddr_access;
 
@@ -907,6 +921,14 @@ begin
         dma_snd_wrreq              => coherent_dma_snd_wrreq,
         dma_snd_data_in            => coherent_dma_snd_data_in,
         dma_snd_full               => coherent_dma_snd_full,
+        -- LLC->ext
+        ext_req_ready              => '0',
+        ext_req_valid              => open,
+        ext_req_data               => open,
+        -- ext->LLC
+        ext_rsp_ready              => open,
+        ext_rsp_valid              => '0',
+        ext_rsp_data               => (others => '0'),
         -- Monitor
         mon_cache                  => mon_cache_int
         );

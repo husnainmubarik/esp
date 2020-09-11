@@ -39,8 +39,10 @@ entity ext2ahbm is
     clk             : in  std_ulogic;
     rstn            : in  std_ulogic;
     -- Memory link
-    fpga_data_in    : out std_logic_vector(ARCH_BITS downto 0);
-    fpga_data_out   : in  std_logic_vector(ARCH_BITS downto 0);
+    fpga_data_in    : out std_logic_vector(ARCH_BITS - 1 downto 0);
+    fpga_data_out   : in  std_logic_vector(ARCH_BITS - 1 downto 0);
+    fpga_valid_in   : out std_ulogic;
+    fpga_valid_out  : in  std_ulogic;
     fpga_data_ien   : out std_logic;
     fpga_clk_in     : out std_logic;
     fpga_clk_out    : in  std_logic;
@@ -58,6 +60,7 @@ begin  -- architecture rtl
   -- TODO: implement FPGA side of link
   fpga_data_in <= (others => '0');
   fpga_data_ien <= '0';
+  fpga_valid_in <= '0';
 
   fpga_clk_in <= '0';
   fpga_credit_in <= '0';

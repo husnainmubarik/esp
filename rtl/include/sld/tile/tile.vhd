@@ -885,8 +885,10 @@ package tile is
     port (
       clk             : in  std_ulogic;
       rstn            : in  std_ulogic;
-      fpga_data_in    : out std_logic_vector(ARCH_BITS downto 0);
-      fpga_data_out   : in  std_logic_vector(ARCH_BITS downto 0);
+      fpga_data_in    : out std_logic_vector(ARCH_BITS - 1 downto 0);
+      fpga_data_out   : in  std_logic_vector(ARCH_BITS - 1 downto 0);
+      fpga_valid_in   : out std_ulogic;
+      fpga_valid_out  : in  std_ulogic;
       fpga_data_ien   : out std_logic;
       fpga_clk_in     : out std_ulogic;
       fpga_clk_out    : in  std_ulogic;
