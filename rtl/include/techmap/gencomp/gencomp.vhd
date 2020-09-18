@@ -564,11 +564,21 @@ constant m010     : integer := 13;
   end component;
 
   component dco is
+    generic (
+      tech : integer;
+      dlog : integer range 0 to 15);
     port (
-      rstn      : in  std_ulogic;
-      fsel_i    : in  std_logic_vector(12 downto 0);
-      clk_o     : out std_ulogic;
-      div_clk_o : out std_ulogic);
+      rstn     : in  std_ulogic;
+      ext_clk  : in  std_logic;
+      en       : in  std_ulogic;
+      clk_sel  : in  std_ulogic;
+      cc_sel   : in  std_logic_vector(5 downto 0);
+      fc_sel   : in  std_logic_vector(5 downto 0);
+      div_sel  : in  std_logic_vector(2 downto 0);
+      freq_sel : in  std_logic_vector(1 downto 0);
+      clk      : out std_logic;
+      clk_div  : out std_logic;
+      lock     : out std_ulogic);
   end component dco;
 
 ---------------------------------------------------------------------------

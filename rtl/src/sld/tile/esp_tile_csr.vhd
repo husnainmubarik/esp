@@ -93,9 +93,23 @@ architecture rtl of esp_tile_csr is
 
     -- CSRs
     signal config_r : std_logic_vector(ESP_CSR_WIDTH - 1 downto 0);
+
+    constant DEFAULT_DCO_NOC_CFG : std_logic_vector(18 downto 0) :=
+       "00"     &  "100"   &  "000000" & "101100" & "0"     & "1";
+    -- FREQ_SEL    DIV_SEL    FC_SEL      CC_SEL    CLK_SEL   EN
+
+    constant DEFAULT_DCO_CFG : std_logic_vector(18 downto 0) :=
+       "00"     &  "100"   &  "000000" & "101100" & "0"     & "1";
+    -- FREQ_SEL    DIV_SEL    FC_SEL      CC_SEL    CLK_SEL   EN
+
+    constant DEFAULT_PAD_CFG : std_logic_vector(2 downto 0) :=
+      "0"       &  "11";
+    -- Slew rate   Drive strength
+
+    constant DEFAULT_TILE_ID : std_logic_vector(7 downto 0) := (others => '0');
+
     constant DEFAULT_CONFIG : std_logic_vector(ESP_CSR_WIDTH - 1 downto 0) :=
-      "011"    &   X"00"    &   "1";
-    -- PAD_CFG     TILE_ID      VALID
+      DEFAULT_DCO_NOC_CFG & DEFAULT_DCO_CFG & DEFAULT_PAD_CFG & DEFAULT_TILE_ID & "0";
 
     signal csr_addr : integer range 0 to 31;
 
@@ -136,6 +150,10 @@ architecture rtl of esp_tile_csr is
           readdata(ESP_CSR_TILE_ID_MSB - ESP_CSR_TILE_ID_LSB downto 0) <= config_r(ESP_CSR_TILE_ID_MSB downto ESP_CSR_TILE_ID_LSB);
         when ESP_CSR_PAD_CFG_ADDR =>
           readdata(ESP_CSR_PAD_CFG_MSB - ESP_CSR_PAD_CFG_LSB downto 0) <= config_r(ESP_CSR_PAD_CFG_MSB downto ESP_CSR_PAD_CFG_LSB);
+        when ESP_CSR_DCO_CFG_ADDR =>
+          readdata(ESP_CSR_DCO_CFG_MSB - ESP_CSR_DCO_CFG_LSB downto 0) <= config_r(ESP_CSR_DCO_CFG_MSB downto ESP_CSR_DCO_CFG_LSB);
+        when ESP_CSR_DCO_NOC_CFG_ADDR =>
+          readdata(ESP_CSR_DCO_NOC_CFG_MSB - ESP_CSR_DCO_NOC_CFG_LSB downto 0) <= config_r(ESP_CSR_DCO_NOC_CFG_MSB downto ESP_CSR_DCO_NOC_CFG_LSB);
         when others =>
           readdata <= (others => '0');
       end case;
@@ -183,6 +201,10 @@ architecture rtl of esp_tile_csr is
               config_r(ESP_CSR_TILE_ID_MSB downto ESP_CSR_TILE_ID_LSB) <= apbi.pwdata(ESP_CSR_TILE_ID_MSB - ESP_CSR_TILE_ID_LSB downto 0);
             when ESP_CSR_PAD_CFG_ADDR =>
               config_r(ESP_CSR_PAD_CFG_MSB downto ESP_CSR_PAD_CFG_LSB) <= apbi.pwdata(ESP_CSR_PAD_CFG_MSB - ESP_CSR_PAD_CFG_LSB downto 0);
+            when ESP_CSR_DCO_CFG_ADDR =>
+              config_r(ESP_CSR_DCO_CFG_MSB downto ESP_CSR_DCO_CFG_LSB) <= apbi.pwdata(ESP_CSR_DCO_CFG_MSB - ESP_CSR_DCO_CFG_LSB downto 0);
+            when ESP_CSR_DCO_NOC_CFG_ADDR =>
+              config_r(ESP_CSR_DCO_NOC_CFG_MSB downto ESP_CSR_DCO_NOC_CFG_LSB) <= apbi.pwdata(ESP_CSR_DCO_NOC_CFG_MSB - ESP_CSR_DCO_NOC_CFG_LSB downto 0);
             when ESP_CSR_SRST_ADDR =>
               srst <= wdata(0);
             when others => null;
