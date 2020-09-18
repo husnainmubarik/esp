@@ -41,10 +41,14 @@ entity tile_empty is
     ROUTER_PORTS : ports_vec            := "11111";
     HAS_SYNC     : integer range 0 to 1 := 1);
   port (
+    raw_rstn           : in  std_ulogic;
     rst                : in  std_logic;
+    clk                : in  std_logic;
     refclk             : in  std_ulogic;
     pllbypass          : in  std_ulogic;
     pllclk             : out std_ulogic;
+    dco_clk            : out std_ulogic;
+    dco_clk_lock       : out std_ulogic;
     -- Test interface
     tdi                : in  std_logic;
     tdo                : out std_logic;
@@ -242,6 +246,14 @@ architecture rtl of tile_empty is
       );
 
   end component;
+
+  -- DCO
+  signal dco_en       : std_ulogic;
+  signal dco_clk_sel  : std_ulogic;
+  signal dco_cc_sel   : std_logic_vector(5 downto 0);
+  signal dco_fc_sel   : std_logic_vector(5 downto 0);
+  signal dco_div_sel  : std_logic_vector(2 downto 0);
+  signal dco_freq_sel : std_logic_vector(1 downto 0);
 
   -- Queues
   signal apb_rcv_rdreq    : std_ulogic;
@@ -454,8 +466,39 @@ architecture rtl of tile_empty is
 
 begin
 
-  -- TODO:  DCO
-  pllclk <= '0';
+  -- DCO
+  dco_gen: if this_has_dco /= 0 generate
+
+    dco_noc: dco
+      generic map (
+        tech => CFG_FABTECH,
+        dlog => 9)                      -- come out of reset after NoC, but
+                                        -- before tile_io.
+      port map (
+        rstn     => raw_rstn,
+        ext_clk  => refclk,
+        en       => dco_en,
+        clk_sel  => dco_clk_sel,
+        cc_sel   => dco_cc_sel,
+        fc_sel   => dco_fc_sel,
+        div_sel  => dco_div_sel,
+        freq_sel => dco_freq_sel,
+        clk      => dco_clk,
+        clk_div  => pllclk,
+        lock     => dco_clk_lock);
+
+    dco_freq_sel <= config(ESP_CSR_DCO_CFG_MSB - 0  downto ESP_CSR_DCO_CFG_MSB - 0  - 1);
+    dco_div_sel  <= config(ESP_CSR_DCO_CFG_MSB - 2  downto ESP_CSR_DCO_CFG_MSB - 2  - 2);
+    dco_fc_sel   <= config(ESP_CSR_DCO_CFG_MSB - 5  downto ESP_CSR_DCO_CFG_MSB - 5  - 5);
+    dco_cc_sel   <= config(ESP_CSR_DCO_CFG_MSB - 11 downto ESP_CSR_DCO_CFG_MSB - 11 - 5);
+    dco_clk_sel  <= config(ESP_CSR_DCO_CFG_LSB + 1);
+    dco_en       <= config(ESP_CSR_DCO_CFG_LSB);
+
+  end generate dco_gen;
+
+  no_dco_gen: if this_has_dco = 0 generate
+    pllclk <= '0';
+  end generate no_dco_gen;
 
   -- TODO JTAG
   tdo <= '0';
@@ -494,7 +537,7 @@ begin
       local_apb_en => this_local_apb_en)
     port map (
       rst              => rst,
-      clk              => sys_clk_int,
+      clk              => clk,
       local_y          => this_local_y,
       local_x          => this_local_x,
       apbi             => apbi,
@@ -510,7 +553,7 @@ begin
 
   --Monitors
   mon_dvfs_int.vf        <= (others => '0');
-  mon_dvfs_int.clk       <= sys_clk_int;
+  mon_dvfs_int.clk       <= clk;
   mon_dvfs_int.acc_idle  <= '0';
   mon_dvfs_int.traffic   <= '0';
   mon_dvfs_int.burst     <= '0';
@@ -536,7 +579,7 @@ begin
     generic map(
       pindex => 0)
    port map(
-     clk => sys_clk_int,
+     clk => clk,
      rstn => rst,
      pconfig => this_csr_pconfig,
      mon_ddr => monitor_ddr_none,
@@ -562,7 +605,7 @@ begin
       tech => CFG_FABTECH)
     port map (
       rst                        => rst,
-      clk                        => sys_clk_int,
+      clk                        => clk,
       apb_snd_wrreq              => apb_snd_wrreq,
       apb_snd_data_in            => apb_snd_data_in,
       apb_snd_full               => apb_snd_full,
@@ -654,7 +697,7 @@ begin
       HAS_SYNC => HAS_SYNC)
     port map (
       clk                => sys_clk_int,
-      clk_tile           => sys_clk_int,
+      clk_tile           => clk,
       rst                => rst,
       CONST_local_x      => this_local_x,
       CONST_local_y      => this_local_y,

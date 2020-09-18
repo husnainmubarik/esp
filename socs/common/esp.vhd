@@ -419,11 +419,15 @@ begin
         ROUTER_PORTS => set_router_ports(CFG_XLEN, CFG_YLEN, tile_x(i), tile_y(i)),
         HAS_SYNC     => CFG_HAS_SYNC)
       port map (
+        raw_rstn           => '0',
         rst                => rst,
+        clk                => sys_clk_int(0),
         refclk             => '0',
         pllbypass          => '0',
         pllclk             => open,
 	sys_clk_int        => sys_clk_int(0),
+        dco_clk            => open,
+        dco_clk_lock       => open,
         -- Test interface
         tdi                => '0',
         tdo                => open,
@@ -527,10 +531,13 @@ begin
         ROUTER_PORTS       => set_router_ports(CFG_XLEN, CFG_YLEN, tile_x(i), tile_y(i)),
         HAS_SYNC           => CFG_HAS_SYNC)
       port map (
+        raw_rstn           => '0',
         rst                => rst_int,
         refclk             => refclk_int(i),
         pllbypass          => pllbypass_int(i),
         pllclk             => clk_tile(i),
+        dco_clk            => open,
+        dco_clk_lock       => open,
         cpuerr             => cpuerr_vec(tile_cpu_id(i)),
         -- Test interface
         tdi                => '0',
@@ -639,10 +646,13 @@ begin
         ROUTER_PORTS       => set_router_ports(CFG_XLEN, CFG_YLEN, tile_x(i), tile_y(i)),
         HAS_SYNC           => CFG_HAS_SYNC)
       port map (
+        raw_rstn           => '0',
         rst                => rst_int,
         refclk             => refclk_int(i),
         pllbypass          => pllbypass_int(i),
         pllclk             => clk_tile(i),
+        dco_clk            => open,
+        dco_clk_lock       => open,
         -- Test interface
         tdi                => '0',
         tdo                => open,
@@ -744,6 +754,7 @@ begin
         ROUTER_PORTS => set_router_ports(CFG_XLEN, CFG_YLEN, tile_x(i), tile_y(i)),
         HAS_SYNC     => CFG_HAS_SYNC)
       port map (
+        raw_rstn           => '0',
 	rst                => rst_int,
 	clk                => refclk_int(i),
         refclk_noc         => '0',
@@ -752,6 +763,13 @@ begin
         pllbypass          => '0',
         pllclk             => open,
         dco_clk            => open,
+        dco_clk_lock       => open,
+        -- Test interface
+        tdi                => '0',
+        tdo                => open,
+        tms                => '0',
+        tclk               => '0',
+        -- I/O bus interfaces
 	eth0_apbi          => eth0_apbi,
 	eth0_apbo          => eth0_apbo,
 	sgmii0_apbi        => sgmii0_apbi,
@@ -767,14 +785,11 @@ begin
 	uart_txd           => uart_txd,
 	uart_ctsn          => uart_ctsn,
 	uart_rtsn          => uart_rtsn,
-        -- Test interface
-        tdi                => '0',
-        tdo                => open,
-        tms                => '0',
-        tclk               => '0',
 	-- NOC
 	sys_clk_int        => sys_clk_int(0),
+        sys_rstn           => rst_int,
         sys_clk_out        => open,
+        sys_clk_lock       => open,
 	noc1_data_n_in     => noc1_data_n_in(i),
 	noc1_data_s_in     => noc1_data_s_in(i),
 	noc1_data_w_in     => noc1_data_w_in(i),
@@ -864,10 +879,14 @@ begin
         ROUTER_PORTS => set_router_ports(CFG_XLEN, CFG_YLEN, tile_x(i), tile_y(i)),
         HAS_SYNC     => CFG_HAS_SYNC)
       port map (
+        raw_rstn           => '0',
 	rst                => rst_int,
+        refclk             => '0',
 	clk                => sys_clk_int(tile_mem_id(i)),
         pllbypass          => '0',
         pllclk             => open,
+        dco_clk            => open,
+        dco_clk_lock       => open,
 	ddr_ahbsi          => ddr_ahbsi(tile_mem_id(i)),
 	ddr_ahbso          => ddr_ahbso(tile_mem_id(i)),
         fpga_data_in       => (others => '0'),
@@ -976,10 +995,14 @@ begin
           ROUTER_PORTS => set_router_ports(CFG_XLEN, CFG_YLEN, tile_x(i), tile_y(i)),
           HAS_SYNC     => CFG_HAS_SYNC)
         port map (
+          raw_rstn           => '0',
           rst                => rst_int,
           clk                => refclk_int(i),
+          refclk             => '0',
           pllbypass          => '0',
           pllclk             => open,
+          dco_clk            => open,
+          dco_clk_lock       => open,
           -- Test interface
           tdi                => '0',
           tdo                => open,

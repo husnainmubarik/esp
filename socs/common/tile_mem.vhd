@@ -39,10 +39,14 @@ entity tile_mem is
     ROUTER_PORTS : ports_vec := "11111";
     HAS_SYNC: integer range 0 to 1 := 1);
   port (
+    raw_rstn           : in  std_ulogic;
     rst                : in  std_ulogic;
+    refclk             : in  std_ulogic;
     clk                : in  std_ulogic;
     pllbypass          : in  std_ulogic;
     pllclk             : out std_ulogic;
+    dco_clk            : out std_ulogic;
+    dco_clk_lock       : out std_ulogic;
     -- DDR controller ports (this_has_ddr -> 1)
     ddr_ahbsi          : out ahb_slv_in_type;
     ddr_ahbso          : in  ahb_slv_out_type;
@@ -256,6 +260,13 @@ architecture rtl of tile_mem is
 
   end component;
 
+  -- DCO
+  signal dco_en       : std_ulogic;
+  signal dco_clk_sel  : std_ulogic;
+  signal dco_cc_sel   : std_logic_vector(5 downto 0);
+  signal dco_fc_sel   : std_logic_vector(5 downto 0);
+  signal dco_div_sel  : std_logic_vector(2 downto 0);
+  signal dco_freq_sel : std_logic_vector(1 downto 0);
 
   -- LLC
   signal llc_rstn : std_ulogic;
@@ -551,8 +562,40 @@ architecture rtl of tile_mem is
 
 begin
 
-  -- TODO:  DCO
-  pllclk <= '0';
+  -- DCO
+  dco_gen: if this_has_dco /= 0 generate
+
+    dco_noc: dco
+      generic map (
+        tech => CFG_FABTECH,
+        dlog => 9)                      -- come out of reset after NoC, but
+                                        -- before tile_io.
+      port map (
+        rstn     => raw_rstn,
+        ext_clk  => refclk,
+        en       => dco_en,
+        clk_sel  => dco_clk_sel,
+        cc_sel   => dco_cc_sel,
+        fc_sel   => dco_fc_sel,
+        div_sel  => dco_div_sel,
+        freq_sel => dco_freq_sel,
+        clk      => dco_clk,
+        clk_div  => pllclk,
+        lock     => dco_clk_lock);
+
+    dco_freq_sel <= config(ESP_CSR_DCO_CFG_MSB - 0  downto ESP_CSR_DCO_CFG_MSB - 0  - 1);
+    dco_div_sel  <= config(ESP_CSR_DCO_CFG_MSB - 2  downto ESP_CSR_DCO_CFG_MSB - 2  - 2);
+    dco_fc_sel   <= config(ESP_CSR_DCO_CFG_MSB - 5  downto ESP_CSR_DCO_CFG_MSB - 5  - 5);
+    dco_cc_sel   <= config(ESP_CSR_DCO_CFG_MSB - 11 downto ESP_CSR_DCO_CFG_MSB - 11 - 5);
+    dco_clk_sel  <= config(ESP_CSR_DCO_CFG_LSB + 1);
+    dco_en       <= config(ESP_CSR_DCO_CFG_LSB);
+
+  end generate dco_gen;
+
+  no_dco_gen: if this_has_dco = 0 generate
+    pllclk <= '0';
+  end generate no_dco_gen;
+
 
   -- TODO FPGA link
   fpga_data_out <= (others => '0');

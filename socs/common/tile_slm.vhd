@@ -38,10 +38,14 @@ entity tile_slm is
     ROUTER_PORTS : ports_vec := "11111";
     HAS_SYNC     : integer range 0 to 1 := 1);
   port (
+    raw_rstn           : in  std_ulogic;
     rst                : in  std_ulogic;
     clk                : in  std_ulogic;
+    refclk             : in  std_ulogic;
     pllbypass          : in  std_ulogic;
     pllclk             : out std_ulogic;
+    dco_clk            : out std_ulogic;
+    dco_clk_lock       : out std_ulogic;
     -- Test interface
     tdi                : in  std_logic;
     tdo                : out std_logic;
@@ -241,6 +245,14 @@ architecture rtl of tile_slm is
       );
   end component;
 
+  -- DCO
+  signal dco_en       : std_ulogic;
+  signal dco_clk_sel  : std_ulogic;
+  signal dco_cc_sel   : std_logic_vector(5 downto 0);
+  signal dco_fc_sel   : std_logic_vector(5 downto 0);
+  signal dco_div_sel  : std_logic_vector(2 downto 0);
+  signal dco_freq_sel : std_logic_vector(1 downto 0);
+
   -- Queues (despite their name, for this tile, all queues carry non-coherent requests)
   signal dma_rcv_rdreq              : std_ulogic;
   signal dma_rcv_data_out           : noc_flit_type;
@@ -397,8 +409,39 @@ architecture rtl of tile_slm is
 
 begin
 
-  -- TODO:  DCO (two instances)
-  pllclk <= '0';
+  -- DCO
+  dco_gen: if this_has_dco /= 0 generate
+
+    dco_noc: dco
+      generic map (
+        tech => CFG_FABTECH,
+        dlog => 9)                      -- come out of reset after NoC, but
+                                        -- before tile_io.
+      port map (
+        rstn     => raw_rstn,
+        ext_clk  => refclk,
+        en       => dco_en,
+        clk_sel  => dco_clk_sel,
+        cc_sel   => dco_cc_sel,
+        fc_sel   => dco_fc_sel,
+        div_sel  => dco_div_sel,
+        freq_sel => dco_freq_sel,
+        clk      => dco_clk,
+        clk_div  => pllclk,
+        lock     => dco_clk_lock);
+
+    dco_freq_sel <= config(ESP_CSR_DCO_CFG_MSB - 0  downto ESP_CSR_DCO_CFG_MSB - 0  - 1);
+    dco_div_sel  <= config(ESP_CSR_DCO_CFG_MSB - 2  downto ESP_CSR_DCO_CFG_MSB - 2  - 2);
+    dco_fc_sel   <= config(ESP_CSR_DCO_CFG_MSB - 5  downto ESP_CSR_DCO_CFG_MSB - 5  - 5);
+    dco_cc_sel   <= config(ESP_CSR_DCO_CFG_MSB - 11 downto ESP_CSR_DCO_CFG_MSB - 11 - 5);
+    dco_clk_sel  <= config(ESP_CSR_DCO_CFG_LSB + 1);
+    dco_en       <= config(ESP_CSR_DCO_CFG_LSB);
+
+  end generate dco_gen;
+
+  no_dco_gen: if this_has_dco = 0 generate
+    pllclk <= '0';
+  end generate no_dco_gen;
 
   -- TODO JTAG
   tdo <= '0';
