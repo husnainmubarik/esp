@@ -95,11 +95,11 @@ architecture rtl of esp_tile_csr is
     signal config_r : std_logic_vector(ESP_CSR_WIDTH - 1 downto 0);
 
     constant DEFAULT_DCO_NOC_CFG : std_logic_vector(18 downto 0) :=
-       "00"     &  "100"   &  "000000" & "101100" & "0"     & "1";
+       "00"     &  "001"   &  "000000" & "100101" & "0"     & "1";
     -- FREQ_SEL    DIV_SEL    FC_SEL      CC_SEL    CLK_SEL   EN
 
     constant DEFAULT_DCO_CFG : std_logic_vector(18 downto 0) :=
-       "00"     &  "100"   &  "000000" & "101100" & "0"     & "1";
+       "00"     &  "001"   &  "000000" & "100101" & "0"     & "1";
     -- FREQ_SEL    DIV_SEL    FC_SEL      CC_SEL    CLK_SEL   EN
 
     constant DEFAULT_PAD_CFG : std_logic_vector(2 downto 0) :=
