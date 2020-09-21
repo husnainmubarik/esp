@@ -313,7 +313,7 @@ architecture rtl of tile_acc is
   signal apb_rcv_empty              : std_ulogic;
 
   -- Tile parameters
-  signal config : std_logic_vector(ESP_CSR_WIDTH - 1 downto 0);
+  signal tile_config : std_logic_vector(ESP_CSR_WIDTH - 1 downto 0);
 
   signal tile_id : integer range 0 to CFG_TILES_NUM - 1;
 
@@ -606,12 +606,12 @@ begin
         clk_div  => pllclk,
         lock     => dco_clk_lock);
 
-    dco_freq_sel <= config(ESP_CSR_DCO_CFG_MSB - 0  downto ESP_CSR_DCO_CFG_MSB - 0  - 1);
-    dco_div_sel  <= config(ESP_CSR_DCO_CFG_MSB - 2  downto ESP_CSR_DCO_CFG_MSB - 2  - 2);
-    dco_fc_sel   <= config(ESP_CSR_DCO_CFG_MSB - 5  downto ESP_CSR_DCO_CFG_MSB - 5  - 5);
-    dco_cc_sel   <= config(ESP_CSR_DCO_CFG_MSB - 11 downto ESP_CSR_DCO_CFG_MSB - 11 - 5);
-    dco_clk_sel  <= config(ESP_CSR_DCO_CFG_LSB + 1);
-    dco_en       <= raw_rstn and config(ESP_CSR_DCO_CFG_LSB);
+    dco_freq_sel <= tile_config(ESP_CSR_DCO_CFG_MSB - 0  downto ESP_CSR_DCO_CFG_MSB - 0  - 1);
+    dco_div_sel  <= tile_config(ESP_CSR_DCO_CFG_MSB - 2  downto ESP_CSR_DCO_CFG_MSB - 2  - 2);
+    dco_fc_sel   <= tile_config(ESP_CSR_DCO_CFG_MSB - 5  downto ESP_CSR_DCO_CFG_MSB - 5  - 5);
+    dco_cc_sel   <= tile_config(ESP_CSR_DCO_CFG_MSB - 11 downto ESP_CSR_DCO_CFG_MSB - 11 - 5);
+    dco_clk_sel  <= tile_config(ESP_CSR_DCO_CFG_LSB + 1);
+    dco_en       <= raw_rstn and tile_config(ESP_CSR_DCO_CFG_LSB);
 
     -- PLL reference clock comes from DCO
     dvfs_clk <= dco_clk_int;
@@ -632,8 +632,8 @@ begin
   -----------------------------------------------------------------------------
   -- Tile parameters
   -----------------------------------------------------------------------------
-  tile_id          <= to_integer(unsigned(config(ESP_CSR_TILE_ID_MSB downto ESP_CSR_TILE_ID_LSB)));
-  pad_cfg          <= config(ESP_CSR_PAD_CFG_MSB downto ESP_CSR_PAD_CFG_LSB);
+  tile_id          <= to_integer(unsigned(tile_config(ESP_CSR_TILE_ID_MSB downto ESP_CSR_TILE_ID_LSB)));
+  pad_cfg          <= tile_config(ESP_CSR_PAD_CFG_MSB downto ESP_CSR_PAD_CFG_LSB);
 
   this_pindex      <= tile_apb_idx(tile_id);
   this_paddr       <= tile_apb_paddr(tile_id);
@@ -875,7 +875,7 @@ begin
       mon_llc => monitor_cache_none,
       mon_acc => mon_acc_int,
       mon_dvfs => mon_dvfs_int,
-      config => config,
+      tile_config => tile_config,
       srst => open,
       apbi => apbi,
       apbo => apbo(0)

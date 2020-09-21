@@ -29,7 +29,7 @@ entity esp_tile_csr is
     mon_llc     : in monitor_cache_type;
     mon_acc     : in monitor_acc_type;
     mon_dvfs    : in monitor_dvfs_type;
-    config      : out std_logic_vector(ESP_CSR_WIDTH - 1 downto 0);
+    tile_config : out std_logic_vector(ESP_CSR_WIDTH - 1 downto 0);
     srst        : out std_ulogic;
     apbi        : in apb_slv_in_type;
     apbo        : out apb_slv_out_type
@@ -120,7 +120,7 @@ architecture rtl of esp_tile_csr is
   apbo.pindex   <= pindex;
   apbo.pconfig  <= pconfig;
 
-  config <= config_r;
+  tile_config <= config_r;
   csr_addr <= conv_integer(apbi.paddr(6 downto 2));
 
   rd_registers : process(apbi, count_value, ctrl_rst, window_size, window_count, config_r, csr_addr)
