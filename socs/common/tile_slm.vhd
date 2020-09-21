@@ -412,7 +412,7 @@ begin
   -- DCO
   dco_gen: if this_has_dco /= 0 generate
 
-    dco_noc: dco
+    dco_i: dco
       generic map (
         tech => CFG_FABTECH,
         dlog => 9)                      -- come out of reset after NoC, but
@@ -435,7 +435,7 @@ begin
     dco_fc_sel   <= config(ESP_CSR_DCO_CFG_MSB - 5  downto ESP_CSR_DCO_CFG_MSB - 5  - 5);
     dco_cc_sel   <= config(ESP_CSR_DCO_CFG_MSB - 11 downto ESP_CSR_DCO_CFG_MSB - 11 - 5);
     dco_clk_sel  <= config(ESP_CSR_DCO_CFG_LSB + 1);
-    dco_en       <= config(ESP_CSR_DCO_CFG_LSB);
+    dco_en       <= raw_rstn and config(ESP_CSR_DCO_CFG_LSB);
 
   end generate dco_gen;
 

@@ -768,9 +768,9 @@ begin
     dco_noc_fc_sel   <= config(ESP_CSR_DCO_NOC_CFG_MSB - 5  downto ESP_CSR_DCO_NOC_CFG_MSB - 5  - 5);
     dco_noc_cc_sel   <= config(ESP_CSR_DCO_NOC_CFG_MSB - 11 downto ESP_CSR_DCO_NOC_CFG_MSB - 11 - 5);
     dco_noc_clk_sel  <= config(ESP_CSR_DCO_NOC_CFG_LSB + 1);
-    dco_noc_en       <= config(ESP_CSR_DCO_NOC_CFG_LSB);
+    dco_noc_en       <= raw_rstn and config(ESP_CSR_DCO_NOC_CFG_LSB);
 
-    dco_noc: dco
+    dco_i: dco
       generic map (
         tech => CFG_FABTECH,
         dlog => 10)                     -- Tile I/O is the first sending NoC
@@ -793,7 +793,7 @@ begin
     dco_fc_sel   <= config(ESP_CSR_DCO_CFG_MSB - 5  downto ESP_CSR_DCO_CFG_MSB - 5  - 5);
     dco_cc_sel   <= config(ESP_CSR_DCO_CFG_MSB - 11 downto ESP_CSR_DCO_CFG_MSB - 11 - 5);
     dco_clk_sel  <= config(ESP_CSR_DCO_CFG_LSB + 1);
-    dco_en       <= config(ESP_CSR_DCO_CFG_LSB);
+    dco_en       <= raw_rstn and config(ESP_CSR_DCO_CFG_LSB);
 
   end generate dco_gen;
 
