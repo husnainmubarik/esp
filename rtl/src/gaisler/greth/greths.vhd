@@ -142,7 +142,6 @@ begin
       attempt_limit  => attempt_limit,
       backoff_limit  => backoff_limit,
       slot_time      => slot_time,
-      mdcscaler      => mdcscaler,
       enable_mdio    => enable_mdio,
       fifosize       => fifosize,
       nsync          => nsync,
@@ -173,6 +172,7 @@ begin
     port map (
       rst            => rst,
       clk            => clk,
+      mdcscaler      => mdcscaler,
       ahbmi          => ahbmi,
       ahbmo          => ahbmo,
       eahbmo         => open,

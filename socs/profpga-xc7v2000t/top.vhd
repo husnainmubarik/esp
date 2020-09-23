@@ -854,7 +854,6 @@ begin
         pirq => 12,
         little_end => GLOB_CPU_AXI * CFG_L2_DISABLE,
         memtech => CFG_MEMTECH,
-        mdcscaler => CPU_FREQ/1000,
         enable_mdio => 1,
         fifosize => CFG_ETH_FIFO,
         nsync => 1,
@@ -870,6 +869,7 @@ begin
       port map(
         rst => rstn,
         clk => chip_refclk,
+        mdcscaler => CPU_FREQ/1000,
         ahbmi => eth0_ahbmi,
         ahbmo => eth0_ahbmo,
         eahbmo => edcl_ahbmo,

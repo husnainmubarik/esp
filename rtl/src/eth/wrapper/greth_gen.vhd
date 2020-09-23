@@ -186,7 +186,6 @@ begin
       ifg_gap        => ifg_gap,
       attempt_limit  => attempt_limit,
       backoff_limit  => backoff_limit,
-      mdcscaler      => mdcscaler,
       enable_mdio    => enable_mdio,
       fifosize       => fifosize,
       nsync          => nsync,
@@ -211,6 +210,7 @@ begin
     port map(
       rst            => rst,
       clk            => clk,
+      mdcscaler      => mdcscaler,
       --ahb mst in
       hgrant         => hgrant,
       hready         => hready,

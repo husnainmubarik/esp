@@ -35,7 +35,6 @@ entity grethc is
     ifg_gap        : integer := 24; 
     attempt_limit  : integer := 16;
     backoff_limit  : integer := 10;
-    mdcscaler      : integer range 0 to 255 := 25; 
     enable_mdio    : integer range 0 to 1 := 0;
     fifosize       : integer range 4 to 512 := 8;
     nsync          : integer range 1 to 2 := 2;
@@ -62,6 +61,7 @@ entity grethc is
   port(
     rst            : in  std_ulogic;
     clk            : in  std_ulogic;
+    mdcscaler      : in  integer range 0 to 255 := 25; 
     --ahb mst in
     hgrant         : in  std_ulogic;
     hready         : in  std_ulogic;   
@@ -192,8 +192,7 @@ architecture rtl of grethc is
                              conv_std_logic_vector(60, 11);
  
   --mdio constants
-  constant divisor : std_logic_vector(7 downto 0) :=
-    conv_std_logic_vector(mdcscaler, 8);
+  signal divisor : std_logic_vector(7 downto 0);
 
   --receiver constants
   constant maxsizerx : unsigned(15 downto 0) :=
@@ -588,6 +587,9 @@ architecture rtl of grethc is
 
 begin
 
+  -- mdio scaler
+  divisor <= conv_std_logic_vector(mdcscaler, 8);
+
   --reset generators for transmitter and receiver
   vcc <= '1';
   arst <= testrst when (scanen = 1) and (testen = '1') 
@@ -597,7 +599,7 @@ begin
   comb : process(rst, irst, r, rmsti, tmsti, txo, rxo, psel, paddr, penable,
                  erdata, pwrite, pwdata, rxrdata, txrdata, mdio_i, phyrstaddr,
                  testen, testrst, edcladdr, mdint, tmsti2, edcldisable,
-                 edclsepahb) is
+                 edclsepahb, divisor) is
     variable v             : reg_type;
     variable vpirq         : std_ulogic;
     variable vprdata       : std_logic_vector(31 downto 0);

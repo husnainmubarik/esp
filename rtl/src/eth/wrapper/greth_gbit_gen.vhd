@@ -179,7 +179,6 @@ begin
       attempt_limit  => attempt_limit,
       backoff_limit  => backoff_limit,
       slot_time      => slot_time,
-      mdcscaler      => mdcscaler,
       nsync          => nsync,
       edcl           => edcl,
       edclbufsz      => edclbufsz,
@@ -202,6 +201,7 @@ begin
     port map(
       rst            => rst,
       clk            => clk,
+      mdcscaler      => mdcscaler,
       --ahb mst in   
       hgrant         => hgrant,
       hready         => hready,
