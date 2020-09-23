@@ -1143,6 +1143,8 @@ begin
     noc4_data_void_in <= test4_data_void_in;
     noc5_data_void_in <= test5_data_void_in;
     noc6_data_void_in <= test6_data_void_in;
+
+    tdo <= '0';
   end generate no_test_if_gen;
 
 end;
