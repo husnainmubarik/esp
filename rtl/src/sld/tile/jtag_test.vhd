@@ -878,7 +878,10 @@ begin
         rd_empty_o => test1_cpu_data_void_in);
 
     noc1_input_port   <= test1_input_port;
+    -- Do not inject any packet to the NoC if tms is active
     noc1_data_void_in <= '1' when tms_int.sync = '1' else test1_data_void_in;
+    -- Hold any packet incoming from the NoC if tms is active
+    noc1_stop_in      <= not noc1_data_void_out when tms_int.sync = '1' else test1_stop_in;
 
     t1_out              <= test1_input_port;
     t1_cpu_data_void_in <= test1_data_void_in when tms_int.sync = '1' else '1';
@@ -904,6 +907,7 @@ begin
 
     noc2_input_port   <= test2_input_port;
     noc2_data_void_in <= '1' when tms_int.sync = '1' else test2_data_void_in;
+    noc2_stop_in      <= not noc2_data_void_out when tms_int.sync = '1' else test2_stop_in;
 
     t2_out              <= test2_input_port;
     t2_cpu_data_void_in <= test2_data_void_in when tms_int.sync = '1' else '1';
@@ -929,6 +933,7 @@ begin
 
     noc3_input_port   <= test3_input_port;
     noc3_data_void_in <= '1' when tms_int.sync = '1' else test3_data_void_in;
+    noc3_stop_in      <= not noc3_data_void_out when tms_int.sync = '1' else test3_stop_in;
 
     t3_out              <= test3_input_port;
     t3_cpu_data_void_in <= test3_data_void_in when tms_int.sync = '1' else '1';
@@ -954,6 +959,7 @@ begin
 
     noc4_input_port   <= test4_input_port;
     noc4_data_void_in <= '1' when tms_int.sync = '1' else test4_data_void_in;
+    noc4_stop_in      <= not noc4_data_void_out when tms_int.sync = '1' else test4_stop_in;
 
     t4_out              <= test4_input_port;
     t4_cpu_data_void_in <= test4_data_void_in when tms_int.sync = '1' else '1';
@@ -979,6 +985,7 @@ begin
 
     noc5_input_port   <= test5_input_port;
     noc5_data_void_in <= '1' when tms_int.sync = '1' else test5_data_void_in;
+    noc5_stop_in      <= not noc5_data_void_out when tms_int.sync = '1' else test5_stop_in;
 
     t5_out              <= test5_input_port;
     t5_cpu_data_void_in <= test5_data_void_in when tms_int.sync = '1' else '1';
@@ -1004,6 +1011,7 @@ begin
 
     noc6_input_port   <= test6_input_port;
     noc6_data_void_in <= '1' when tms_int.sync = '1' else test6_data_void_in;
+    noc6_stop_in      <= not noc6_data_void_out when tms_int.sync = '1' else test6_stop_in;
 
     t6_out              <= test6_input_port;
     t6_cpu_data_void_in <= test6_data_void_in when tms_int.sync = '1' else '1';
