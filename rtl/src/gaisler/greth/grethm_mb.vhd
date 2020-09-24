@@ -43,7 +43,7 @@ entity grethm_mb is
     attempt_limit  : integer := 16;
     backoff_limit  : integer := 10;
     slot_time      : integer := 128;
-    mdcscaler      : integer range 0 to 255 := 25; 
+    mdcscaler      : integer range 0 to 2047 := 25; 
     enable_mdio    : integer range 0 to 1 := 0;
     fifosize       : integer range 4 to 64 := 8;
     nsync          : integer range 1 to 2 := 2;

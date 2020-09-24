@@ -169,7 +169,7 @@ package net is
     port(
      rst            : in  std_ulogic;
      clk            : in  std_ulogic;
-     mdcscaler      : in  integer range 0 to 255 := 25; 
+     mdcscaler      : in  integer range 0 to 2047 := 25; 
      ahbmi          : in  ahb_mst_in_type;
      ahbmo          : out ahb_mst_out_type;
      eahbmo         : out ahb_mst_out_type;
@@ -193,7 +193,7 @@ package net is
       attempt_limit  : integer := 16;
       backoff_limit  : integer := 10;
       slot_time      : integer := 128;
-      mdcscaler      : integer range 0 to 255 := 25; 
+      mdcscaler      : integer range 0 to 2047 := 25; 
       enable_mdio    : integer range 0 to 1 := 0;
       fifosize       : integer range 4 to 512 := 8;
       nsync          : integer range 1 to 2 := 2;
@@ -272,7 +272,7 @@ package net is
     port(
       rst            : in  std_ulogic;
       clk            : in  std_ulogic;
-      mdcscaler      : in  integer range 0 to 255 := 25; 
+      mdcscaler      : in  integer range 0 to 2047 := 25; 
       ahbmi          : in  ahb_mst_in_type;
       ahbmo          : out ahb_mst_out_type;
       ahbmi2         : in  ahb_mst_in_type;
@@ -324,7 +324,7 @@ package net is
     port(
       rst            : in  std_ulogic;
       clk            : in  std_ulogic;
-      mdcscaler      : in  integer range 0 to 255 := 25; 
+      mdcscaler      : in  integer range 0 to 2047 := 25; 
       ahbmi          : in  ahb_mst_in_type;
       ahbmo          : out ahb_mst_out_type;
       apbi           : in  apb_slv_in_type;
@@ -379,7 +379,7 @@ package net is
   port(
     rst            : in  std_ulogic;
     clk            : in  std_ulogic;
-    mdcscaler      : in  integer range 0 to 255 := 25; 
+    mdcscaler      : in  integer range 0 to 2047 := 25; 
     ahbmi          : in  ahb_mst_in_type;
     ahbmo          : out ahb_mst_out_type;
     eahbmo         : out ahb_mst_out_type;
@@ -403,7 +403,7 @@ package net is
       attempt_limit  : integer := 16;
       backoff_limit  : integer := 10;
       slot_time      : integer := 128;
-      mdcscaler      : integer range 0 to 255 := 25; 
+      mdcscaler      : integer range 0 to 2047 := 25; 
       enable_mdio    : integer range 0 to 1 := 0;
       fifosize       : integer range 4 to 64 := 8;
       nsync          : integer range 1 to 2 := 2;
@@ -459,7 +459,7 @@ package net is
       attempt_limit  : integer := 16;
       backoff_limit  : integer := 10;
       slot_time      : integer := 128;
-      mdcscaler      : integer range 0 to 255 := 25; 
+      mdcscaler      : integer range 0 to 2047 := 25; 
       enable_mdio    : integer range 0 to 1 := 0;
       fifosize       : integer range 4 to 64 := 8;
       nsync          : integer range 1 to 2 := 2;
@@ -538,7 +538,7 @@ package net is
       attempt_limit  : integer := 16;
       backoff_limit  : integer := 10;
       slot_time      : integer := 128;
-      mdcscaler      : integer range 0 to 255 := 25; 
+      mdcscaler      : integer range 0 to 2047 := 25; 
       enable_mdio    : integer range 0 to 1 := 0;
       fifosize       : integer range 4 to 64 := 8;
       nsync          : integer range 1 to 2 := 2;

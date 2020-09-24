@@ -36,7 +36,7 @@ entity greth_gbit_gen is
     attempt_limit  : integer := 16;
     backoff_limit  : integer := 10;
     slot_time      : integer := 128;
-    mdcscaler      : integer range 0 to 255 := 25; 
+    mdcscaler      : integer range 0 to 2047 := 25; 
     nsync          : integer range 1 to 2 := 2;
     edcl           : integer range 0 to 3 := 1;
     edclbufsz      : integer range 1 to 64 := 1;

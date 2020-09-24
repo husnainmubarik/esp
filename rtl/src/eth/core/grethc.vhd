@@ -61,7 +61,7 @@ entity grethc is
   port(
     rst            : in  std_ulogic;
     clk            : in  std_ulogic;
-    mdcscaler      : in  integer range 0 to 255 := 25; 
+    mdcscaler      : in  integer range 0 to 2047 := 25; 
     --ahb mst in
     hgrant         : in  std_ulogic;
     hready         : in  std_ulogic;   
@@ -192,7 +192,7 @@ architecture rtl of grethc is
                              conv_std_logic_vector(60, 11);
  
   --mdio constants
-  signal divisor : std_logic_vector(7 downto 0);
+  signal divisor : std_logic_vector(10 downto 0);
 
   --receiver constants
   constant maxsizerx : unsigned(15 downto 0) :=
@@ -445,7 +445,7 @@ architecture rtl of grethc is
     mcastacc        : std_ulogic;
     
     --mdio
-    mdccnt          : std_logic_vector(7 downto 0);
+    mdccnt          : std_logic_vector(10 downto 0);
     mdioclk         : std_ulogic;
     mdioclkold      : std_logic_vector(mdiohold-1 downto 0);
     mdio_state      : mdio_state_type;
@@ -1426,7 +1426,7 @@ begin
      mclk := mclkvec(mdiohold-1) and not mclkvec(mdiohold);
      nmclk := mclkvec(1) and not mclkvec(0);
      v.mdioclkold := mclkvec(mdiohold-1 downto 0);
-     if r.mdccnt = "00000000" then
+     if r.mdccnt = "00000000000" then
        v.mdccnt := divisor;
        v.mdioclk := not r.mdioclk;
      else

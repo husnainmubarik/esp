@@ -75,7 +75,7 @@ entity grethm is
   port(
     rst            : in  std_ulogic;
     clk            : in  std_ulogic;
-    mdcscaler      : in  integer range 0 to 255 := 25; 
+    mdcscaler      : in  integer range 0 to 2047 := 25; 
     ahbmi          : in  ahb_mst_in_type;
     ahbmo          : out ahb_mst_out_type;
     eahbmo         : out ahb_mst_out_type;
