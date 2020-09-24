@@ -258,7 +258,7 @@ constant padoen_polarity : tech_ability_type :=
         (axcel => 1, proasic => 1, umc => 1, rhumc => 1, saed32 => 1, rhs65 => 0, dare => 1, apa3 => 1,
          ihp25 => 1, ut25 => 1, peregrine => 1, easic90 => 1, axdsp => 1,
 	 actfus => 1, apa3e => 1, apa3l => 1, ut130 => 1, easic45 => 1,
-         ut90 => 1, igloo2 => 1, rtg4 => 1, others => 0);
+         ut90 => 1, igloo2 => 1, rtg4 => 1, gf12 => 1, others => 0);
 
 constant has_pads : tech_ability_type :=
 	(inferred => 0, virtex => 1, virtex2 => 1, memvirage => 0,
