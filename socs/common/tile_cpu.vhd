@@ -328,6 +328,7 @@ architecture rtl of tile_cpu is
   signal tile_id : integer range 0 to CFG_TILES_NUM - 1;
 
   signal this_cpu_id            : integer range 0 to CFG_NCPU_TILE - 1;
+  signal this_ariane_hartid_cfg : std_logic_vector(ESP_CSR_ARIANE_HARTID_MSB downto ESP_CSR_ARIANE_HARTID_LSB + 1);
   signal this_cpu_id_lv         : std_logic_vector(63 downto 0);
 
   signal this_dvfs_pindex       : integer range 0 to NAPBSLV - 1;
@@ -704,7 +705,8 @@ begin
   pad_cfg                <= tile_config(ESP_CSR_PAD_CFG_MSB downto ESP_CSR_PAD_CFG_LSB);
 
   this_cpu_id            <= tile_cpu_id(tile_id);
-  this_cpu_id_lv         <= conv_std_logic_vector(this_cpu_id, 64);
+  this_ariane_hartid_cfg <= tile_config(ESP_CSR_ARIANE_HARTID_MSB downto ESP_CSR_ARIANE_HARTID_LSB + 1);
+  this_cpu_id_lv         <= conv_std_logic_vector(this_cpu_id, 64) when tile_config(ESP_CSR_ARIANE_HARTID_LSB) = '0' else X"0000_0000_0000_000" & this_ariane_hartid_cfg;
 
   this_dvfs_pindex       <= cpu_dvfs_pindex(tile_id);
   this_dvfs_paddr        <= cpu_dvfs_paddr(tile_id);

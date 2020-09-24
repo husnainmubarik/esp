@@ -126,7 +126,7 @@ package sldcommon is
     coherent_dma_rsp => '0'
     );
 
-  constant ESP_CSR_WIDTH : integer := 61;
+  constant ESP_CSR_WIDTH : integer := 66;
 
   constant ESP_CSR_VALID_ADDR : integer range 0 to 31 := 0;
   constant ESP_CSR_VALID_LSB  : integer range 0 to ESP_CSR_WIDTH-1 := 0;
@@ -151,6 +151,10 @@ package sldcommon is
   constant ESP_CSR_MDC_SCALER_CFG_ADDR : integer range 0 to 31 := 5;
   constant ESP_CSR_MDC_SCALER_CFG_LSB : integer range 0 to ESP_CSR_WIDTH - 1 := 50;
   constant ESP_CSR_MDC_SCALER_CFG_MSB : integer range 0 to ESP_CSR_WIDTH - 1 := 60;
+
+  constant ESP_CSR_ARIANE_HARTID_ADDR : integer range 0 to 31 := 6;
+  constant ESP_CSR_ARIANE_HARTID_LSB : integer range 0 to ESP_CSR_WIDTH - 1 := 61;
+  constant ESP_CSR_ARIANE_HARTID_MSB : integer range 0 to ESP_CSR_WIDTH - 1 := 65;
 
   constant ESP_CSR_SRST_ADDR : integer range 0 to 31 := 31;  -- reserved address
 

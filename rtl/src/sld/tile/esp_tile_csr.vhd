@@ -94,6 +94,10 @@ architecture rtl of esp_tile_csr is
     -- CSRs
     signal config_r : std_logic_vector(ESP_CSR_WIDTH - 1 downto 0);
 
+    constant DEFAULT_ARIANE_HARTID : std_logic_vector(4 downto 0) :=
+      "0000"    & "0";
+    -- HART ID    OVERWRITE DEFAULT FROM SOCMAP
+
     constant DEFAULT_MDC_SCALER_CFG : std_logic_vector(10 downto 0) := conv_std_logic_vector(490, 11);
     -- Assume default I/O tile DCO frequency is 490MHz
 
@@ -112,7 +116,7 @@ architecture rtl of esp_tile_csr is
     constant DEFAULT_TILE_ID : std_logic_vector(7 downto 0) := (others => '0');
 
     constant DEFAULT_CONFIG : std_logic_vector(ESP_CSR_WIDTH - 1 downto 0) :=
-      DEFAULT_MDC_SCALER_CFG & DEFAULT_DCO_NOC_CFG & DEFAULT_DCO_CFG & DEFAULT_PAD_CFG & DEFAULT_TILE_ID & "0";
+      DEFAULT_ARIANE_HARTID & DEFAULT_MDC_SCALER_CFG & DEFAULT_DCO_NOC_CFG & DEFAULT_DCO_CFG & DEFAULT_PAD_CFG & DEFAULT_TILE_ID & "0";
 
     signal csr_addr : integer range 0 to 31;
 
@@ -159,6 +163,8 @@ architecture rtl of esp_tile_csr is
           readdata(ESP_CSR_DCO_NOC_CFG_MSB - ESP_CSR_DCO_NOC_CFG_LSB downto 0) <= config_r(ESP_CSR_DCO_NOC_CFG_MSB downto ESP_CSR_DCO_NOC_CFG_LSB);
         when ESP_CSR_MDC_SCALER_CFG_ADDR =>
           readdata(ESP_CSR_MDC_SCALER_CFG_MSB - ESP_CSR_MDC_SCALER_CFG_LSB downto 0) <= config_r(ESP_CSR_MDC_SCALER_CFG_MSB downto ESP_CSR_MDC_SCALER_CFG_LSB);
+        when ESP_CSR_ARIANE_HARTID_ADDR =>
+          readdata(ESP_CSR_ARIANE_HARTID_MSB - ESP_CSR_ARIANE_HARTID_LSB downto 0) <= config_r(ESP_CSR_ARIANE_HARTID_MSB downto ESP_CSR_ARIANE_HARTID_LSB);
         when others =>
           readdata <= (others => '0');
       end case;
@@ -212,6 +218,8 @@ architecture rtl of esp_tile_csr is
               config_r(ESP_CSR_DCO_NOC_CFG_MSB downto ESP_CSR_DCO_NOC_CFG_LSB) <= apbi.pwdata(ESP_CSR_DCO_NOC_CFG_MSB - ESP_CSR_DCO_NOC_CFG_LSB downto 0);
             when ESP_CSR_MDC_SCALER_CFG_ADDR =>
               config_r(ESP_CSR_MDC_SCALER_CFG_MSB downto ESP_CSR_MDC_SCALER_CFG_LSB) <= apbi.pwdata(ESP_CSR_MDC_SCALER_CFG_MSB - ESP_CSR_MDC_SCALER_CFG_LSB downto 0);
+            when ESP_CSR_ARIANE_HARTID_ADDR =>
+              config_r(ESP_CSR_ARIANE_HARTID_MSB downto ESP_CSR_ARIANE_HARTID_LSB) <= apbi.pwdata(ESP_CSR_ARIANE_HARTID_MSB - ESP_CSR_ARIANE_HARTID_LSB downto 0);
             when ESP_CSR_SRST_ADDR =>
               srst <= wdata(0);
             when others => null;
