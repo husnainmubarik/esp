@@ -588,7 +588,7 @@ architecture rtl of grethc is
 begin
 
   -- mdio scaler
-  divisor <= conv_std_logic_vector(mdcscaler, 8);
+  divisor <= conv_std_logic_vector(mdcscaler, 11);
 
   --reset generators for transmitter and receiver
   vcc <= '1';
