@@ -769,6 +769,8 @@ begin
         tdo                => open,
         tms                => '0',
         tclk               => '0',
+        -- Ethernet MDC Scaler configuration
+        mdcscaler          => open,
         -- I/O bus interfaces
 	eth0_apbi          => eth0_apbi,
 	eth0_apbo          => eth0_apbo,

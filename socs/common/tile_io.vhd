@@ -57,6 +57,8 @@ entity tile_io is
     tdo                : out std_logic;
     tms                : in  std_logic;
     tclk               : in  std_logic;
+    -- Ethernet MDC Scaler configuration
+    mdcscaler          : out integer range 0 to 1023;
     -- I/O bus interfaces
     eth0_apbi          : out apb_slv_in_type;
     eth0_apbo          : in  apb_slv_out_type;
@@ -827,6 +829,9 @@ begin
 
   -- Pads configuration
   pad_cfg                <= tile_config(ESP_CSR_PAD_CFG_MSB downto ESP_CSR_PAD_CFG_LSB);
+
+  -- MDC scaler configuration
+  mdcscaler              <= conv_integer(tile_config(ESP_CSR_MDC_SCALER_CFG_MSB downto ESP_CSR_MDC_SCALER_CFG_LSB));
 
   -----------------------------------------------------------------------------
   -- NOC Connections
