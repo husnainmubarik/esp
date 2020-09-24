@@ -9,6 +9,7 @@ use ieee.numeric_std.all;
 use work.config.all;
 use work.config_types.all;
 use work.gencomp.all;
+use work.misc.all;
 use work.alldco.all;
 
 
@@ -35,14 +36,22 @@ end entity dco;
 architecture rtl of dco is
 
   signal clk_int : std_ulogic;
+  signal sync_rstn : std_ulogic;
   signal count : std_logic_vector(15 downto 0);
 
 begin  -- architecture rtl
 
+
+  -- Generate synchronous reset for lock counter
+  rst0 : rstgen                         -- reset generator
+    generic map (acthigh => 0, syncin => 0)
+    port map (rstn, clk_int, '1', sync_rstn, open);
+
+
   -- generate lock output after 2^dlog cycles
-  process (clk_int, rstn) is
+  process (clk_int, sync_rstn) is
   begin  -- process
-    if rstn = '0' then                  -- asynchronous reset (active low)
+    if sync_rstn = '0' then                  -- asynchronous reset (active low)
       count <= (others => '0');
     elsif clk_int'event and clk_int = '1' then  -- rising clock edge
       if count(dlog) /= '1' then
