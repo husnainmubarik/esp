@@ -258,6 +258,30 @@ architecture rtl of llc_wrapper is
   signal ahbm_reg      : ahbm_reg_type;
   signal ahbm_reg_next : ahbm_reg_type;
 
+  -----------------------------------------------------------------------------
+  -- EXT FSM
+  -----------------------------------------------------------------------------
+  type ext_fsm is (idle, load_line, send_mem_rsp, store_line);
+
+  type ext_reg_type is record
+    state    : ext_fsm;
+    hwrite   : std_ulogic;
+    haddr    : addr_t;
+    line     : line_t;
+    word_cnt : integer;
+  end record;
+
+  constant EXT_REG_DEFAULT : ext_reg_type := (
+    state    => idle,
+    hwrite   => '0',
+    haddr    => (others => '0'),
+    line     => (others => '0'),
+    word_cnt => 0
+    );
+
+  signal ext_reg      : ext_reg_type;
+  signal ext_reg_next : ext_reg_type;
+
   -------------------------------------------------------------------------------
   -- FSM: Forward to NoC
   -------------------------------------------------------------------------------
@@ -572,13 +596,6 @@ architecture rtl of llc_wrapper is
 
 begin  -- architecture rtl
 
--------------------------------------------------------------------------------
--- Memory request through FPGA link
--------------------------------------------------------------------------------
-
-  ext_req_data <= (others => '0');
-  ext_req_valid <= '0';
-  ext_rsp_ready <= '0';
 
 -------------------------------------------------------------------------------
 -- APB slave interface (flush, soft reset)
@@ -724,6 +741,8 @@ begin  -- architecture rtl
       dma_rsp_out_reg <= dma_rsp_out_reg_next;
     end if;
   end process fsms_state_update;
+
+  ahb_mst_if_gen: if ahb_if_en /= 0 generate
 
 -------------------------------------------------------------------------------
 -- FSM: Bridge from LLC cache to AHB bus
@@ -903,6 +922,160 @@ begin  -- architecture rtl
     ahbm_reg_next <= reg;
 
   end process fsm_ahbm;
+
+  -- Do not use FPGA-based memory link
+  ext_req_data <= (others => '0');
+  ext_req_valid <= '0';
+  ext_rsp_ready <= '0';
+  end generate ahb_mst_if_gen;
+
+
+  ext_if_gen: if ahb_if_en = 0 generate
+-------------------------------------------------------------------------------
+-- Memory request through FPGA link
+-------------------------------------------------------------------------------
+
+  fsm_ext : process (ext_reg, ext_req_ready, ext_rsp_valid, ext_rsp_data,
+                      llc_mem_req_valid, llc_mem_req_data_hwrite,
+                      llc_mem_req_data_hprot, llc_mem_req_data_addr,
+                      llc_mem_req_data_line, llc_mem_rsp_ready) is
+
+    variable reg     : ext_reg_type;
+
+  begin  -- process fsm_ext
+
+    -- save current state into a variable
+    reg         := ext_reg;
+
+    -- default values for output signals
+    llc_mem_req_ready     <= '0';
+    llc_mem_rsp_valid     <= '0';
+    llc_mem_rsp_data_line <= (others => '0');
+
+    ext_req_data  <= (others => '0');
+    ext_req_valid <= '0';
+    ext_rsp_ready <= '0';
+
+    -- select next state and set outputs
+    case ext_reg.state is
+
+      -- IDLE
+      when idle =>
+        llc_mem_req_ready <= '1';
+
+        -- Use address LSB as write/not read control bit
+        reg.hwrite   := llc_mem_req_data_hwrite;
+        reg.haddr    := llc_mem_req_data_addr & empty_offset(OFFSET_BITS - 1 downto 1) & llc_mem_req_data_hwrite;
+        reg.line     := llc_mem_req_data_line;
+        reg.word_cnt := 0;
+
+        if llc_mem_req_valid = '1' then
+          if llc_mem_req_data_hwrite = '0' then
+            reg.state := load_line;
+          else
+            reg.state := store_line;
+          end if;
+        end if;
+
+      -- LOAD LINE
+      when load_line =>
+        if reg.word_cnt = 0 then
+
+          if ext_req_ready = '1' then
+            if GLOB_PHYS_ADDR_BITS < ARCH_BITS then
+              ext_req_data(ARCH_BITS - 1 downto GLOB_PHYS_ADDR_BITS) <= (others => '0');
+              ext_req_data(GLOB_PHYS_ADDR_BITS - 1 downto 0) <= reg.haddr;
+            end if;
+            if GLOB_PHYS_ADDR_BITS = ARCH_BITS then
+              ext_req_data  <= reg.haddr;
+            end if;
+            ext_req_valid <= '1';
+            reg.word_cnt  := reg.word_cnt + 1;
+          end if;
+
+        elsif reg.word_cnt = WORDS_PER_LINE then
+
+          if ext_rsp_valid = '1' then
+            reg.line(WORDS_PER_LINE*BITS_PER_WORD-1 downto (WORDS_PER_LINE-1)*BITS_PER_WORD) := fix_endian(ext_rsp_data);
+
+            llc_mem_rsp_valid <= '1';
+            if llc_mem_rsp_ready = '1' then
+              llc_mem_rsp_data_line <= fix_endian(ext_rsp_data) & reg.line((WORDS_PER_LINE-1)*BITS_PER_WORD-1 downto 0);
+              reg.state             := idle;
+            else
+              reg.state := send_mem_rsp;
+            end if;
+          end if;
+
+        else
+
+          if ext_rsp_valid = '1' then
+            reg.line(reg.word_cnt*BITS_PER_WORD-1 downto (reg.word_cnt-1)*BITS_PER_WORD) := fix_endian(ext_rsp_data);
+            reg.word_cnt                                                                 := reg.word_cnt + 1;
+          end if;
+
+        end if;
+
+
+      -- SEND MEM RSP
+      when send_mem_rsp =>
+        llc_mem_rsp_valid <= '1';
+        if llc_mem_rsp_ready = '1' then
+          llc_mem_rsp_data_line <= reg.line;
+          reg.state := idle;
+        end if;
+
+
+      -- STORE LINE
+      when store_line =>
+        if reg.word_cnt = 0 then
+
+          if ext_req_ready = '1' then
+            if GLOB_PHYS_ADDR_BITS < ARCH_BITS then
+              ext_req_data(ARCH_BITS - 1 downto GLOB_PHYS_ADDR_BITS) <= (others => '0');
+              ext_req_data(GLOB_PHYS_ADDR_BITS - 1 downto 0) <= reg.haddr;
+            end if;
+            if GLOB_PHYS_ADDR_BITS = ARCH_BITS then
+              ext_req_data  <= reg.haddr;
+            end if;
+            ext_req_valid <= '1';
+            reg.word_cnt  := reg.word_cnt + 1;
+          end if;
+
+        elsif reg.word_cnt = WORDS_PER_LINE then
+
+          ext_req_data <= fix_endian(reg.line(WORDS_PER_LINE*BITS_PER_WORD-1 downto (WORDS_PER_LINE-1)*BITS_PER_WORD));
+          if ext_req_ready = '1' then
+            ext_req_valid <= '1';
+            reg.state     := idle;
+          end if;
+
+        else
+
+          ext_req_data <= fix_endian(reg.line(reg.word_cnt*BITS_PER_WORD-1 downto (reg.word_cnt-1)*BITS_PER_WORD));
+          if ext_req_ready = '1' then
+            ext_req_valid <= '1';
+            reg.word_cnt  := reg.word_cnt + 1;
+          end if;
+
+        end if;
+
+    end case;
+
+    ext_reg_next <= reg;
+
+  end process fsm_ext;
+
+  -- Do not use AHB master interface
+  ahbmo.hbusreq <= '0';
+  ahbmo.htrans  <= HTRANS_IDLE;
+  ahbmo.hwrite  <= '0';
+  ahbmo.haddr   <= (others => '0');
+  ahbmo.hprot   <= "1100";
+  ahbm_reg_next <= AHBM_REG_DEFAULT;
+
+  end generate ext_if_gen;
+
 
 -----------------------------------------------------------------------------
 -- FSM: Requests from NoC (from private caches only)
