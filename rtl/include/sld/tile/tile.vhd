@@ -881,6 +881,35 @@ package tile is
       apbo        : out apb_slv_out_type);
   end component;
 
+  component mem2ext is
+    port (
+      clk               : in  std_ulogic;
+      rstn              : in  std_ulogic;
+      local_y           : in  local_yx;
+      local_x           : in  local_yx;
+      fpga_data_in      : in  std_logic_vector(ARCH_BITS - 1 downto 0);
+      fpga_data_out     : out std_logic_vector(ARCH_BITS - 1 downto 0);
+      fpga_valid_in     : in  std_logic;
+      fpga_valid_out    : out std_logic;
+      fpga_oen          : out std_logic;
+      fpga_clk_in       : in  std_logic;
+      fpga_clk_out      : out std_logic;
+      fpga_credit_in    : in  std_logic;
+      fpga_credit_out   : out std_logic;
+      llc_ext_req_ready : out std_ulogic;
+      llc_ext_req_valid : in  std_ulogic;
+      llc_ext_req_data  : in  std_logic_vector(ARCH_BITS - 1 downto 0);
+      llc_ext_rsp_ready : in  std_ulogic;
+      llc_ext_rsp_valid : out std_ulogic;
+      llc_ext_rsp_data  : out std_logic_vector(ARCH_BITS - 1 downto 0);
+      dma_rcv_rdreq     : out std_ulogic;
+      dma_rcv_data_out  : in  noc_flit_type;
+      dma_rcv_empty     : in  std_ulogic;
+      dma_snd_wrreq     : out std_ulogic;
+      dma_snd_data_in   : out noc_flit_type;
+      dma_snd_full      : in  std_ulogic);
+  end component mem2ext;
+
   component ext2ahbm is
     port (
       clk             : in  std_ulogic;

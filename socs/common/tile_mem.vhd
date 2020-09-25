@@ -258,6 +258,15 @@ architecture rtl of tile_mem is
   signal apb_snd_data_in            : misc_noc_flit_type;
   signal apb_snd_full               : std_ulogic;
 
+  -- LLC/FPGA-based memory link
+  signal llc_ext_req_ready : std_ulogic;
+  signal llc_ext_req_valid : std_ulogic;
+  signal llc_ext_req_data  : std_logic_vector(ARCH_BITS - 1 downto 0);
+  signal llc_ext_rsp_ready : std_ulogic;
+  signal llc_ext_rsp_valid : std_ulogic;
+  signal llc_ext_rsp_data  : std_logic_vector(ARCH_BITS - 1 downto 0);
+
+
   -- Bus
   signal ahbsi : ahb_slv_in_type;
   signal ahbso : ahb_slv_out_vector;
@@ -530,13 +539,6 @@ begin
   end generate no_dco_gen;
 
 
-  -- TODO FPGA link
-  fpga_data_out <= (others => '0');
-  fpga_oen <= '0';
-  fpga_valid_out <= '0';
-  fpga_clk_out <= '0';
-  fpga_credit_out <= '0';
-
   -----------------------------------------------------------------------------
   -- JTAG for single tile testing / bypass when test_if_en = 0
   -----------------------------------------------------------------------------
@@ -790,11 +792,19 @@ begin
   -- Bus
   -----------------------------------------------------------------------------
 
+  ahb_bus_gen: if this_has_ddr /= 0 generate
+  -- instantiate the bus if using on-chip DDR controller
   ahb2 : ahbctrl                        -- AHB arbiter/multiplexer
     generic map (defmast => CFG_DEFMST, split => CFG_SPLIT,
                  rrobin  => CFG_RROBIN, ioaddr => CFG_AHBIO, fpnpen => CFG_FPNPEN,
                  nahbm   => maxahbm, nahbs => maxahbs)
     port map (rst, clk, ahbmi, ahbmo, ahbsi, ahbso);
+  end generate ahb_bus_gen;
+
+  no_ahb_bus_gen: if this_has_ddr = 0 generate
+    ahbsi <= ahbs_in_none;
+    ahbmi <= ahbm_in_none;
+  end generate no_ahb_bus_gen;
 
 
   -----------------------------------------------------------------------
@@ -961,6 +971,13 @@ begin
     ahbmo(2)      <= ahbm_none;
     mon_cache_int <= monitor_cache_none;
 
+    -- FPGA-based memory link is not supported when ESP cahces are not enabled
+    fpga_data_out <= (others => '0');
+    fpga_oen <= '0';
+    fpga_valid_out <= '0';
+    fpga_clk_out <= '0';
+    fpga_credit_out <= '0';
+
     -- Handle JTAG or EDCL requests to memory as well as ETH DMA
     mem_noc2ahbm_2 : mem_noc2ahbm
       generic map (
@@ -1002,6 +1019,7 @@ begin
 
   with_cache_coherence : if CFG_LLC_ENABLE /= 0 generate
 
+    non_coh_dma_proxy_gen: if this_has_ddr /= 0 generate
     -- Handle accelerators non-coherent DMA
     mem_noc2ahbm_1 : mem_noc2ahbm
       generic map (
@@ -1037,6 +1055,7 @@ begin
         dma_snd_full              => dma_snd_full,
         dma_snd_atleast_4slots    => dma_snd_atleast_4slots,
         dma_snd_exactly_3slots    => dma_snd_exactly_3slots);
+    end generate non_coh_dma_proxy_gen;
 
     -- Handle CPU coherent requests and accelerators coherent DMA
     llc_rstn <= not srst and rst;
@@ -1046,6 +1065,7 @@ begin
         tech          => CFG_MEMTECH,
         sets          => CFG_LLC_SETS,
         ways          => CFG_LLC_WAYS,
+        ahb_if_en     => this_has_ddr,
         nl2           => CFG_NL2,
         nllc          => CFG_NLLC_COHERENT,
         noc_xlen      => CFG_XLEN,
@@ -1099,17 +1119,59 @@ begin
         dma_snd_data_in            => coherent_dma_snd_data_in,
         dma_snd_full               => coherent_dma_snd_full,
         -- LLC->ext
-        ext_req_ready              => '0',
-        ext_req_valid              => open,
-        ext_req_data               => open,
+        ext_req_ready              => llc_ext_req_ready,
+        ext_req_valid              => llc_ext_req_valid,
+        ext_req_data               => llc_ext_req_data,
         -- ext->LLC
-        ext_rsp_ready              => open,
-        ext_rsp_valid              => '0',
-        ext_rsp_data               => (others => '0'),
+        ext_rsp_ready              => llc_ext_rsp_ready,
+        ext_rsp_valid              => llc_ext_rsp_valid,
+        ext_rsp_data               => llc_ext_rsp_data,
         -- Monitor
         mon_cache                  => mon_cache_int
         );
 
+
+    mem2ext_gen: if this_has_ddr = 0 generate
+    -- Use FPGA-based memory link if DDR controller is not available
+    -- This option is only supported with the ESP cache hierarchy enabled
+    mem2ext_1: mem2ext
+      port map (
+        clk               => clk,
+        rstn              => rst,
+        local_y           => this_local_y,
+        local_x           => this_local_x,
+        fpga_data_in      => fpga_data_in,
+        fpga_data_out     => fpga_data_out,
+        fpga_valid_in     => fpga_valid_in,
+        fpga_valid_out    => fpga_valid_out,
+        fpga_oen          => fpga_oen,
+        fpga_clk_in       => fpga_clk_in,
+        fpga_clk_out      => fpga_clk_out,
+        fpga_credit_in    => fpga_credit_in,
+        fpga_credit_out   => fpga_credit_out,
+        llc_ext_req_ready => llc_ext_req_ready,
+        llc_ext_req_valid => llc_ext_req_valid,
+        llc_ext_req_data  => llc_ext_req_data,
+        llc_ext_rsp_ready => llc_ext_rsp_ready,
+        llc_ext_rsp_valid => llc_ext_rsp_valid,
+        llc_ext_rsp_data  => llc_ext_rsp_data,
+        dma_rcv_rdreq     => dma_rcv_rdreq,
+        dma_rcv_data_out  => dma_rcv_data_out,
+        dma_rcv_empty     => dma_rcv_empty,
+        dma_snd_wrreq     => dma_snd_wrreq,
+        dma_snd_data_in   => dma_snd_data_in,
+        dma_snd_full      => dma_snd_full);
+
+    -- ESPLink cannot access memory through the FPGA-based link.
+    -- A second instance of ESPLink is placed on the FPGA connected to DDR to
+    -- load programs in memory
+    remote_ahbm_rcv_rdreq <= '0';
+    remote_ahbm_snd_data_in <= (others => '0');
+    remote_ahbm_snd_wrreq <= '1';
+    end generate mem2ext_gen;
+
+
+    esplink_proxy_gen: if this_has_ddr /= 0 generate
     -- Handle JTAG or EDCL requests to memory
     mem_noc2ahbm_2 : mem_noc2ahbm
       generic map (
@@ -1145,6 +1207,7 @@ begin
         dma_snd_full              => '0',
         dma_snd_atleast_4slots    => '1',
         dma_snd_exactly_3slots    => '0');
+    end generate esplink_proxy_gen;
 
   end generate with_cache_coherence;
 

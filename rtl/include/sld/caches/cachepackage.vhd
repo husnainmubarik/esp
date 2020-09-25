@@ -269,6 +269,7 @@ package cachepackage is
       tech        : integer                      := virtex7;
       sets        : integer                      := 256;
       ways        : integer                      := 16;
+      ahb_if_en   : integer range 0 to 1         := 1;
       nl2         : integer                      := 4;
       nllc        : integer                      := 1;
       noc_xlen    : integer                      := 2;
