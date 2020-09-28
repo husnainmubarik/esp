@@ -32,7 +32,7 @@ begin
         sr <=(others=>'0');
       elsif load = '1' then
         sr <= A & '1';
-      elsif clk'event and clk='1' and shift_en='1' then
+      elsif shift_en='1' then
         sr <=sr(sz-1 downto 0) & '0';
       end if;
     end if ;
