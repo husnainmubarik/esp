@@ -416,7 +416,7 @@ begin
     tile_empty_i: tile_empty
       generic map (
         SIMULATION   => SIMULATION,
-        ROUTER_PORTS => set_router_ports(CFG_XLEN, CFG_YLEN, tile_x(i), tile_y(i)),
+        ROUTER_PORTS => set_router_ports(CFG_FABTECH, CFG_XLEN, CFG_YLEN, tile_x(i), tile_y(i)),
         HAS_SYNC     => CFG_HAS_SYNC)
       port map (
         raw_rstn           => '0',
@@ -528,7 +528,7 @@ begin
         this_has_dvfs      => tile_has_dvfs(i),
         this_has_pll       => tile_has_pll(i),
         this_extra_clk_buf => extra_clk_buf(i),
-        ROUTER_PORTS       => set_router_ports(CFG_XLEN, CFG_YLEN, tile_x(i), tile_y(i)),
+        ROUTER_PORTS       => set_router_ports(CFG_FABTECH, CFG_XLEN, CFG_YLEN, tile_x(i), tile_y(i)),
         HAS_SYNC           => CFG_HAS_SYNC)
       port map (
         raw_rstn           => '0',
@@ -643,7 +643,7 @@ begin
         this_has_dvfs      => tile_has_dvfs(i),
         this_has_pll       => tile_has_pll(i),
         this_extra_clk_buf => extra_clk_buf(i),
-        ROUTER_PORTS       => set_router_ports(CFG_XLEN, CFG_YLEN, tile_x(i), tile_y(i)),
+        ROUTER_PORTS       => set_router_ports(CFG_FABTECH, CFG_XLEN, CFG_YLEN, tile_x(i), tile_y(i)),
         HAS_SYNC           => CFG_HAS_SYNC)
       port map (
         raw_rstn           => '0',
@@ -751,7 +751,7 @@ begin
       tile_io_i : tile_io
       generic map (
         SIMULATION   => SIMULATION,
-        ROUTER_PORTS => set_router_ports(CFG_XLEN, CFG_YLEN, tile_x(i), tile_y(i)),
+        ROUTER_PORTS => set_router_ports(CFG_FABTECH, CFG_XLEN, CFG_YLEN, tile_x(i), tile_y(i)),
         HAS_SYNC     => CFG_HAS_SYNC)
       port map (
         raw_rstn           => '0',
@@ -878,7 +878,7 @@ begin
     mem_tile: if tile_type(i) = 4 generate
       tile_mem_i: tile_mem
       generic map (
-        ROUTER_PORTS => set_router_ports(CFG_XLEN, CFG_YLEN, tile_x(i), tile_y(i)),
+        ROUTER_PORTS => set_router_ports(CFG_FABTECH, CFG_XLEN, CFG_YLEN, tile_x(i), tile_y(i)),
         HAS_SYNC     => CFG_HAS_SYNC)
       port map (
         raw_rstn           => '0',
@@ -994,7 +994,7 @@ begin
     slm_tile: if tile_type(i) = 5 generate
       tile_slm_i: tile_slm
         generic map (
-          ROUTER_PORTS => set_router_ports(CFG_XLEN, CFG_YLEN, tile_x(i), tile_y(i)),
+          ROUTER_PORTS => set_router_ports(CFG_FABTECH, CFG_XLEN, CFG_YLEN, tile_x(i), tile_y(i)),
           HAS_SYNC     => CFG_HAS_SYNC)
         port map (
           raw_rstn           => '0',
