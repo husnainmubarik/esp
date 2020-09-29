@@ -158,14 +158,6 @@ architecture rtl of mem2ext is
 
 begin  -- architecture rtl
 
-  -- -----------------------------------------------------------------------------
-
-  -- -----------------------------------------------------------------------------REMOVE
-  -- fpga_data_out <= (others => '0');
-  -- fpga_valid_out <= '0';
-  -- fpga_credit_out <= '0';
-  -- fpga_oen <= '0';
-
   -----------------------------------------------------------------------------
   -- Drive fpga_clk_out (should be lenght-matched w/ credit and data)
   fpga_clk_out <= fpga_clk_in;
