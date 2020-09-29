@@ -911,6 +911,8 @@ package tile is
   end component mem2ext;
 
   component ext2ahbm is
+    generic (
+      hindex : integer range 0 to NAHBSLV - 1);
     port (
       clk             : in  std_ulogic;
       rstn            : in  std_ulogic;
@@ -923,8 +925,8 @@ package tile is
       fpga_clk_out    : in  std_ulogic;
       fpga_credit_in  : out std_ulogic;
       fpga_credit_out : in  std_ulogic;
-      ddr_ahbsi       : out ahb_slv_in_type;
-      ddr_ahbso       : in  ahb_slv_out_type);
+      ahbmo           : out ahb_mst_out_type;
+      ahbmi           : in  ahb_mst_in_type);
   end component ext2ahbm;
 
   component demux_1to6
