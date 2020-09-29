@@ -1072,6 +1072,7 @@ begin  -- architecture rtl
   ahbmo.hwrite  <= '0';
   ahbmo.haddr   <= (others => '0');
   ahbmo.hprot   <= "1100";
+  ahbmo.hwdata  <= (others => '0');
   ahbm_reg_next <= AHBM_REG_DEFAULT;
 
   end generate ext_if_gen;
