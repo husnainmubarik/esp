@@ -648,6 +648,9 @@ package tile is
       clk                : in  std_ulogic;
       local_y            : in  local_yx;
       local_x            : in  local_yx;
+      override_cpu_loc   : in  std_ulogic;
+      cpu_loc_y          : in  yx_vec(0 to CFG_NCPU_TILE - 1);
+      cpu_loc_x          : in  yx_vec(0 to CFG_NCPU_TILE - 1);
       irqi               : in  irq_in_vector(ncpu-1 downto 0);
       irqo               : out irq_out_vector(ncpu-1 downto 0);
       irqi_fifo_overflow : out std_ulogic;

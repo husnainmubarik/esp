@@ -249,6 +249,9 @@ architecture rtl of tile_io is
   signal timer_irq          : std_logic_vector(CFG_NCPU_TILE - 1 downto 0);  --CLINT
   signal ipi                : std_logic_vector(CFG_NCPU_TILE - 1 downto 0);  --CLINT
 
+  signal override_cpu_loc : std_ulogic;
+  signal cpu_loc_y        : yx_vec(0 to CFG_NCPU_TILE - 1);
+  signal cpu_loc_x        : yx_vec(0 to CFG_NCPU_TILE - 1);
 
   -- UART
   signal u1i : uart_in_type;
@@ -1565,6 +1568,18 @@ begin
       apb_rcv_data_out => apb_rcv_data_out,
       apb_rcv_empty    => apb_rcv_empty);
 
+
+  -- Enable configuration registers to relocate CPUs. Chaing this routing
+  -- table, incombination with the reconfiguration of the HART ID allows any
+  -- CPU (rather than CPU0 only) to boot in single-core mode.
+  -- Default CPU ID and routing tables are defined as constants in the generated
+  -- socmap, which is based on the ESP configuration file.
+  override_cpu_loc <= tile_config(ESP_CSR_CPU_LOC_OVR_LSB);
+  cpu_loc_ovr_gen: for i in 0 to CFG_NCPU_TILE - 1 generate
+    cpu_loc_x(i) <= tile_config(ESP_CSR_CPU_LOC_OVR_LSB + 1 + i * 6 + 0 + 2 downto ESP_CSR_CPU_LOC_OVR_LSB + 1 + i * 6 + 0);
+    cpu_loc_y(i) <= tile_config(ESP_CSR_CPU_LOC_OVR_LSB + 1 + i * 6 + 3 + 2 downto ESP_CSR_CPU_LOC_OVR_LSB + 1 + i * 6 + 3);
+  end generate cpu_loc_ovr_gen;
+
   misc_irq2noc_1 : misc_irq2noc
     generic map (
       tech  => CFG_FABTECH,
@@ -1576,6 +1591,9 @@ begin
       clk                => clk,
       local_y            => this_local_y,
       local_x            => this_local_x,
+      override_cpu_loc   => override_cpu_loc,
+      cpu_loc_y          => cpu_loc_y,
+      cpu_loc_x          => cpu_loc_x,
       irqi               => irqi,
       irqo               => irqo,
       irqi_fifo_overflow => irqi_fifo_overflow,
