@@ -282,6 +282,7 @@ begin
       rd_i_out <= (others => '0');
       we_in    <= (others => '0');
 
+      piso_load <= '0';
 
       case r.state is
 
@@ -314,7 +315,6 @@ begin
                         sipo_en_in  <= '1';
 
                         if sipo_done_i(1) = '1' then
-                          --v.piso_clear0:='1';
                           sipo_en_in <= '0';
                           v.compare  := (others => '0');
                           v.state    := waitforvoid1;
@@ -326,7 +326,6 @@ begin
                         v.demux_sel := "010000";
                         sipo_en_in  <= '1';
                         if sipo_done_i(2) = '1' then
-                          --v.piso_clear0:='1';
                           sipo_en_in <= '0';
                           v.compare  := (others => '0');
                           v.state    := waitforvoid2;
@@ -337,7 +336,6 @@ begin
                         v.demux_sel := "001000";
                         sipo_en_in  <= '1';
                         if sipo_done_i(3) = '1' then
-                          --v.piso_clear0:='1';
                           sipo_en_in <= '0';
                           v.compare  := (others => '0');
                           v.state    := waitforvoid3;
@@ -348,7 +346,6 @@ begin
                         v.demux_sel := "000100";
                         sipo_en_in  <= '1';
                         if sipo_done_i(4) = '1' then
-                          --v.piso_clear0:='1';
                           sipo_en_in <= '0';
                           v.compare  := (others => '0');
                           v.state    := waitforvoid4;
@@ -359,7 +356,6 @@ begin
                         v.demux_sel := "000010";
                         sipo_en_in  <= '1';
                         if sipo_done_i(5) = '1' then
-                          --v.piso_clear0:='1';
                           sipo_en_in <= '0';
                           v.compare  := (others => '0');
                           v.state    := waitforvoid5;
@@ -370,7 +366,6 @@ begin
                         v.demux_sel := "000001";
                         sipo_en_in  <= '1';
                         if sipo_done_i(6) = '1' then
-                          --v.piso_clear0:='1';
                           sipo_en_in <= '0';
                           v.compare  := (others => '0');
                           v.state    := waitforvoid6;
@@ -569,19 +564,19 @@ begin
           end if;
 
 
-        when read_and_check => case r.compare is
-          when "100000" => rd_i_out(1) <= '1';
-          when "010000" => rd_i_out(2) <= '1';
-          when "001000" => rd_i_out(3) <= '1';
-          when "000100" => rd_i_out(4) <= '1';
-          when "000010" => rd_i_out(5) <= '1';
-          when "000001" => rd_i_out(6) <= '1';
-          when others   => null;
-                               end case;
-                               piso_load <= '1';
-                               v.state   := extract;
-                               v.piso_en := '1';
-
+        when read_and_check =>
+          case r.compare is
+            when "100000" => rd_i_out(1) <= '1';
+            when "010000" => rd_i_out(2) <= '1';
+            when "001000" => rd_i_out(3) <= '1';
+            when "000100" => rd_i_out(4) <= '1';
+            when "000010" => rd_i_out(5) <= '1';
+            when "000001" => rd_i_out(6) <= '1';
+            when others   => null;
+          end case;
+          piso_load <= '1';
+          v.state   := extract;
+          v.piso_en := '1';
 
         when extract => piso_load <= '0';
                         rd_i_out <= (others => '0');
@@ -608,7 +603,7 @@ begin
         when "000100" => sipo_done <= sipo_done_i(4);
         when "000010" => sipo_done <= sipo_done_i(5);
         when "000001" => sipo_done <= sipo_done_i(6);
-        when others   => null;
+        when others   => sipo_done <= '0';
       end case;
 
     end process;
@@ -618,6 +613,7 @@ begin
 
     process(sipo_en_in, r.compare)
     begin
+      sipo_en_i    <= (others => '0');
       if sipo_en_in = '1' then
         case r.compare is
           when "100000" => sipo_en_i(1) <= '1';
@@ -628,13 +624,12 @@ begin
           when "000001" => sipo_en_i(6) <= '1';
           when others   => sipo_en_i    <= (others => '0');
         end case;
-      else
-        sipo_en_i <= (others => '0');
       end if;
     end process;
 
     process(r.sipo_clear, r.compare)
     begin
+      sipo_clear_i <= (others => '0');
       if r.sipo_clear = '1' then
         case r.compare is
           when "100000" => sipo_clear_i(1) <= '1';
@@ -643,11 +638,8 @@ begin
           when "000100" => sipo_clear_i(4) <= '1';
           when "000010" => sipo_clear_i(5) <= '1';
           when "000001" => sipo_clear_i(6) <= '1';
-
-          when others => null;
+          when others   => sipo_clear_i    <= (others => '0');
         end case;
-      else
-        sipo_clear_i <= (others => '0');
       end if;
     end process;
 
