@@ -1684,7 +1684,7 @@ genus/srcs.tcl: genus check_all_rtl_srcs.old
 	done; \
 	echo "### Compile VHDL source files ###" >> $@; \
 		for rtl in $(VHDL_SYN_SRCS); do \
-			[[ $$rtl =~ techmap/unisim  ]] || echo "$(GENUS_VHDL) $$rtl" >> $@; \
+			[[ $$rtl =~ techmap/unisim  ]] || [[ $$rtl =~ fpga_proxy_top.vhd  ]] || echo "$(GENUS_VHDL) $$rtl" >> $@; \
 		done; \
 	echo "### Compile Verilog source files ###" >> $@; \
 		for rtl in $(VLOG_SYN_SRCS); do \
