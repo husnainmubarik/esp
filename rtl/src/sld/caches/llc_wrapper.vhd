@@ -731,6 +731,7 @@ begin  -- architecture rtl
       fwd_out_reg <= FWD_OUT_REG_DEFAULT;
       rsp_out_reg <= RSP_OUT_REG_DEFAULT;
       dma_rsp_out_reg <= DMA_RSP_OUT_REG_DEFAULT;
+      ext_reg <= EXT_REG_DEFAULT;
     elsif clk'event and clk = '1' then
       ahbm_reg    <= ahbm_reg_next;
       req_in_reg  <= req_in_reg_next;
@@ -739,6 +740,7 @@ begin  -- architecture rtl
       fwd_out_reg <= fwd_out_reg_next;
       rsp_out_reg <= rsp_out_reg_next;
       dma_rsp_out_reg <= dma_rsp_out_reg_next;
+      ext_reg <= ext_reg_next;
     end if;
   end process fsms_state_update;
 
