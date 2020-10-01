@@ -272,7 +272,15 @@ begin
 
     NSL : process(r, sipo_done, sipo_done_i,
                   piso_done, piso_done0,
-                  tms, sipo_comp, sipo_comp_i)
+                  tms, sipo_comp, sipo_comp_i,
+                  end_trace, op_i,
+                  test1_cpu_data_void_in,
+                  test2_cpu_data_void_in,
+                  test3_cpu_data_void_in,
+                  test4_cpu_data_void_in,
+                  test5_cpu_data_void_in,
+                  test6_cpu_data_void_in,
+                  fwd_wr_full_o)
 
       variable v : jtag_ctrl_t;
     begin
