@@ -282,7 +282,8 @@ begin
       rd_i_out <= (others => '0');
       we_in    <= (others => '0');
 
-      piso_load <= '0';
+      piso_load  <= '0';
+      sipo_en_in <= '0';
 
       case r.state is
 
