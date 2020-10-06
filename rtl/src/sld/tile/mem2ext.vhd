@@ -236,9 +236,9 @@ begin  -- architecture rtl
       q_o        => ext_snd_data_out,
       rd_empty_o => ext_snd_empty);
 
-  ext_snd_rdreq  <= '0' when credits = 0 else (not ext_snd_empty) and sending.sync_fpga;
+  ext_snd_rdreq  <= '0' when credits = 0 else (not ext_snd_empty);
   fpga_data_out  <= ext_snd_data_out;
-  fpga_oen       <= sending.sync_fpga;
+  fpga_oen       <= sending.sync_fpga or (not ext_snd_empty);
   fpga_valid_out <= ext_snd_rdreq;
 
   -----------------------------------------------------------------------------
@@ -496,11 +496,11 @@ begin  -- architecture rtl
           case req_reg is
 
             when llc_req =>
+              -- Push to LLC rsp queue
+              llc_ext_rsp_valid <= '1';
               if llc_ext_rsp_ready = '1' then
                 -- Decrement counter
                 tran_count_en <= '1';
-                -- Push to LLC rsp queue
-                llc_ext_rsp_valid <= '1';
                 -- Pop ext queue
                 ext_rcv_rdreq <= '1';
               end if;

@@ -983,6 +983,7 @@ begin  -- architecture rtl
       when load_line =>
         if reg.word_cnt = 0 then
 
+          ext_req_valid <= '1';
           if ext_req_ready = '1' then
             if GLOB_PHYS_ADDR_BITS < ARCH_BITS then
               ext_req_data(ARCH_BITS - 1 downto GLOB_PHYS_ADDR_BITS) <= (others => '0');
@@ -991,11 +992,11 @@ begin  -- architecture rtl
             if GLOB_PHYS_ADDR_BITS = ARCH_BITS then
               ext_req_data  <= reg.haddr;
             end if;
-            ext_req_valid <= '1';
             reg.word_cnt  := reg.word_cnt + 1;
           end if;
 
         elsif reg.word_cnt = WORDS_PER_LINE then
+          ext_rsp_ready <= llc_mem_rsp_ready;
 
           if ext_rsp_valid = '1' then
             reg.line(WORDS_PER_LINE*BITS_PER_WORD-1 downto (WORDS_PER_LINE-1)*BITS_PER_WORD) := fix_endian(ext_rsp_data);
@@ -1010,6 +1011,7 @@ begin  -- architecture rtl
           end if;
 
         else
+          ext_rsp_ready <= '1';
 
           if ext_rsp_valid = '1' then
             reg.line(reg.word_cnt*BITS_PER_WORD-1 downto (reg.word_cnt-1)*BITS_PER_WORD) := fix_endian(ext_rsp_data);
@@ -1032,6 +1034,7 @@ begin  -- architecture rtl
       when store_line =>
         if reg.word_cnt = 0 then
 
+          ext_req_valid <= '1';
           if ext_req_ready = '1' then
             if GLOB_PHYS_ADDR_BITS < ARCH_BITS then
               ext_req_data(ARCH_BITS - 1 downto GLOB_PHYS_ADDR_BITS) <= (others => '0');
@@ -1040,23 +1043,22 @@ begin  -- architecture rtl
             if GLOB_PHYS_ADDR_BITS = ARCH_BITS then
               ext_req_data  <= reg.haddr;
             end if;
-            ext_req_valid <= '1';
             reg.word_cnt  := reg.word_cnt + 1;
           end if;
 
         elsif reg.word_cnt = WORDS_PER_LINE then
 
           ext_req_data <= fix_endian(reg.line(WORDS_PER_LINE*BITS_PER_WORD-1 downto (WORDS_PER_LINE-1)*BITS_PER_WORD));
+          ext_req_valid <= '1';
           if ext_req_ready = '1' then
-            ext_req_valid <= '1';
             reg.state     := idle;
           end if;
 
         else
 
           ext_req_data <= fix_endian(reg.line(reg.word_cnt*BITS_PER_WORD-1 downto (reg.word_cnt-1)*BITS_PER_WORD));
+          ext_req_valid <= '1';
           if ext_req_ready = '1' then
-            ext_req_valid <= '1';
             reg.word_cnt  := reg.word_cnt + 1;
           end if;
 
