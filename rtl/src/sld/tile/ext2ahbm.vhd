@@ -35,7 +35,8 @@ use work.memoryctrl.all;
 
 entity ext2ahbm is
   generic (
-    hindex : integer range 0 to NAHBSLV - 1);
+    hindex : integer range 0 to NAHBSLV - 1;
+    little_end  : integer range 0 to 1 := 0);
   port (
     clk             : in  std_ulogic;
     rstn            : in  std_ulogic;
@@ -135,6 +136,23 @@ architecture rtl of ext2ahbm is
     end case;
   end target_word_hsize;
 
+  -- Endianness fix
+  function fix_endian (
+    le : std_logic_vector(ARCH_BITS - 1 downto 0))
+    return std_logic_vector is
+    variable be : std_logic_vector(ARCH_BITS - 1 downto 0);
+  begin
+    if little_end = 0 then
+      be := le;
+    else
+      for i in 0 to (ARCH_BITS / 8) - 1 loop
+        be(8 * (i + 1) - 1 downto 8 * i) := le(ARCH_BITS - 8 * i - 1 downto ARCH_BITS - 8 * (i + 1));
+      end loop;  -- i
+    end if;
+    return be;
+  end fix_endian;
+
+  -- Bus address increment
   constant default_incr : std_logic_vector(GLOB_PHYS_ADDR_BITS - 1 downto 0) := conv_std_logic_vector(GLOB_ADDR_INCR, GLOB_PHYS_ADDR_BITS);
 
   attribute keep : string;
@@ -338,7 +356,7 @@ begin  -- architecture rtl
               -- Decrement word count
               v.count := r.count - 1;
               -- Set data
-              v.hwdata := ext_rcv_data_out;
+              v.hwdata := fix_endian(ext_rcv_data_out);
               -- Pop ext queue
               ext_rcv_rdreq <= '1';
               -- Write data next cycle
@@ -376,7 +394,7 @@ begin  -- architecture rtl
           if (granted and ahbmi.hready) = '1' then
             -- Data bus acquired
             -- Set data
-            v.hwdata := ext_rcv_data_out;
+            v.hwdata := fix_endian(ext_rcv_data_out);
             -- Pop ext queue
             ext_rcv_rdreq <= '1';
             -- Increment address
@@ -404,7 +422,7 @@ begin  -- architecture rtl
           if (granted and ahbmi.hready) = '1' then
             -- Read data is valid
             -- Push ext queue
-            ext_snd_data_in <= ahbmi.hrdata;
+            ext_snd_data_in <= fix_endian(ahbmi.hrdata);
             ext_snd_wrreq   <= '1';
             -- End of transaction
             v.state := receive_address;
@@ -415,7 +433,7 @@ begin  -- architecture rtl
           if (granted and ahbmi.hready) = '1' then
             -- Read data is valid
             -- Push ext queue
-            ext_snd_data_in <= ahbmi.hrdata;
+            ext_snd_data_in <= fix_endian(ahbmi.hrdata);
             ext_snd_wrreq   <= '1';
             -- Increment address
             v.haddr := r.haddr + default_incr;

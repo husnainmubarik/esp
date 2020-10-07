@@ -999,11 +999,11 @@ begin  -- architecture rtl
           ext_rsp_ready <= llc_mem_rsp_ready;
 
           if ext_rsp_valid = '1' then
-            reg.line(WORDS_PER_LINE*BITS_PER_WORD-1 downto (WORDS_PER_LINE-1)*BITS_PER_WORD) := fix_endian(ext_rsp_data);
+            reg.line(WORDS_PER_LINE*BITS_PER_WORD-1 downto (WORDS_PER_LINE-1)*BITS_PER_WORD) := ext_rsp_data;
 
             llc_mem_rsp_valid <= '1';
             if llc_mem_rsp_ready = '1' then
-              llc_mem_rsp_data_line <= fix_endian(ext_rsp_data) & reg.line((WORDS_PER_LINE-1)*BITS_PER_WORD-1 downto 0);
+              llc_mem_rsp_data_line <= ext_rsp_data & reg.line((WORDS_PER_LINE-1)*BITS_PER_WORD-1 downto 0);
               reg.state             := idle;
             else
               reg.state := send_mem_rsp;
@@ -1014,7 +1014,7 @@ begin  -- architecture rtl
           ext_rsp_ready <= '1';
 
           if ext_rsp_valid = '1' then
-            reg.line(reg.word_cnt*BITS_PER_WORD-1 downto (reg.word_cnt-1)*BITS_PER_WORD) := fix_endian(ext_rsp_data);
+            reg.line(reg.word_cnt*BITS_PER_WORD-1 downto (reg.word_cnt-1)*BITS_PER_WORD) := ext_rsp_data;
             reg.word_cnt                                                                 := reg.word_cnt + 1;
           end if;
 
@@ -1048,7 +1048,7 @@ begin  -- architecture rtl
 
         elsif reg.word_cnt = WORDS_PER_LINE then
 
-          ext_req_data <= fix_endian(reg.line(WORDS_PER_LINE*BITS_PER_WORD-1 downto (WORDS_PER_LINE-1)*BITS_PER_WORD));
+          ext_req_data <= reg.line(WORDS_PER_LINE*BITS_PER_WORD-1 downto (WORDS_PER_LINE-1)*BITS_PER_WORD);
           ext_req_valid <= '1';
           if ext_req_ready = '1' then
             reg.state     := idle;
@@ -1056,7 +1056,7 @@ begin  -- architecture rtl
 
         else
 
-          ext_req_data <= fix_endian(reg.line(reg.word_cnt*BITS_PER_WORD-1 downto (reg.word_cnt-1)*BITS_PER_WORD));
+          ext_req_data <= reg.line(reg.word_cnt*BITS_PER_WORD-1 downto (reg.word_cnt-1)*BITS_PER_WORD);
           ext_req_valid <= '1';
           if ext_req_ready = '1' then
             reg.word_cnt  := reg.word_cnt + 1;

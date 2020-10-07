@@ -915,7 +915,8 @@ package tile is
 
   component ext2ahbm is
     generic (
-      hindex : integer range 0 to NAHBSLV - 1);
+      hindex : integer range 0 to NAHBSLV - 1;
+      little_end  : integer range 0 to 1 := 0);
     port (
       clk             : in  std_ulogic;
       rstn            : in  std_ulogic;
