@@ -351,7 +351,7 @@ begin  -- architecture rtl
     dma_snd_wrreq <= '0';
 
     llc_ext_rsp_data <= ext_rcv_data_out;
-    dma_snd_data_in  <= "00" & ext_rcv_data_out;
+    dma_snd_data_in  <= PREAMBLE_BODY & ext_rcv_data_out;
 
     -- To dual-clock FIFOs
     ext_snd_wrreq <= '0';
@@ -512,6 +512,9 @@ begin  -- architecture rtl
               end if;
 
             when dma_req =>
+              if tran_count_reg = X"00000001" then
+                dma_snd_data_in(NOC_FLIT_SIZE - 1 downto NOC_FLIT_SIZE - PREAMBLE_WIDTH)  <= PREAMBLE_TAIL;
+              end if;
               if dma_snd_full = '0' then
                 -- Decrement counter
                 tran_count_en <= '1';
