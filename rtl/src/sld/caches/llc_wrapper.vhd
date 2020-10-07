@@ -984,14 +984,14 @@ begin  -- architecture rtl
         if reg.word_cnt = 0 then
 
           ext_req_valid <= '1';
+          if GLOB_PHYS_ADDR_BITS < ARCH_BITS then
+            ext_req_data(ARCH_BITS - 1 downto GLOB_PHYS_ADDR_BITS) <= (others => '0');
+            ext_req_data(GLOB_PHYS_ADDR_BITS - 1 downto 0) <= reg.haddr;
+          end if;
+          if GLOB_PHYS_ADDR_BITS = ARCH_BITS then
+            ext_req_data  <= reg.haddr;
+          end if;
           if ext_req_ready = '1' then
-            if GLOB_PHYS_ADDR_BITS < ARCH_BITS then
-              ext_req_data(ARCH_BITS - 1 downto GLOB_PHYS_ADDR_BITS) <= (others => '0');
-              ext_req_data(GLOB_PHYS_ADDR_BITS - 1 downto 0) <= reg.haddr;
-            end if;
-            if GLOB_PHYS_ADDR_BITS = ARCH_BITS then
-              ext_req_data  <= reg.haddr;
-            end if;
             reg.word_cnt  := reg.word_cnt + 1;
           end if;
 
@@ -1035,14 +1035,14 @@ begin  -- architecture rtl
         if reg.word_cnt = 0 then
 
           ext_req_valid <= '1';
+          if GLOB_PHYS_ADDR_BITS < ARCH_BITS then
+            ext_req_data(ARCH_BITS - 1 downto GLOB_PHYS_ADDR_BITS) <= (others => '0');
+            ext_req_data(GLOB_PHYS_ADDR_BITS - 1 downto 0) <= reg.haddr;
+          end if;
+          if GLOB_PHYS_ADDR_BITS = ARCH_BITS then
+            ext_req_data  <= reg.haddr;
+          end if;
           if ext_req_ready = '1' then
-            if GLOB_PHYS_ADDR_BITS < ARCH_BITS then
-              ext_req_data(ARCH_BITS - 1 downto GLOB_PHYS_ADDR_BITS) <= (others => '0');
-              ext_req_data(GLOB_PHYS_ADDR_BITS - 1 downto 0) <= reg.haddr;
-            end if;
-            if GLOB_PHYS_ADDR_BITS = ARCH_BITS then
-              ext_req_data  <= reg.haddr;
-            end if;
             reg.word_cnt  := reg.word_cnt + 1;
           end if;
 

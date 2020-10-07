@@ -358,11 +358,13 @@ begin  -- architecture rtl
       when idle =>
         if llc_ext_req_valid = '1' then
           req <= llc_req;
+          -- state
+          sample_header <= '1';
           ext_next <= send_addr;
         elsif dma_rcv_empty = '0' then
           req <= dma_req;
           ext_next <= send_addr;
-          -- Sample response header
+          -- Sample response header and state
           sample_header <= '1';
           -- Pop DMA queue
           dma_rcv_rdreq <= '1';
