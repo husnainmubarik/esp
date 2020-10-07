@@ -105,6 +105,8 @@ architecture rtl of mem2ext is
   signal credit_out       : std_ulogic;
   signal credit_out_empty : std_ulogic;
 
+  signal fpga_credit_in_int : std_ulogic;
+
   type ext_req_type is (llc_req, dma_req);
   signal req, req_reg : ext_req_type;
 
@@ -189,10 +191,12 @@ begin  -- architecture rtl
     if fpga_clk_in'event and fpga_clk_in = '1' then  -- rising clock edge
       if rstn = '0' then
         credits <= QUEUE_DEPTH;
+        fpga_credit_in_int <= '0';
       else
-        if ext_snd_rdreq = '1' and fpga_credit_in = '0' and credits /= 0 then
+        fpga_credit_in_int <= fpga_credit_in;
+        if ext_snd_rdreq = '1' and fpga_credit_in_int = '0' and credits /= 0 then
           credits <= credits - 1;
-        elsif ext_snd_rdreq = '0' and fpga_credit_in = '1' and credits /= QUEUE_DEPTH then
+        elsif ext_snd_rdreq = '0' and fpga_credit_in_int = '1' and credits /= QUEUE_DEPTH then
           credits <= credits + 1;
         end if;
       end if;
@@ -204,7 +208,7 @@ begin  -- architecture rtl
   credits_out_fifo: inferred_async_fifo
     generic map (
       g_data_width => 1,
-      g_size       => 2)
+      g_size       => 2 * QUEUE_DEPTH)
     port map (
       rst_n_i    => rstn,
       clk_wr_i   => clk,
@@ -224,7 +228,7 @@ begin  -- architecture rtl
   mem2ext_fifo: inferred_async_fifo
     generic map (
       g_data_width => ARCH_BITS,
-      g_size       => QUEUE_DEPTH)
+      g_size       => 2 * QUEUE_DEPTH)
     port map (
       rst_n_i    => rstn,
       clk_wr_i   => clk,
@@ -246,7 +250,7 @@ begin  -- architecture rtl
   ext2mem_fifo: inferred_async_fifo
     generic map (
       g_data_width => ARCH_BITS,
-      g_size       => QUEUE_DEPTH)
+      g_size       => 2 * QUEUE_DEPTH)
     port map (
       rst_n_i    => rstn,
       clk_wr_i   => fpga_clk_in,
