@@ -1167,7 +1167,7 @@ begin
     -- load programs in memory
     remote_ahbm_rcv_rdreq <= '0';
     remote_ahbm_snd_data_in <= (others => '0');
-    remote_ahbm_snd_wrreq <= '1';
+    remote_ahbm_snd_wrreq <= '0';
     end generate mem2ext_gen;
 
 
