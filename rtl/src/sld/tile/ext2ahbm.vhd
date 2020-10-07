@@ -182,7 +182,12 @@ begin  -- architecture rtl
 
   -----------------------------------------------------------------------------
   -- Credits out (to chip)
-  fpga_credit_in <= ext_rcv_rdreq;
+  fpga_redit_in_reg: process (clk) is
+  begin  -- process fpga_redit_in_reg
+    if clk'event and clk = '1' then  -- rising clock edge
+      fpga_credit_in <= ext_rcv_rdreq;
+    end if;
+  end process fpga_redit_in_reg;
 
 
   -----------------------------------------------------------------------------
@@ -190,7 +195,7 @@ begin  -- architecture rtl
   credits_in_fifo: inferred_async_fifo
     generic map (
       g_data_width => 1,
-      g_size       => 2)
+      g_size       => 2 * QUEUE_DEPTH)
     port map (
       rst_n_i    => rstn,
       clk_wr_i   => fpga_clk_out,
@@ -226,7 +231,7 @@ begin  -- architecture rtl
   mem2ext_fifo: inferred_async_fifo
     generic map (
       g_data_width => ARCH_BITS,
-      g_size       => QUEUE_DEPTH)
+      g_size       => 2 * QUEUE_DEPTH)
     port map (
       rst_n_i    => rstn,
       clk_wr_i   => fpga_clk_out,
@@ -245,7 +250,7 @@ begin  -- architecture rtl
   -- FPGA to Chip (this requires no synchronization: clk is fpga_clk_in)
   ext2mem_fifo: fifo3
     generic map (
-      depth => QUEUE_DEPTH,
+      depth => 2 * QUEUE_DEPTH,
       width => ARCH_BITS)
     port map (
       clk         => clk,
@@ -365,11 +370,11 @@ begin  -- architecture rtl
             -- End of transaction
             v.state := receive_address;
           end if;
-        elsif (granted and ahbmi.hready) = '1' then
-          -- Data bus acquired
-          if ext_rcv_empty = '0' then
-            -- Continue with burst transaction
-            ahbmo.htrans <= HTRANS_SEQ;
+        elsif ext_rcv_empty = '0' then
+          -- Continue with burst transaction
+          ahbmo.htrans <= HTRANS_SEQ;
+          if (granted and ahbmi.hready) = '1' then
+            -- Data bus acquired
             -- Set data
             v.hwdata := ext_rcv_data_out;
             -- Pop ext queue
@@ -384,10 +389,10 @@ begin  -- architecture rtl
             else
               ahbmo.hbusreq <= '1';
             end if;
-          else
-            -- Bus granted, but data not received from chip
-            ahbmo.htrans <= HTRANS_BUSY;
           end if;
+        else
+          -- Data not received from chip
+          ahbmo.htrans <= HTRANS_BUSY;
         end if;
 
 
@@ -404,11 +409,11 @@ begin  -- architecture rtl
             -- End of transaction
             v.state := receive_address;
           end if;
-        elsif (granted and ahbmi.hready) = '1' then
-          -- Read data is valid
-          if (ext_snd_almost_full or ext_snd_full) = '0' then
-            -- Continue with burst transaction
-            ahbmo.htrans <= HTRANS_SEQ;
+        elsif (ext_snd_almost_full or ext_snd_full) = '0' then
+          -- Continue with burst transaction
+          ahbmo.htrans <= HTRANS_SEQ;
+          if (granted and ahbmi.hready) = '1' then
+            -- Read data is valid
             -- Push ext queue
             ext_snd_data_in <= ahbmi.hrdata;
             ext_snd_wrreq   <= '1';
@@ -422,10 +427,10 @@ begin  -- architecture rtl
             else
               ahbmo.hbusreq <= '1';
             end if;
-          else
-            -- bus granted, but ext queue is full
-            ahbmo.htrans <= HTRANS_BUSY;
           end if;
+        else
+          -- ext queue is full
+          ahbmo.htrans <= HTRANS_BUSY;
         end if;
 
     end case;
@@ -437,7 +442,7 @@ begin  -- architecture rtl
   ahbmo.hwrite  <= r.hwrite;
   ahbmo.hwdata  <= r.hwdata;
 
-  ahbmo.hprot   <= "1100";
+  ahbmo.hprot   <= "0011";
   ahbmo.hsize   <= target_word_hsize;
   ahbmo.hlock   <= '0';
   ahbmo.hirq    <= (others => '0');
