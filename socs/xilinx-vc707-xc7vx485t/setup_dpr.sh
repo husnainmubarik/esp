@@ -1,5 +1,22 @@
 #!/bin/bash
 
+#TODO: check user input
+#read -p "  * Enter the name of the new accelerator: " NAME
+#NAME=${NAME:-$NAME_DEFAULT}
+
+#read -p "  * Enter the id of the tile to be reconfigured: " TILE_ID
+#TILE_ID=${TILE_ID}
+
+
+#TODO:  1. * do you want to run a static synth
+#              if (yes)
+#                set some RR flags to run static synth (**)
+#      
+#       2. * how many RR tiles
+#          * tile id and name of the accelerator (check if tile is an accelerator tile)
+#       
+#       3. * generate syn and impl scripts
+
 num_acc_tiles=0
 esp_config="$1/socs/$2/.esp_config"
 DEVICE=$3
@@ -28,6 +45,7 @@ do
                 ((num_acc_tiles++));
             fi
             echo $tile_token $tile_index $tile_type $acc_name;
+
         fi
     done
 done < $esp_config
@@ -36,6 +54,7 @@ echo "$1    $2   $3"
 for i in $num_acc_tiles
 do
     echo "tile id ${accelerators[$i, 0]} accelerator name ${accelerators[$i,1]}"
+    echo "tile id ${accelerators[$i, 0]} accelerator name   ${accelerators[$i,1]}"
 done
 
 #initialize tiles with accelerators
@@ -49,6 +68,7 @@ echo " " > $output
 while read -r type ext addr
 do
     if [[ "$ext" == *"tile_acc.vhd"* ]] || [[ "$ext" == *"tile_acc_bbox.vhd"* ]]; then
+        echo "match found";
         echo "vhdl xil_defaultlib $acc_dir/tile_acc_$i.vhd" >> $output;
     elif [ "$type" == "read_verilog" ] && [ "$ext" == "-sv" ] && [[ "$addr" != *"nbdcache"* ]] && [[ "$addr" != *"miss_handler"* ]]; then
         echo "system xil_defaultlib $addr" >> $output
@@ -59,6 +79,7 @@ do
     else
         echo " "  
     fi;
+   
 done < $prj_source
 done
 

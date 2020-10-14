@@ -274,7 +274,6 @@ echo "add_implementation top_dpr " >> $dpr_syn_tcl;
 echo "set_attribute impl top_dpr top        \$top" >> $dpr_syn_tcl;
 echo "set_attribute impl top_dpr pr.impl      1" >> $dpr_syn_tcl;
 echo "set_attribute impl top_dpr implXDC     [list [ list $1/constraints/$2/pblocks_dpr.xdc $1/constraints/$2/$2.xdc $1/constraints/$2/$2-eth-constraints.xdc $1/constraints/$2/$2-eth-pins.xdc  $1/socs/$2/vivado/esp-$2.srcs/sources_1/ip/mig/mig/user_design/constraints/mig.xdc $1/socs/$2/vivado/esp-$2.srcs/sources_1/ip/sgmii/synth/sgmii.xdc ] ]" >> $dpr_syn_tcl;
-
 echo "set_property SEVERITY {Warning} [get_drc_checks HDPR-41]" >> $dpr_syn_tcl;
 
 if [[ "$4" == "DPR" ]]; then
@@ -332,5 +331,4 @@ elif [ $4 == "ACC" ]; then
 elif [ $4 == "test" ]; then
     extract_acc $1 $2 $3
     gen_fplan $1 $2 $3;
-fi;
 
