@@ -1,23 +1,23 @@
 A guide to using the dynamic partial reconfiguration (DPR) flow in ESP.
 
-The major advantage of using the DPR flow in ESP is reducing the duration of the design loop. This guide demonstrates FPGA prototyping 
-of ESP in 2x2 tile configuration using the DPR flow. The tiles are configured as, a cpu tile, an accelerator tile, a mem tile and an I/O tile. The example
-focuses on implementing ESP with a FIR accelerator in the accelerator tile in the first design run, and then replacing the MAC accelerator with a FIR 
-acceleraator in the second run. Both accelerators are designed using the Vivado HLS based acceleration design flow from the ESP 
-website, https://www.esp.cs.columbia.edu/docs/cpp_acc/cpp_acc-guide but it should also work for the systemC based flow. 
+The major advantage of using the DPR flow in ESP is reducing the vivado implementation time of a design when only minor change is made to the design. It is an alternative 
+to the exisiting vivado prototyping of ESP. 
+This guide demonstrates FPGA prototyping of ESP in 2x2 tile configuration using the DPR flow. The tiles are configured as, a cpu tile, an accelerator tile, a mem tile and an I/O tile. 
+The example focuses on implementing ESP with a MAC accelerator in the accelerator tile in the first design run, and then replacing the MAC accelerator with a FIR 
+acceleraator in the second run. Both accelerators are designed using the Vivado HLS based acceleration design flow from the ESP website, 
+https://www.esp.cs.columbia.edu/docs/cpp_acc/cpp_acc-guide but it should also work for the systemC based accelerator design flow. 
 
-The DPR flow was tested on the Xilinx VC707 design folder.  
+The DPR flow was tested on the Xilinx VC707 design folder.
 
 First design run: MAC accelerator implementaion
 --------------------------------------------
-Protoyping ESP with the DPR flow is almost the same as the non-dpr flow except the targets to generate the FPGA bitstream and programming the FPGA in Xilinx Vivado.
+Protoyping ESP with the DPR flow is almost the same as the non-dpr flow except the make targets which are used to generate the FPGA bitstream and programming the FPGA in Xilinx Vivado.
 
 1. Follow the steps to create the MAC acclerator using the guide https://www.esp.cs.columbia.edu/docs/cpp_acc/cpp_acc-guide/ up until "the Accelerator integration" step.
 2. Follow the steps to generate a single-core ESP SoC https://www.esp.cs.columbia.edu/docs/singlecore/singlecore-guide/ except the "FPGA prototyping section".
 3. At the FPGA prototyping stage replace the "make vivado-syn" target with "make vivado-syn-dpr".
 4. Finally when deploying the bitstream into the FPGA, replace the "fpga-run" and "fpga-run-linux" targets with "fpga-run-dpr" and "fpga-run-linux-dpr", to load the 
-bitstream to the FPGA and run a baremetal application or linux.
-
+bitstream to the FPGA and run a baremetal application or linux respectively.
 
 Second design run: Replacing the MAC accelerator with a FIR accelerator
 ---------------------------------------------------------------------
@@ -55,14 +55,14 @@ In the second design run, the MAC accelerator is replaced with FIR accelerator. 
                                                                                                                                        
         _outbuff[i] = acc; 
 
-3. run the "make esp-xconfig" target to change the accelerator tile from MAC to FIR
-4. run "make vivado-syn-dpr-acc" to replace the accelerator and run vivado implementation
-5. Finally when deploying the bitstream into the FPGA, replace the "fpga-run" and "fpga-run-linux" targets with "fpga-run-dpr" and "fpga-run-linux-dpr", to load the 
+3. Generate your accelerator using "make fir-hls" same way as you would for the mac accelerator.
+4. run the "make esp-xconfig" target to change the accelerator tile from MAC to FIR
+5. run "make vivado-syn-dpr-acc" to replace the accelerator and run vivado implementation
+6. Finally when deploying the bitstream into the FPGA, replace the "fpga-run" and "fpga-run-linux" targets with "fpga-run-dpr" and "fpga-run-linux-dpr", to load the 
 bitstream to the FPGA and run a baremetal application or linux.
 
 Things to Note
 -------------------------------------------------
-If any of the tiles are modified, then the flow must be run again with "make vivado-syn-dpr".
+If any of the tiles, besides the accelerator tile, are modified, then the flow must be run again with "make vivado-syn-dpr".
 
-For now the design supports configurations with only one reconfigurable acc_tile. But once the floorplanning is automated, it can support any tile configuration with no modification.
-
+The design flow has been tested with a 3x2, 2x3, 3x3 and 4x3 tile configuration.
