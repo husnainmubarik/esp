@@ -30,6 +30,7 @@ do
             tile_index=${_line[2]}
             tile_type=${_line[3]}
             acc_name=${_line[4]}
+            acc_name+="_$tile_index"
             if [ $tile_type == "acc" ]; then
                 new_accelerators["$num_acc_tiles,0"]=$tile_index;
                 new_accelerators["$num_acc_tiles,1"]=$(echo ${acc_name} | awk '{print tolower($0)}');
@@ -40,10 +41,10 @@ do
     done
 done < $esp_config
 
-#for ((i=0; i<num_acc_tiles; i++)) 
-#do
-#echo " new accelerator $i is ${new_accelerators[${i},0]}  ${new_accelerators[${i},1]};"
-#done
+for ((i=0; i<num_acc_tiles; i++)) 
+do
+echo " new accelerator $i is ${new_accelerators[${i},0]}  ${new_accelerators[${i},1]};"
+done
 
 }
 
@@ -58,6 +59,7 @@ do
             tile_index=${_line[2]}
             tile_type=${_line[3]}
             acc_name=${_line[4]}
+            acc_name+="_$tile_index"
             if [ $tile_type == "acc" ]; then
                 old_accelerators["$num_old_acc_tiles,0"]=$tile_index;
                 old_accelerators["$num_old_acc_tiles,1"]=$(echo ${acc_name} | awk '{print tolower($0)}');
@@ -121,7 +123,7 @@ done < $tile_acc
 while read src_list
 do
     if [[ $src_list == *"tile_acc.vhd" ]]; then
-        echo "read_vhdl /home/sholmes/esp/socs/xilinx-vc707-xc7vx485t/sldgen/dpr_srcs/tile_acc_bbox.vhd" >> $temp_srcs;
+        echo "read_vhdl $1/socs/$2/sldgen/dpr_srcs/tile_acc_bbox.vhd" >> $temp_srcs;
     else
         echo "$src_list" >> $temp_srcs;
     fi
@@ -158,18 +160,59 @@ done
 #generate flooplan
 function gen_fplan() {
 fplan_pblock="$1/constraints/$2/pblocks_dpr.xdc";
+slice_start_x=10;
+slice_start_y=0;
+slice_width=59;
+slice_height=100;
+bram36_start_x=0;
+bram36_start_y=0;
+bram36_width=3;
+bram36_height=20;
+bram18_start_x=0;
+bram18_start_y=0;
+bram18_width=3;
+bram18_height=40;
+dsp_start_x=0;
+dsp_start_y=0;
+dsp_width=5;
+dsp_height=40;
+threshold=180;
+
 echo " " > $fplan_pblock;
-echo "set_property HD.RECONFIGURABLE true [get_cells esp_1/tiles_gen[${new_accelerators["0,0"]}].accelerator_tile.tile_acc_i]" >> $fplan_pblock;
-echo "create_pblock pblock_1" >> $fplan_pblock;
-echo "add_cells_to_pblock [get_pblocks pblock_1] [get_cells -quiet [list esp_1/tiles_gen[${new_accelerators["0,0"]}].accelerator_tile.tile_acc_i]]" >> $fplan_pblock;
-echo "resize_pblock [get_pblocks pblock_1] -add {SLICE_X48Y0:SLICE_X107Y99}" >> $fplan_pblock;
-echo "resize_pblock [get_pblocks pblock_1] -add {RAMB18_X4Y0:RAMB18_X6Y39}" >> $fplan_pblock;
-echo "resize_pblock [get_pblocks pblock_1] -add {RAMB36_X4Y0:RAMB36_X6Y19}" >> $fplan_pblock;
-echo "resize_pblock [get_pblocks pblock_1] -add {DSP48_X3Y0:DSP48_X8Y39}" >> $fplan_pblock;
-echo "set_property RESET_AFTER_RECONFIG true [get_pblocks pblock_1]" >> $fplan_pblock;
-echo "set_property SNAPPING_MODE ON [get_pblocks pblock_1]" >> $fplan_pblock;
-echo "set_property SEVERITY {Warning} [get_drc_checks NSTD-1]" >> $fplan_pblock;
-echo "set_property SEVERITY {Warning} [get_drc_checks UCIO-1]" >> $fplan_pblock;
+
+for ((i=0; i<$num_acc_tiles; i++))
+do
+    echo "set_property HD.RECONFIGURABLE true [get_cells esp_1/tiles_gen[${new_accelerators["$i,0"]}].accelerator_tile.tile_acc_i]" >> $fplan_pblock;
+    echo "create_pblock pblock_$i" >> $fplan_pblock;
+    echo "add_cells_to_pblock [get_pblocks pblock_$i] [get_cells -quiet [list esp_1/tiles_gen[${new_accelerators["$i,0"]}].accelerator_tile.tile_acc_i]]" >> $fplan_pblock;
+    echo "resize_pblock [get_pblocks pblock_$i] -add {SLICE_X"$slice_start_x"Y"$slice_start_y":SLICE_X"$(($slice_start_x+$slice_width))"Y"$((slice_start_y+ +$slice_height-1))"}" >> $fplan_pblock;
+    echo "resize_pblock [get_pblocks pblock_$i] -add {RAMB18_X"$bram18_start_x"Y"$bram18_start_y":RAMB18_X"$(($bram18_start_x+$bram18_width))"Y"$(($bram18_start_y+$bram18_height-1))"}" >> $fplan_pblock;
+    echo "resize_pblock [get_pblocks pblock_$i] -add {RAMB36_X"$bram36_start_x"Y"$bram36_start_y":RAMB36_X"$(($bram36_start_x+$bram36_width))"Y"$(($bram36_start_y+$bram36_height-1))"}" >> $fplan_pblock;
+    echo "resize_pblock [get_pblocks pblock_$i] -add {DSP48_X"$dsp_start_x"Y"$dsp_start_y":DSP48_X"$(($dsp_start_x+$dsp_width))"Y"$(($dsp_start_y+$dsp_height-1))"}" >> $fplan_pblock;
+    echo "set_property RESET_AFTER_RECONFIG true [get_pblocks pblock_$i]" >> $fplan_pblock;
+    echo "set_property SNAPPING_MODE ON [get_pblocks pblock_$i]" >> $fplan_pblock;
+    echo "set_property SEVERITY {Warning} [get_drc_checks NSTD-1]" >> $fplan_pblock;
+    echo "set_property SEVERITY {Warning} [get_drc_checks UCIO-1]" >> $fplan_pblock;
+    
+    if [ $slice_start_y -ge $threshold ]; then 
+        slice_start_y=0;
+        slice_start_x=$(($slice_start_x+$slice_width+1));
+        bram18_start_y=0;
+        bram18_start_x=$(($bram18_start_x+$bram18_width+1));\
+        bram36_start_y=0;\
+        bram36_start_y=$(($bram36_start_y+$bram36_height+1));\
+        dsp_start_y=0\
+        dsp_start_x=$(($dsp_start_x+$dsp_width+1)); \
+    else
+        slice_start_y=$(($slice_start_y+$slice_height));
+        #bram18_start_x=$(($bram18_start_x+$bram18_width));
+        bram18_start_y=$(($bram18_start_y+$bram18_height));
+        #bram36_start_x=$(($bram36_start_x+$bram36_width));
+        bram36_start_y=$(($bram36_start_y+$bram36_height));
+        #dsp_start_x=$(($dsp_start_x+$dsp_width));
+        dsp_start_y=$(($dsp_start_y+$dsp_height));
+    fi;
+done
 }
 
 #generate dpr script
@@ -330,5 +373,7 @@ elif [ $4 == "ACC" ]; then
     gen_dpr $1 $2 $3 $4;
 elif [ $4 == "test" ]; then
     extract_acc $1 $2 $3
+    extract_acc_old $1 $2 $3
+    diff_accelerators $1 $2 $3 
     gen_fplan $1 $2 $3;
-
+fi;

@@ -1640,6 +1640,7 @@ vivado-prog-fpga: vivado/program.tcl
 	if [ "$(DPR_ENABLED)" != "y" ]; then \
 		bit=$(DESIGN).runs/impl_1/$(TOP).bit; \
 	else \
+		mkdir -p $(ESP_ROOT)/socs/$(BOARD)/vivado/$(DESIGN).runs/impl_1; \
 		cp $(ESP_ROOT)/socs/$(BOARD)/vivado_dpr/Bitstreams/top_dpr.bit $(ESP_ROOT)/socs/$(BOARD)/vivado/$(DESIGN).runs/impl_1/$(TOP).bit; \
 		bit=$(DESIGN).runs/impl_1/top.bit; \
 	fi;\
